@@ -1,16 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Amiri, Blinker, Cardo, Roboto } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cardo = Cardo({
+  weight: ["400", "700"],
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+const roboto = Roboto({
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
 });
+
+const amiri = Amiri({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+});
+
+const www = Blinker({
+  weight: ["100", "200", "300", "400", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +39,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // className={`${cardo.className} ${amiri.className}  text-shadow-neutral-800 antialiased`}
+        className={`   ${cardo.className}  text-shadow-neutral-800 antialiased`}
       >
         {children}
       </body>
