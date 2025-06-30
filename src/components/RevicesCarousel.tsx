@@ -15,7 +15,7 @@ const RevicesCarousel = () => {
       <div className=" px-6 pb-8 flex items-center flex-col gap-3 justify-between">
         <div className=" flex items-center justify-center w-full gap-2">
           <p className="text-3xl w-full text-center font-semibold pr-6 amr uppercase tracking-tighter">
-            House Of{" "}
+            Haus Of{" "}
             <span className="sm:[word-spacing:16px]">
               Privae <br className="block sm:hidden" /> and Me
             </span>
