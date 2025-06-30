@@ -4,7 +4,7 @@ import { MenuIcon, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useState } from "react";
 
-const BRAND_NAME = "Hous Of Privae";
+const BRAND_NAME = "Haus Of Privae";
 
 const NavBar = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
