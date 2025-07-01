@@ -6,6 +6,8 @@ import Image from "next/image";
 import BrandValues from "./BrandValue";
 import Footer from "@/components/Footer";
 import RevicesCarousel from "@/components/RevicesCarousel";
+import VideoPlay from "./VideoPlayback";
+import { HomeBanner } from "./HouseBanner";
 
 export default function Home() {
   return (
@@ -29,7 +31,7 @@ export default function Home() {
 function Categories() {
   return (
     <div className=" py-10 space-y-8">
-      <p className="arm text-3xl amr font-bold md:font-semibold  text-center">
+      <p className="arm text-4xl amr font-bold md:font-semibold  text-center">
         Categories
       </p>
       <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5">
@@ -84,43 +86,10 @@ const categoriesData = [
   },
 ];
 
-function VideoPlay() {
-  return (
-    <div className=" w-full">
-      <video
-        loop
-        autoPlay
-        muted
-        playsInline
-        className="desktop_video"
-        style={{ width: "100%" }}
-      >
-        <source
-          src="https://cdn.shopify.com/videos/c/o/v/21a817ba98a342eb8fbd1106654fe8ba.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
-    </div>
-  );
-}
-
-function HomeBanner() {
-  return (
-    <Image
-      src="/home_banner.jpg"
-      alt="banner"
-      width={800}
-      height={800}
-      className=" h-auto w-full object-cover"
-    />
-  );
-}
-
 function Categories2() {
   return (
     <div className=" px-3 py-4 w-full">
-      <div className=" gap-6 lg:px-6 py-3 flex-col lg:flex-row flex items-center justify-between">
+      <div className=" gap-6 lg:px-6 py-4 pb-6 flex-col lg:flex-row flex items-center justify-between">
         <div className=" flex flex-col sm:flex-row lg:items-center gap-2">
           <div className=" flex gap-3 items-center">
             <ArrowRight stroke="#000" strokeWidth={2.5} size={32} />
@@ -136,12 +105,12 @@ function Categories2() {
             consequatur vel suscipit quisquam?
           </p>
         </div>
-        <div className=" w-full md:w-fit text-center duration-300 hover:bg-neutral-800 hover:text-white py-3 px-4 border border-black rounded-full text-lg roboto font-medium cursor-pointer">
+        <div className=" w-full md:w-fit text-center duration-300 hover:bg-neutral-800 hover:text-white py-2 md:py-3 px-4 border border-black rounded-full text-lg roboto font-medium cursor-pointer">
           See all styles
         </div>
       </div>
 
-      <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
+      <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         {categoriesData2.map((item, idx) => {
           return (
             <div key={idx} className="  p-0.5 w-full h-full ">

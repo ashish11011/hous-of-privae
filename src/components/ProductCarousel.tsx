@@ -12,8 +12,8 @@ import { ArrowRight } from "lucide-react";
 
 const ProductCarousel = () => {
   return (
-    <div className=" px-4 py-2">
-      <div className=" gap-3 lg:px-6 py-3 flex-col lg:flex-row flex items-center justify-between">
+    <div className=" px-4 ">
+      <div className=" gap-3 lg:px-6 pt-3 pb-6 flex-col lg:flex-row flex items-center justify-between">
         <div className=" flex flex-col sm:flex-row lg:items-center gap-2">
           <div className=" flex gap-3 items-center">
             <ArrowRight
@@ -59,7 +59,7 @@ const buttonStyle =
 
 function CategorieCard({ itemData }: { itemData: ItemData }) {
   return (
-    <div className=" shrink-0 flex w-44 lg:w-80 flex-col  ">
+    <div className=" shrink-0 flex w-72 lg:w-80 flex-col  ">
       <Image
         src={itemData.image}
         alt={itemData.name}

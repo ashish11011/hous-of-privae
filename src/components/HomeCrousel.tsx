@@ -1,7 +1,15 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 import Image from "next/image";
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from "./ui/carousel";
+import { cn } from "@/lib";
+import { useIsMobile } from "@/lib/Hooks";
+import Autoplay from "embla-carousel-autoplay";
 
 const slides = [
   {
@@ -24,87 +32,67 @@ const slides = [
   },
 ];
 
-function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
-  );
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= breakpoint);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [breakpoint]);
-
-  return isMobile;
-}
-
 export default function StackedCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const prevIndexRef = useRef(activeIndex);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    prevIndexRef.current = activeIndex;
-  }, [activeIndex]);
+  const [api, setApi] = React.useState<CarouselApi>();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % slides.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  console.log(isMobile);
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  if (isMobile === null) {
+    return null;
+  }
 
   return (
-    <div className="relative w-full h-[calc(70vh)] md:h-[calc(100vh-42px)] overflow-hidden bg-black">
-      {/* Previous Slide */}
-      <div className={`absolute w-full h-full inset-0`}>
-        <Image
-          src={
-            isMobile
-              ? slides[prevIndexRef.current].imageMob
-              : slides[prevIndexRef.current].image
-          }
-          alt={slides[prevIndexRef.current].title}
-          fill
-          className="object-cover"
-        />
-      </div>
+    <Carousel
+      plugins={[
+        Autoplay({
+          delay: 2000,
+        }),
+      ]}
+      setApi={setApi}
+      className=" h-[80vh] lg:h-[calc(100vh-3rem)]"
+    >
+      <CarouselContent className=" h-[80vh]  lg:h-[calc(100vh-3rem)]">
+        {slides.map((itemData, index) => (
+          <CarouselItem className=" w-screen" key={index}>
+            <Image
+              src={isMobile ? itemData.imageMob : itemData.image}
+              alt={itemData.title}
+              width={1200}
+              height={1200}
+              className=" h-full w-full object-cover"
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      {/* <CarouselPrevious />
+      <CarouselNext /> */}
 
-      {/* Active Slide Animation */}
-      <AnimatePresence>
-        <motion.div
-          key={slides[activeIndex].id}
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "-100%" }}
-          transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
-          className="w-full absolute h-full inset-0"
-        >
-          <Image
-            src={
-              isMobile
-                ? slides[activeIndex].imageMob
-                : slides[activeIndex].image
-            }
-            alt={slides[activeIndex].title}
-            fill
-            className="object-cover"
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex gap-4">
-        {slides.map((_, index) => (
-          <button
+      <div className=" absolute bottom-4 left-1/2 -translate-x-1/2  flex gap-2 py-2">
+        {Array.from({ length: count }).map((_, index) => (
+          <div
+            onClick={() => api?.scrollTo(index)}
             key={index}
-            onClick={() => setActiveIndex(index)}
-            className={`h-1 rounded-md w-10 cursor-pointer ${
-              activeIndex === index ? "bg-white" : "bg-gray-400"
-            }`}
-          ></button>
+            className={cn(" cursor-pointer inline-flex h-1 w-8 rounded-full", {
+              "bg-muted": current !== index + 1,
+              "bg-primary": current === index + 1,
+            })}
+          />
         ))}
       </div>
-    </div>
+    </Carousel>
   );
 }
