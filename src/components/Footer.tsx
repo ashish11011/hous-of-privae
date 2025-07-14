@@ -1,4 +1,5 @@
 import { TFacebook, TInstagram, TLinkedIn, TTwitter, TWhatsApp } from "@/lib";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -9,17 +10,19 @@ const Footer = () => {
             key={index}
             className="flex  flex-col md:text-center md:items-center"
           >
-            <h4 className="font-semibold amr text-xl mb-3">{section.title}</h4>
+            <h4 className="font-semibold font2 text-xl mb-3">
+              {section.title}
+            </h4>
             <ul className="space-y-1">
-              {section.items.map((item, i) => (
-                <li className=" text-lg  text-gray-600" key={i}>
-                  {item}
-                </li>
+              {section.items.map((item, idx) => (
+                <Link href={item.slug} key={idx}>
+                  <li className=" text-lg  text-gray-600">{item.name}</li>
+                </Link>
               ))}
             </ul>
           </div>
         ))}
-        <div className="flex gap-2 amr flex-col md:text-center md:items-center">
+        <div className="flex gap-2 font2 flex-col md:text-center md:items-center">
           <h4 className="font-semibold  text-xl mb-3">
             Offers, New Arrivals, <br /> Restocks and More.
           </h4>
@@ -53,10 +56,18 @@ export default Footer;
 const footerLinks = [
   {
     title: "Hous Of Privae",
-    items: ["About Us", "Privacy Policy", "Terms & Conditions"],
+    items: [
+      { name: "About Us", slug: "/about-us" },
+      { name: "Privacy Policy", slug: "/privacy-policy" },
+      { name: "Terms & Conditions", slug: "/terms-and-conditions" },
+    ],
   },
   {
     title: "Help & Support",
-    items: ["Order & Shipping", "Returns & Refunds", "Contact Us"],
+    items: [
+      { name: "Order & Shipping", slug: "/order-and-shipping" },
+      { name: "Returns & Refunds", slug: "/returns-and-refunds" },
+      { name: "Contact Us", slug: "/contact-us" },
+    ],
   },
 ];

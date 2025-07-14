@@ -14,7 +14,7 @@ const RevicesCarousel = () => {
     <div className=" py-20 max-w-7xl mx-auto">
       <div className=" px-6 pb-8 flex items-center flex-col gap-3 justify-between">
         <div className=" flex items-center justify-center w-full gap-2">
-          <p className="text-3xl w-full text-center font-semibold pr-6 amr uppercase tracking-tighter">
+          <p className="text-3xl w-full text-center font-semibold pr-6 font2 uppercase tracking-tighter">
             Haus Of{" "}
             <span className="sm:[word-spacing:16px]">
               Privae <br className="block sm:hidden" /> and Me
@@ -62,10 +62,10 @@ function CategorieCard({ itemData }: { itemData: ReviewType }) {
       </div>
 
       <div className="-mt-12 bg-yellow-50/60 py-6 px-4 pt-16 w-full  flex flex-col justify-center">
-        <p className="text-lg font-semibold text-gray-900 mb-2 roboto">
+        <p className="text-lg font-semibold text-gray-900 mb-2 font2 ">
           {itemData.name}
         </p>
-        <p className="text-sm h-16 text-gray-600 font-medium leading-snug">
+        <p className=" text-lg h-24 text-gray-600 font-medium leading-snug">
           {itemData.review}
         </p>
       </div>

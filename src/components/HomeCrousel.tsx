@@ -39,7 +39,6 @@ export default function StackedCarousel() {
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
-  console.log(isMobile);
   React.useEffect(() => {
     if (!api) {
       return;

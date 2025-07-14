@@ -2,8 +2,10 @@
 @import "tw-animate-css";
 
 
-.amr{
-  font-family: "amiri", sans-serif;
+.font2{
+  /* font-family: "amiri", sans-serif; */
+  font-family: "Instrument Serif", serif;
+  letter-spacing: 1.4px;
 }
 
 .roboto{

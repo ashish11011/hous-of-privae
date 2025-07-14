@@ -38,7 +38,7 @@ export default function BrandValues() {
               alt={feature.title}
               className=" size-20 md:size-32 object-contain mx-auto mb-4"
             />
-            <h4 className=" font-semibold amr text-lg tracking-wide uppercase mb-2">
+            <h4 className=" font-semibold font2 text-lg uppercase mb-2">
               {feature.title}
             </h4>
             <p className="text-base text-gray-700">{feature.description}</p>
