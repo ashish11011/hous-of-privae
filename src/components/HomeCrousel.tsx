@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib";
 import { useIsMobile } from "@/lib/Hooks";
 import Autoplay from "embla-carousel-autoplay";
+import SampleImage from "./sampleImage";
 
 const slides = [
   {
@@ -66,14 +67,20 @@ export default function StackedCarousel() {
     >
       <CarouselContent className=" h-[80vh]  lg:h-[calc(100vh-3rem)]">
         {slides.map((itemData, index) => (
-          <CarouselItem className=" w-screen" key={index}>
-            <Image
+          <CarouselItem
+            className=" flex items-center justify-center bg-[#D5D6CF] w-screen"
+            key={index}
+          >
+            {/* <Image
               src={isMobile ? itemData.imageMob : itemData.image}
               alt={itemData.title}
               width={1200}
               height={1200}
               className=" h-full w-full object-cover"
-            />
+            /> */}
+            <div className=" size-96 ">
+              <SampleImage />
+            </div>
           </CarouselItem>
         ))}
       </CarouselContent>

@@ -1,6 +1,6 @@
 import ProductCarousel from "@/components/ProductCarousel";
 import Carousel from "@/components/HomeCrousel";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/navbar/NavBar";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import BrandValues from "./BrandValue";
@@ -32,7 +32,7 @@ export default function Home() {
 function Categories() {
   return (
     <div className=" py-10 space-y-8">
-      <p className="arm text-4xl font2 font-bold md:font-semibold  text-center">
+      <p className="roboto text-4xl font2 font-bold md:font-semibold  text-center">
         Categories
       </p>
       <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5">
@@ -52,7 +52,7 @@ function Categories() {
                     style={{
                       fontWeight: 800,
                     }}
-                    className=" absolute top-1/2 left-1/2 text-black -translate-x-1/2 -translate-y-1/2  text-2xl text-center font2 line-clamp-2"
+                    className=" absolute top-1/2 left-1/2 text-black -translate-x-1/2 -translate-y-1/2  text-2xl text-center roboto line-clamp-2"
                   >
                     {item.name}
                   </p>

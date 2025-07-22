@@ -1,5 +1,6 @@
 import { cn } from "@/lib";
 import Image from "next/image";
+import Link from "next/link";
 
 export function ProductCard({
   itemData,
@@ -9,7 +10,10 @@ export function ProductCard({
   className?: string;
 }) {
   return (
-    <div className={cn(" shrink-0 flex w-72 lg:w-80 flex-col  ", className)}>
+    <Link
+      href={`/product/${itemData.name}`}
+      className={cn(" shrink-0 flex w-72 lg:w-80 flex-col  ", className)}
+    >
       <Image
         src={itemData.image}
         alt={itemData.name}
@@ -24,7 +28,7 @@ export function ProductCard({
           {itemData.price}INR
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
 

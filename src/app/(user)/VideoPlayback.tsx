@@ -1,5 +1,6 @@
 "use client";
 
+import SampleImage from "@/components/sampleImage";
 import { useIsMobile } from "@/lib/Hooks";
 
 export default function VideoPlay() {
@@ -8,8 +9,10 @@ export default function VideoPlay() {
     return null;
   }
   return (
-    <div className=" w-full">
-      <video
+    <div className=" h-96 w-full flex items-center justify-center border-2 border-black">
+      {/* <SampleImage /> */}
+      <p className=" text-3xl">Video here</p>
+      {/* <video
         loop
         autoPlay
         muted
@@ -26,7 +29,7 @@ export default function VideoPlay() {
           type="video/mp4"
         />
         Your browser does not support the video tag.
-      </video>
+      </video> */}
     </div>
   );
 }

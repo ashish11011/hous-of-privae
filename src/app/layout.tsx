@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Libre_Caslon_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import SessionWrapper from "@/components/authProvider";
 
-const cardo = Libre_Caslon_Display({
+const inter = Inter({
   weight: ["400"],
   subsets: ["latin"],
 });
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
-const InstrumentSerif = Instrument_Serif({
-  weight: ["400"],
-  subsets: ["latin"],
-});
 
 // const roboto = Roboto({
 //   weight: ["400", "700", "900"],
@@ -44,9 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`   ${cardo.className}  text-shadow-neutral-800 antialiased`}
+        className={`   ${inter.className}  text-shadow-neutral-800 antialiased`}
       >
-        {children}
+        <SessionWrapper>{children}</SessionWrapper>
       </body>
     </html>
   );

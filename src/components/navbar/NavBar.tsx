@@ -2,13 +2,17 @@
 import { TShoppingCart } from "@/lib";
 import { MenuIcon, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { NavBarDropdown } from "./dripdownMenu";
 
 const BRAND_NAME = "Haus Of Privae";
 
 const NavBar = () => {
+  // const session = await getServerSession(authOptions);
+
   const [selectedCategory, setSelectedCategory] = useState(-1);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const params = useParams();
@@ -20,25 +24,25 @@ const NavBar = () => {
       }
     });
   });
+
   return (
-    // <div className=" sticky border-b-2 border-neutral-200 top-0 z-50 bg-white roboto h-12 lg:h-12 flex items-center gap-6 justify-between px-3 md:px-6  ">
-    <div className=" sticky border-b-2 border-neutral-200 top-0 z-50 bg-white  h-12 lg:h-12 flex items-center gap-6 justify-between px-3 md:px-6  ">
+    <div className=" sticky border-b-2 border-neutral-200 top-0 z-50 bg-white  flex items-center gap-6 justify-between px-3 md:px-6  ">
       <div className="  flex gap-4 items-center">
         <Link
           href={"/"}
-          className=" font-semibold text-neutral-900 text-3xl leading-none  uppercase tracking-tighter mr-6 "
+          className=" font-semibold text-neutral-900 text-3xl leading-none tracking-tighter!  uppercase font2 mr-6 "
         >
           {BRAND_NAME}
         </Link>
-        <div className=" hidden lg:flex h-12  gap-6 items-center">
+        <div className=" hidden lg:flex   gap-7 items-center">
           {headingCategories.map((item, idx: number) => {
             return (
               <Link key={idx} href={`/category/${item.slug}`}>
                 <div
-                  className={`cursor-pointer font-medium text-sm uppercase h-full flex items-center justify-center  ${
+                  className={`cursor-pointer py-3 font-semibold text-xs uppercase h-full flex items-center justify-center  ${
                     selectedCategory === idx
                       ? "font-semibold border-black border-b-2"
-                      : " text-neutral-500"
+                      : " text-neutral-700"
                   } `}
                 >
                   {item.name}
@@ -117,8 +121,9 @@ const NavBar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <NavbarUserMenu />
 
-      <p className=" hidden lg:block">Basket</p>
+      {/* <p className=" hidden lg:block">Basket</p> */}
     </div>
   );
 };
@@ -162,3 +167,20 @@ const headingCategories = [
     slug: "festival-session",
   },
 ];
+
+function NavbarUserMenu() {
+  const { data: session, status } = useSession();
+
+  if (status === "authenticated") {
+    return (
+      <div className=" z-50">
+        <NavBarDropdown userName={session?.user?.name} />
+      </div>
+    );
+  }
+  return (
+    <Link href="/auth/login">
+      <p className=" hidden lg:block">Login</p>
+    </Link>
+  );
+}
