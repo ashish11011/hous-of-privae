@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { NavBarDropdown } from "./dripdownMenu";
+import Image from "next/image";
+import { CartSheet } from "../cart/cartSheet";
 
 const BRAND_NAME = "Haus Of Privae";
 
@@ -28,36 +30,38 @@ const NavBar = () => {
   return (
     <div className=" sticky border-b-2 border-neutral-200 top-0 z-50 bg-white  flex items-center gap-6 justify-between px-3 md:px-6  ">
       <div className="  flex gap-4 items-center">
-        <Link
-          href={"/"}
-          className=" font-semibold text-neutral-900 text-3xl leading-none tracking-tighter!  uppercase font2 mr-6 "
-        >
-          {BRAND_NAME}
+        <Link href={"/"} className=" flex gap-3 items-center">
+          <Image
+            src="/logo-nobg.png"
+            alt="logo"
+            width={50}
+            height={50}
+            className=" w-auto block md:hidden object-contain h-8"
+          />
+          <div className=" hidden sm:block font-semibold text-neutral-900 text-3xl leading-none tracking-tighter!  uppercase font2 mr-6 ">
+            {BRAND_NAME}
+          </div>
         </Link>
-        <div className=" hidden lg:flex   gap-7 items-center">
-          {headingCategories.map((item, idx: number) => {
-            return (
-              <Link key={idx} href={`/category/${item.slug}`}>
-                <div
-                  className={`cursor-pointer py-3 font-semibold text-xs uppercase h-full flex items-center justify-center  ${
-                    selectedCategory === idx
-                      ? "font-semibold border-black border-b-2"
-                      : " text-neutral-700"
-                  } `}
-                >
-                  {item.name}
-                </div>
-              </Link>
-            );
-          })}
+        <div className=" ">
+          <div className=" hidden xl:flex  w-full gap-5 items-center">
+            {headingCategories.map((item, idx: number) => {
+              return (
+                <Link key={idx} href={`/category/${item.slug}`}>
+                  <div
+                    className={`cursor-pointer whitespace-nowrap py-3 font-semibold text-xs uppercase h-full flex items-center justify-center  ${
+                      selectedCategory === idx
+                        ? "font-semibold border-black border-b-2"
+                        : " text-neutral-700"
+                    } `}
+                  >
+                    {item.name}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
-      {!isMobileNavOpen && (
-        <MenuIcon
-          onClick={() => setIsMobileNavOpen(true)}
-          className=" block lg:hidden"
-        />
-      )}
 
       <AnimatePresence>
         {isMobileNavOpen && (
@@ -68,10 +72,10 @@ const NavBar = () => {
             transition={{ duration: 0.3 }}
             className="fixed top-0 left-0 w-full h-full bg-white z-50 flex flex-col px-4 py-4"
           >
-            <div className="ml-auto">
+            <div className="">
               <X
                 onClick={() => setIsMobileNavOpen(false)}
-                className="block lg:hidden"
+                className="block xl:hidden"
               />
             </div>
 
@@ -121,7 +125,17 @@ const NavBar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <NavbarUserMenu />
+      <div className=" flex gap-3 items-center">
+        {!isMobileNavOpen && (
+          <MenuIcon
+            onClick={() => setIsMobileNavOpen(true)}
+            className=" block xl:hidden"
+          />
+        )}
+
+        <NavbarUserMenu />
+        <CartSheet />
+      </div>
 
       {/* <p className=" hidden lg:block">Basket</p> */}
     </div>

@@ -12,6 +12,9 @@ import {
 export const User = (props: IconProps) => {
   return <IconUser {...props} />;
 };
+export const UserCircle = (props: IconProps) => {
+  return <IconUserCircle {...props} />;
+};
 
 export const Fabric = (props: IconProps) => {
   return <IconBrandCraft {...props} />;

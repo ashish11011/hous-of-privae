@@ -13,7 +13,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "@/lib/incons";
+import { User, UserCircle } from "@/lib/incons";
 import { UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -21,12 +21,11 @@ export function NavBarDropdown({ userName }: any) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div>
+        <div className=" hover:bg-gray-200 rounded-md duration-200 py-1 px-2 flex items-center gap-1.5">
           {/* <Button variant={"outline"}>{userName}</Button> */}
 
-          <div className=" border rounded-full p-1 hover:bg-gray-100 cursor-pointer aspect-square ">
-            <User />
-          </div>
+          <UserCircle />
+          <p>You</p>
         </div>
       </DropdownMenuTrigger>
 
@@ -41,10 +40,10 @@ export function NavBarDropdown({ userName }: any) {
             Orders
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Cart
-            {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-          </DropdownMenuItem>
+          {/* <DropdownMenuItem>
+            Cart */}
+          {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+          {/* </DropdownMenuItem> */}
           {/* <DropdownMenuItem>
             Billing
             <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
