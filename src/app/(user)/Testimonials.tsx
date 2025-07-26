@@ -33,7 +33,7 @@ const testimonials = [
 export default function Testimonials() {
   return (
     <section className=" py-16 text-center">
-      <h2 className="text-3xl font-semibold mb-2">Mulmul and Me</h2>
+      <h2 className="text-3xl font-semibold mb-2">Haus of Privae and Me</h2>
       <p className="text-sm text-gray-600 mb-10 uppercase tracking-widest">
         Love shared by you
       </p>

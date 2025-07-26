@@ -109,6 +109,7 @@ const Page = () => {
       <div className=" px-4 grid max-w-7xl mx-auto grid-cols-2 md:grid-cols-4 pb-8 gap-2 md:gap-4 w-full">
         {Array.from({ length: 4 }).map((_, index) => (
           <ProductCard
+            key={index}
             className=" lg:w-full w-full"
             itemData={{
               name: sampleProductData.name,

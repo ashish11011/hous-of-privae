@@ -6,80 +6,86 @@ export default function ShippingAndDeliveryPage() {
           Shipping & Delivery Policy
         </h1>
 
-        {/* Shipping Process */}
+        {/* Shipping Partners */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">1. Shipping Partners</h2>
+          <h2 className="text-xl font-semibold">1. Our Shipping Partners</h2>
           <p>
-            We use trusted and reliable courier services such as{" "}
-            <strong>Blue Dart</strong> and <strong>Delhivery</strong> to ship
-            all orders. Each shipment is fully insured to ensure safe and secure
-            delivery.
+            At Haus of Privae, we work with trusted logistics partners like{" "}
+            <strong>Blue Dart</strong> and <strong>Delhivery</strong> to ensure
+            your order reaches you safely and on time. All shipments are fully
+            insured until delivered.
           </p>
         </div>
 
-        {/* Delivery Experience */}
+        {/* Delivery Attempts */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">2. Delivery Attempts</h2>
+          <h2 className="text-xl font-semibold">
+            2. Delivery Attempts & Communication
+          </h2>
           <p>
-            For <strong>Cash on Delivery (COD)</strong> orders, the delivery
-            agent may contact you before attempting delivery. If you are
-            unavailable at the time, you can call them back using the provided
-            contact to:
+            For <strong>Cash on Delivery (COD)</strong> orders, our delivery
+            partner may reach out to confirm your availability. If you're
+            unavailable during the first attempt, you can:
           </p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Reschedule a new delivery date</li>
-            <li>Arrange a pickup from the courier's local hub</li>
+            <li>Request a new delivery time</li>
+            <li>
+              Arrange to collect your package from the nearest courier facility
+            </li>
           </ul>
         </div>
 
-        {/* Delivery Time */}
+        {/* Shipping Timelines */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">3. Shipping TAT</h2>
+          <h2 className="text-xl font-semibold">
+            3. Estimated Delivery Timelines
+          </h2>
           <p>
-            Orders are generally shipped within{" "}
-            <strong>3 to 7 business days</strong> from the date of order
-            confirmation. Delivery times may vary based on your location.
+            Orders are typically shipped within{" "}
+            <strong>3 to 7 business days</strong> from the date of confirmation.
+            Delivery timelines may vary based on location, pincode, and external
+            factors.
           </p>
         </div>
 
-        {/* Disclaimer */}
+        {/* Delays & Responsibility */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">4. Delays & Liability</h2>
+          <h2 className="text-xl font-semibold">4. Delays & Limitations</h2>
           <p>
-            We are not responsible for any delays caused by unforeseen
-            circumstances such as weather conditions, operational delays by
-            courier partners, or incorrect delivery information provided by the
-            customer.
+            While we strive to meet expected timelines, delays may occur due to
+            weather, high volumes, or courier-related issues. Haus of Privae is
+            not liable for such delays once the order has been dispatched.
           </p>
           <p>
-            In case the customer is not available at the delivery address, the
-            courier company may attempt redelivery or hold the package at their
-            facility for self-pickup.
+            If the delivery attempt fails due to incorrect address or
+            unavailability, the courier may reschedule or hold the package at a
+            nearby hub for pickup.
           </p>
         </div>
 
-        {/* Tracking */}
+        {/* Order Tracking */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">5. Tracking Your Order</h2>
           <p>
-            Once your order is shipped, you will receive an email or SMS with
-            the tracking information. You can track your shipment using the link
-            provided or on the courier company’s official website.
+            Once your order is shipped, you’ll receive an email or SMS with the
+            tracking details. You can track your shipment via the link shared or
+            by visiting the courier partner’s official website.
           </p>
         </div>
 
-        {/* Contact Info */}
+        {/* Customer Support */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">6. Questions or Issues?</h2>
+          <h2 className="text-xl font-semibold">6. Need Help?</h2>
           <p>
-            For any shipping-related questions or assistance, feel free to
-            contact our support team at{" "}
-            <span className="font-medium">support@yourdomain.com</span>.
+            If you have any concerns or need assistance regarding your shipment,
+            feel free to reach out to our team at{" "}
+            <span className="font-medium">support@hausofprivae.com</span>. We're
+            here to help!
           </p>
         </div>
 
         <p className="text-sm text-gray-500 pt-6 text-center">
-          Last updated: July 14, 2025
+          Last updated: July 26, 2025
         </p>
       </section>
     </main>

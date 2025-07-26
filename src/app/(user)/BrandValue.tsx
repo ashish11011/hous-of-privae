@@ -3,26 +3,27 @@ import { Delivery, Fabric, Flag, HappyFace } from "@/lib/incons";
 const features = [
   {
     Icon: Fabric,
-    title: "OUR FABRICS",
-    description: "Made with love using only 100% vegan fabrics",
+    title: "Consciously Crafted",
+    description:
+      "Every piece is made using premium vegan fabrics - soft on you and the planet.",
   },
   {
     Icon: Delivery,
-    title: "EXPRESS DELIVERY",
+    title: "Fast & Reliable Delivery",
     description:
-      "We love getting our Muls to you as soon as you choose your favourites",
+      "From our studio to your wardrobe - enjoy quick, safe, and seamless delivery.",
   },
   {
     Icon: HappyFace,
-    title: "HAPPINESS GUARANTEED",
+    title: "Love it or Return it",
     description:
-      "100% money back guaranteed & easy exchanges. No questions asked",
+      "Easy returns and exchanges - because your comfort and happiness come first.",
   },
   {
     Icon: Flag,
-    title: "MADE IN INDIA",
+    title: "Proudly Indian",
     description:
-      "A brand of Indian values, we are made completely in India from thought to creation",
+      "Born in India, made for every body - every thread reflects local craftsmanship and care.",
   },
 ];
 

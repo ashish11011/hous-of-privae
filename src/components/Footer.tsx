@@ -55,7 +55,7 @@ export default Footer;
 
 const footerLinks = [
   {
-    title: "Hous Of Privae",
+    title: "Haus Of Privae",
     items: [
       { name: "About Us", slug: "/about-us" },
       { name: "Privacy Policy", slug: "/privacy-policy" },

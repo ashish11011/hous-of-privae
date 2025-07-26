@@ -7,50 +7,51 @@ export default function ReturnAndRefundPage() {
         </h1>
 
         <p className="text-lg leading-relaxed">
-          We want you to love what you purchase from us. If for any reason
-          you're not satisfied, we're here to help. Please review our return and
-          refund policy below.
+          At Haus of Privae, your satisfaction is at the heart of everything we
+          do. If something isn't quite right, we're here to make it right.
+          Please read our return and refund policy carefully before initiating a
+          return or exchange.
         </p>
 
         {/* Section 1 */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">1. Returns</h2>
+          <h2 className="text-xl font-semibold">1. Return Eligibility</h2>
           <p>
-            You may return most new, unused items within{" "}
-            <strong>7 days of delivery</strong> for a full refund or exchange,
-            provided the item is in original condition with tags and packaging
-            intact.
+            You may request a return within <strong>7 days of delivery</strong>
+            for most unused items in their original condition, including all
+            tags and packaging.
           </p>
           <p>
-            Items that are damaged, worn, or altered may not be accepted and may
-            be returned to the customer at their expense.
+            Items that show signs of wear, damage, stains, or alterations may be
+            rejected and sent back at your expense.
           </p>
         </div>
 
         {/* Section 2 */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">2. Non-returnable Items</h2>
-          <p>The following items are not eligible for return:</p>
+          <p>
+            For hygiene and customization reasons, we cannot accept returns on:
+          </p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Items marked as final sale</li>
+            <li>Items marked as "Final Sale"</li>
             <li>Gift cards or vouchers</li>
-            <li>Personalized or custom-made products</li>
-            <li>Opened hygiene-related items</li>
+            <li>Customized or made-to-order products</li>
+            <li>Hygiene-related items that have been opened</li>
           </ul>
         </div>
 
         {/* Section 3 */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">3. Refunds</h2>
+          <h2 className="text-xl font-semibold">3. Refund Process</h2>
           <p>
-            Once your return is received and inspected, we will notify you of
-            the approval or rejection of your refund. If approved, the refund
-            will be processed within
-            <strong> 5–7 business days</strong> to your original payment method.
+            Once we receive and inspect your return, we’ll notify you of the
+            approval or rejection. Approved refunds will be processed within{" "}
+            <strong>5–7 business days</strong> to your original payment method.
           </p>
           <p>
-            In case of COD (Cash on Delivery) orders, refunds will be issued via
-            UPI or bank transfer after confirmation.
+            For COD orders, refunds are issued via UPI or bank transfer after
+            confirmation of account details.
           </p>
         </div>
 
@@ -58,9 +59,10 @@ export default function ReturnAndRefundPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">4. Exchanges</h2>
           <p>
-            We allow exchanges for size or defective items. To initiate an
-            exchange, please contact us with your order ID and reason for
-            exchange within 7 days of delivery.
+            We’re happy to exchange items for size or defect issues. To request
+            an exchange, contact us with your order ID and reason within{" "}
+            <strong>7 days of delivery</strong>. We’ll do our best to get you
+            the perfect fit!
           </p>
         </div>
 
@@ -68,25 +70,25 @@ export default function ReturnAndRefundPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">5. Return Shipping</h2>
           <p>
-            Customers are responsible for the return shipping cost unless the
-            item received was damaged or incorrect. We recommend using a
-            trackable shipping service.
+            Return shipping is the responsibility of the customer unless the
+            item received was incorrect or damaged. We recommend using a
+            reliable, trackable courier service to avoid issues.
           </p>
         </div>
 
-        {/* Contact Info */}
+        {/* Section 6 */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">6. Contact Us</h2>
+          <h2 className="text-xl font-semibold">6. Need Help?</h2>
           <p>
-            For any return or refund inquiries, please email us at{" "}
-            <span className="font-medium">support@yourdomain.com</span> with
-            your order number and concern. Our support team will assist you
-            promptly.
+            Our support team is here to assist you. For return or refund
+            queries, please email us at{" "}
+            <span className="font-medium">support@hausofprivae.com</span> with
+            your order number and concern.
           </p>
         </div>
 
         <p className="text-sm text-gray-500 pt-6 text-center">
-          Last updated: July 14, 2025
+          Last updated: July 26, 2025
         </p>
       </section>
     </main>

@@ -2,6 +2,7 @@
 
 import SampleImage from "@/components/sampleImage";
 import { useIsMobile } from "@/lib/Hooks";
+import Image from "next/image";
 
 export default function VideoPlay() {
   const isMobile = useIsMobile();
@@ -9,9 +10,27 @@ export default function VideoPlay() {
     return null;
   }
   return (
-    <div className=" h-96 w-full flex items-center justify-center border-2 border-black">
-      {/* <SampleImage /> */}
-      <p className=" text-3xl">Video here</p>
+    <div className=" w-full flex items-center justify-center border-b border-black">
+      <div>
+        <div className=" hidden sm:block">
+          <Image
+            src={"/bannervideoweb.png"}
+            alt="banner"
+            width={1800}
+            height={900}
+            className=" w-full h-full object-cover"
+          />
+        </div>
+        <div className=" sm:hidden block">
+          <Image
+            src={"/bannervideomobile.png"}
+            alt="banner"
+            width={1800}
+            height={900}
+            className=" w-full h-full object-cover"
+          />
+        </div>
+      </div>
       {/* <video
         loop
         autoPlay

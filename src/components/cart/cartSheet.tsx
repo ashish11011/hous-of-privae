@@ -64,8 +64,8 @@ export function CartSheet() {
             </div>
           ) : (
             <div className="  gap-4">
-              {cart.map((item: CartProduct) => (
-                <div key={item.id} className=" flex gap-1 py-4">
+              {cart.map((item: CartProduct, idx) => (
+                <div key={idx} className=" flex gap-1 py-4">
                   <div className="col-span-1 flex w-full flex-col gap-3 md:flex-row  md:space-x-4">
                     <div className="relative w-16 h-auto shrink-0 rounded-lg md:w-20">
                       <Image

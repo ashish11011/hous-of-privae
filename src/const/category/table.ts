@@ -36,24 +36,24 @@ export const categoryTable2 = [
     id: "7f5a8f99-fbdc-472b-b43a-cc9dc12e1ddd",
     name: "Summer Vibes",
     slug: "summer-vibes",
-    image: "/cat2/1.jpg",
+    image: "/categoryimage.png",
   },
   {
     id: "cbaf4d2b-9fd2-465b-b55e-9c8734ae2eee",
     name: "Trendy",
     slug: "trendy",
-    image: "/cat2/2.jpg",
+    image: "/categoryimage.png",
   },
   {
     id: "52b3df7c-e8b5-4f4a-b2c7-8423dd0f4fff",
     name: "Festival Season",
     slug: "festival-season",
-    image: "/cat2/3.jpg",
+    image: "/categoryimage.png",
   },
   {
     id: "9f2ce7f1-43aa-4a0d-8cfa-b7dc12ab1aaa",
     name: "Casual",
     slug: "casual",
-    image: "/cat2/4.jpg",
+    image: "/categoryimage.png",
   },
 ];

@@ -1,19 +1,19 @@
 export const sampleProductData = {
   id: "1",
-  name: "Mulmul Organza Savani Yellow Saree",
+  name: "Haus of privae Organza Savani Yellow Saree",
   description:
     "Bright yellow organza saree—vibrant choice for Haldi or mehndi.",
   basePrice: 14500,
   categoryId1: "Saree",
   categoryId2: "Organza",
-  slug: "mulmul-organza-savani-yellow-saree",
-  bannerImage: "/items/2.jpg",
+  slug: "haus-of-privae-organza-savani-yellow-saree",
+  bannerImage: "/productimage.png",
   images: [
-    "/items/1.jpg",
-    "/items/7.jpg",
-    "/items/4.jpg",
-    "/items/5.jpg",
-    "/items/6.jpg",
+    "/productimage.png",
+    "/productimage.png",
+    "/productimage.png",
+    "/productimage.png",
+    "/productimage.png",
   ],
 
   //   all the filters

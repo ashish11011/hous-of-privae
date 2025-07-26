@@ -73,64 +73,64 @@ function ReviewCard({ itemData }: { itemData: ReviewType }) {
 
 const customerReviews = [
   {
-    name: "Aanya Mehta",
+    name: "Aarohi Deshmukh",
     review:
-      "Absolutely loved the fabric! It’s light, breathable, and the embroidery is just stunning. Perfect for summer weddings.",
-    image: "/items/1.jpg",
+      "Wore Haus of Privae for a festive dinner and felt effortlessly elegant. It’s now my favourite in the wardrobe!",
+    image: "/reviewimage.png",
   },
   {
-    name: "Riya Kapoor",
+    name: "Vritika Chauhan",
     review:
-      "I felt like a queen in this outfit. The fit was spot on and I got so many compliments!",
-    image: "/items/2.jpg",
+      "The detailing is even more beautiful in person. Super breathable and stitched to perfection!",
+    image: "/reviewimage.png",
   },
   {
-    name: "Simran Arora",
+    name: "Ilisha Gokhale",
     review:
-      "Soft on the skin and such a graceful drape. Ideal for long events when you want comfort and elegance together.",
-    image: "/items/3.png",
+      "This felt like second skin. Perfect for long hours of celebration — light, soft, and stunning.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Ishita Jain",
+    name: "Charvi Tyagi",
     review:
-      "Wore it to my best friend’s mehndi. The pastel tones were dreamy and the look was effortlessly festive.",
-    image: "/items/4.jpg",
+      "Haus of Privae blends comfort and tradition so well. Loved every bit of the outfit, from fit to finish.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Niyati Sharma",
+    name: "Naira Talwar",
     review:
-      "It’s rare to find such lightweight festive wear that also feels luxurious. Mulmul got it just right.",
-    image: "/items/5.jpg",
+      "Received so many compliments! It's rare to find pieces that look so regal yet feel so breathable.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Tanya Bansal",
+    name: "Vedika Raut",
     review:
-      "The color is even better in person. I danced all night and it never once felt heavy or itchy.",
-    image: "/items/6.jpg",
+      "Absolutely delighted with the quality. The color was rich, and the embroidery so delicate.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Meher Khanna",
+    name: "Kyra Mahajan",
     review:
-      "Got this for a small family function—looked classy and minimal. The detailing really makes it feel premium.",
-    image: "/items/7.jpg",
+      "Felt graceful the moment I wore it. Haus of Privae has truly changed how I view ethnicwear.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Lavanya Singh",
+    name: "Devina Bhatt",
     review:
-      "Super fast delivery and the product quality exceeded expectations. I’m already looking for my next outfit!",
-    image: "/items/8.jpg",
+      "The fit was spot-on and didn’t need a single alteration. The whole look felt elevated and modern.",
+    image: "/reviewimage.png",
   },
   {
-    name: "Kavya Patel",
+    name: "Tia Sondhi",
     review:
-      "Perfect fit, flattering silhouette, and such a rich finish. Loved every bit of it.",
-    image: "/items/9.jpg",
+      "Ordered this for a destination wedding — easy to pack, gorgeous to wear. 10/10 recommend!",
+    image: "/reviewimage.png",
   },
   {
-    name: "Anika Reddy",
+    name: "Zehra Merchant",
     review:
-      "Light as a feather and so well stitched. Loved how breathable it felt even in the heat.",
-    image: "/reviews/10.jpg",
+      "From the texture to the silhouette, everything screamed premium. Haus of Privae exceeded expectations.",
+    image: "/reviewimage.png",
   },
 ];
 

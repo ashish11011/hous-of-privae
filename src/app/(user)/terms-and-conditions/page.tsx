@@ -7,18 +7,20 @@ export default function TermsAndConditionsPage() {
         </h1>
 
         <p className="text-lg leading-relaxed">
-          These Terms and Conditions ("Terms") govern your use of our website
-          and services. By accessing or purchasing from our platform, you agree
-          to be bound by these Terms.
+          Welcome to hausofprivae.com. These Terms & Conditions ("Terms") govern
+          your use of our website and services. By browsing, purchasing, or
+          interacting with our platform, you agree to abide by these Terms in
+          full.
         </p>
 
         {/* Section 1 */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">1. General</h2>
+          <h2 className="text-xl font-semibold">1. Overview</h2>
           <p>
-            These Terms apply to all visitors, users, and others who access or
-            use our website. We reserve the right to modify these Terms at any
-            time without prior notice.
+            These Terms apply to all users, visitors, and customers of Haus of
+            Privae. We reserve the right to update or modify these Terms at any
+            time without prior notice. Continued use of the site constitutes
+            acceptance of any changes.
           </p>
         </div>
 
@@ -26,9 +28,9 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">2. Eligibility</h2>
           <p>
-            You must be at least 18 years old or have the consent of a legal
-            guardian to use our services. By using the website, you confirm that
-            you meet these requirements.
+            You must be 18 years or older to use our services, or have consent
+            from a parent or legal guardian. By accessing our website, you
+            confirm that you meet this requirement.
           </p>
         </div>
 
@@ -36,9 +38,10 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">3. Orders & Payments</h2>
           <p>
-            All orders are subject to availability and acceptance. We reserve
-            the right to refuse or cancel any order for any reason. Payments
-            must be made via the available methods.
+            All product orders are subject to availability and confirmation. We
+            reserve the right to refuse or cancel any order at our sole
+            discretion. Payments must be made using the methods provided on our
+            website.
           </p>
         </div>
 
@@ -46,9 +49,10 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">4. Shipping & Returns</h2>
           <p>
-            We aim to ship products within the estimated timeframe. Delays may
-            occur due to external factors. Please refer to our Return & Exchange
-            Policy for more information.
+            We strive to deliver your orders within the estimated timeframe.
+            However, shipping delays may occur due to unforeseen circumstances.
+            Please refer to our <strong>Shipping & Returns</strong> policy for
+            full details.
           </p>
         </div>
 
@@ -56,9 +60,10 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">5. Intellectual Property</h2>
           <p>
-            All content, trademarks, logos, and designs on this site are the
-            property of the company and may not be used without express written
-            permission.
+            All content, images, logos, and design elements on hausofprivae.com
+            are the intellectual property of Haus of Privae. Reproduction,
+            duplication, or commercial use is strictly prohibited without
+            written consent.
           </p>
         </div>
 
@@ -66,8 +71,9 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">6. Limitation of Liability</h2>
           <p>
-            We are not liable for any indirect, incidental, or consequential
-            damages arising from your use of the website or products.
+            Haus of Privae shall not be held liable for any indirect,
+            incidental, or consequential damages arising out of your use of the
+            website, products, or services offered.
           </p>
         </div>
 
@@ -75,22 +81,25 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">7. Governing Law</h2>
           <p>
-            These Terms are governed by the laws of India. Any disputes shall be
-            subject to the jurisdiction of the courts of Jaipur.
+            These Terms are governed in accordance with the laws of India. All
+            disputes shall be subject to the exclusive jurisdiction of the
+            courts in Jaipur, Rajasthan.
           </p>
         </div>
 
-        {/* Contact */}
+        {/* Section 8 */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">8. Contact</h2>
+          <h2 className="text-xl font-semibold">8. Contact Us</h2>
           <p>
-            If you have any questions regarding these Terms, please contact us
-            {/* at <span className="font-medium">support@yourdomain.com</span>. */}
+            For any questions or concerns related to these Terms & Conditions,
+            feel free to reach out to us at{" "}
+            <span className="font-medium">support@hausofprivae.com</span>.
           </p>
         </div>
 
+        {/* Last Updated */}
         <p className="text-sm text-gray-500 pt-6 text-center">
-          Last updated: July 14, 2025
+          Last updated: July 26, 2025
         </p>
       </section>
     </main>
