@@ -12,7 +12,7 @@ export default function VideoPlay() {
   return (
     <div className=" w-full flex items-center justify-center border-b border-black">
       <div>
-        <div className=" hidden sm:block">
+        <div className=" w-full hidden sm:block">
           <Image
             src={"/bannervideoweb.png"}
             alt="banner"
@@ -21,7 +21,7 @@ export default function VideoPlay() {
             className=" w-full h-full object-cover"
           />
         </div>
-        <div className=" sm:hidden block">
+        <div className="w-full sm:hidden block">
           <Image
             src={"/bannervideomobile.png"}
             alt="banner"
