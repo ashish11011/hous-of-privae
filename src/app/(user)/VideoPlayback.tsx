@@ -11,7 +11,7 @@ export default function VideoPlay() {
   }
   return (
     <div className=" w-full flex items-center justify-center border-b border-black">
-      <div>
+      <div className=" w-full">
         <div className=" w-full hidden sm:block">
           <Image
             src={"/bannervideoweb.png"}
