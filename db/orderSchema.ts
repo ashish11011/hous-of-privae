@@ -17,10 +17,11 @@ export const order = pgTable("order", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id),
-  statusId: varchar("status_id")
-    .notNull()
-    .default("91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87"),
-  shippingAddress: varchar("shipping_address"),
+  status: varchar("status").notNull().default("pending"),
+  addressLine1: varchar("address_line_1"),
+  addressLine2: varchar("address_line_2"),
+  city: varchar("city"),
+  state: varchar("state"),
   pincode: varchar("pincode"),
   totalAmountPaid: integer("total_amount_paid"),
 

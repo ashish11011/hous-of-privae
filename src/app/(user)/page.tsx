@@ -9,8 +9,8 @@ import RevicesCarousel from "@/components/RevicesCarousel";
 import VideoPlay from "./VideoPlayback";
 import { HomeBanner } from "./HouseBanner";
 import { IconCategory2 } from "@tabler/icons-react";
-import { categoryTable1, categoryTable2 } from "@/const/category/table";
 import Link from "next/link";
+import { CATEGORY_1, CATEGORY_2 } from "@/const";
 
 export default function Home() {
   return (
@@ -18,7 +18,6 @@ export default function Home() {
       <Carousel />
       <Categories />
       <VideoPlay />
-      <HomeBanner />
       <Categories2 />
 
       <ProductCarousel />
@@ -36,7 +35,7 @@ function Categories() {
         Categories
       </p>
       <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5">
-        {categoryTable1.map((item, idx) => {
+        {CATEGORY_1.map((item, idx) => {
           return (
             <div key={idx} className="  p-0.5 w-full h-64 lg:h-96 ">
               <Link href={`category/${item.slug}`}>
@@ -91,7 +90,7 @@ function Categories2() {
       </div>
 
       <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        {categoryTable2.map((item, idx) => {
+        {CATEGORY_2.map((item, idx) => {
           return (
             <div key={idx} className="  p-0.5 w-full h-full ">
               <Link href={`category/${item.slug}`}>

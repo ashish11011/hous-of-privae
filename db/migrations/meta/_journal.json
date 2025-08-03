@@ -22,6 +22,20 @@
       "when": 1752501987853,
       "tag": "0002_ambiguous_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754249135482,
+      "tag": "0003_yellow_silver_fox",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1754249418093,
+      "tag": "0004_flimsy_switch",
+      "breakpoints": true
     }
   ]
 }

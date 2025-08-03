@@ -40,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        cz-shortcut-listen="true"
         className={`   ${inter.className}  text-shadow-neutral-800 antialiased`}
       >
         <SessionWrapper>{children}</SessionWrapper>
