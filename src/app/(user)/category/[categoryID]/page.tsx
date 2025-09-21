@@ -1,7 +1,6 @@
 import { ProductCard } from "@/components/ProductCard";
-import { productItemData } from "@/const/data/product";
+import { getProductByCategory } from "@/lib";
 import React from "react";
-import { getProductByCategory } from "../../../../../lib";
 
 const Page = async ({ params }: { params: any }) => {
   const categoryID = (await params).categoryID;

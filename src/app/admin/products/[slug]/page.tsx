@@ -1,6 +1,6 @@
 import React from "react";
 import ProductEdit from "./productEdit";
-import { getProdcutInfoBySlug } from "../../../../../lib";
+import { getProdcutInfoBySlug } from "@/lib";
 
 const Page = async ({ params }: any) => {
   const { slug } = await params;

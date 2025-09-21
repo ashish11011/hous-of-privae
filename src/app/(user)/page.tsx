@@ -1,20 +1,23 @@
 import ProductCarousel from "@/components/ProductCarousel";
 import Carousel from "@/components/HomeCrousel";
-import NavBar from "@/components/navbar/NavBar";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import BrandValues from "./BrandValue";
-import Footer from "@/components/Footer";
 import RevicesCarousel from "@/components/RevicesCarousel";
 import VideoPlay from "./VideoPlayback";
-import { HomeBanner } from "./HouseBanner";
-import { IconCategory2 } from "@tabler/icons-react";
 import Link from "next/link";
 import { CATEGORY_1, CATEGORY_2 } from "@/const";
 
 export default function Home() {
   return (
     <div className=" w-full">
+      <div className="hidden md:block bg-green-500 text-white p-4">
+        {"Visible only on desktop (≥768px)"}
+      </div>
+      <div className="block md:hidden bg-red-500 text-white p-4">
+        {" Visible only on mobile (<768px)"}
+      </div>
+
       <Carousel />
       <Categories />
       <VideoPlay />

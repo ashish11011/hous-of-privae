@@ -1,6 +1,5 @@
 "use client";
 import { LabelInput } from "@/components";
-import { Button } from "@/components/shadcn";
 import {
   Table,
   TableBody,
@@ -8,12 +7,13 @@ import {
   TableHead,
   TableRow,
 } from "@/components/ui/table";
-import { getColorNameByHex } from "@/hepler";
-import { useStore } from "@/hepler/store/zustand";
 import { Form, Formik } from "formik";
 import Image from "next/image";
 import React, { useState } from "react";
 import { user } from "../../../../db/userSchema";
+import { useStore } from "@/src/hepler/store/zustand";
+import { Button } from "@/components/ui/button";
+import { getColorNameByHex } from "@/src/hepler";
 
 const Page = () => {
   const { productStore } = useStore();

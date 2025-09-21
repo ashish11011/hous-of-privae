@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useField, useFormikContext } from "formik";
-import { Label } from "./shadcn";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils"; // Your class merge util
+import { Label } from "./ui/label";
 
 interface Option {
   value: string;

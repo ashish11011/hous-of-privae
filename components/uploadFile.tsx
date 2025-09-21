@@ -1,4 +1,4 @@
-import { uploadFileToS3 } from "@/lib";
+import { uploadFileToS3 } from "@/lib/s3-upload";
 import { Plus } from "lucide-react";
 import React, { useRef } from "react";
 
@@ -27,7 +27,7 @@ export const UploadFile = ({ onChange }: any) => {
         multiple={false}
         className=" hidden"
         type="file"
-        ref={ref}
+        // ref={ref}
       />
     </div>
   );

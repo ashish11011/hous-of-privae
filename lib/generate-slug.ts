@@ -1,9 +1,8 @@
 "use server";
-// lib/generate-slug.ts
 import slugify from "slugify";
-import { eq, ilike } from "drizzle-orm";
-import { db } from "../../lib/db";
-import { product } from "../../db/productSchema";
+import { product } from "@/db/productSchema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export async function generateUniqueSlug(name: string) {
   let base = slugify(name, { lower: true, strict: true });

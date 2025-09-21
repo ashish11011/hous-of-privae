@@ -1,10 +1,17 @@
 import {
+  IconBrandCraft,
   IconBrandFacebook,
   IconBrandInstagram,
   IconBrandLinkedin,
   IconBrandTwitter,
   IconBrandWhatsapp,
+  IconCubeSend,
+  IconFlag,
+  IconInfoCircle,
+  IconMoodHappy,
   IconShoppingCart,
+  IconUser,
+  IconUserCircle,
 } from "@tabler/icons-react";
 
 type IconProps = React.ComponentProps<typeof IconBrandFacebook>;
@@ -30,4 +37,28 @@ export const TLinkedIn = (props: IconProps) => {
 };
 export const TShoppingCart = (props: IconProps) => {
   return <IconShoppingCart {...props} />;
+};
+
+export const TUser = (props: IconProps) => {
+  return <IconUser {...props} />;
+};
+export const TUserCircle = (props: IconProps) => {
+  return <IconUserCircle {...props} />;
+};
+
+export const TFabric = (props: IconProps) => {
+  return <IconBrandCraft {...props} />;
+};
+
+export const TDelivery = (props: IconProps) => {
+  return <IconCubeSend {...props} />;
+};
+export const THappyFace = (props: IconProps) => {
+  return <IconMoodHappy {...props} />;
+};
+export const TFlag = (props: IconProps) => {
+  return <IconFlag {...props} />;
+};
+export const TInfoCircle = (props: IconProps) => {
+  return <IconInfoCircle {...props} />;
 };

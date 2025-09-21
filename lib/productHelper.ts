@@ -1,7 +1,7 @@
 "use server";
 import { and, eq, not, or } from "drizzle-orm";
-import { product } from "../db/productSchema";
 import { db } from "./db";
+import { product } from "@/db/productSchema";
 
 export async function getAllProducts() {
   return await db.select().from(product);

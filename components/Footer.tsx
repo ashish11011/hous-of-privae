@@ -1,4 +1,10 @@
-import { TFacebook, TInstagram, TLinkedIn, TTwitter, TWhatsApp } from "@/lib";
+import {
+  TFacebook,
+  TInstagram,
+  TLinkedIn,
+  TTwitter,
+  TWhatsApp,
+} from "@/lib/icons";
 import Link from "next/link";
 
 const Footer = () => {

@@ -6,14 +6,15 @@ import {
   Select,
   UploadFile,
 } from "@/components";
-import { Button, Label } from "@/components/shadcn";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { CATEGORY_1, CATEGORY_2, COLORS, MATERIALS, SIZES } from "@/const";
 import {
   convertArrayToSelectOptions,
   convertColorToSelectOptions,
   convertSizeToSelectOptions,
-} from "@/hepler";
-import { adminProductFormikSchema } from "@/types";
+} from "@/src/hepler";
+
 import { Form, Formik, useFormikContext } from "formik";
 import { X } from "lucide-react";
 import Image from "next/image";

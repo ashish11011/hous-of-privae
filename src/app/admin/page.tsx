@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ProductTableAdmin } from "./productTable";
 import Link from "next/link";
-import { getAllProducts } from "../../../lib";
+import { getAllProducts } from "@/lib";
 
 const Page = async () => {
   const productData = await getAllProducts();

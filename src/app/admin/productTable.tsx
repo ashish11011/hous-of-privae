@@ -1,14 +1,12 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getCategoryFromSlug } from "@/hepler";
+import { getCategoryFromSlug } from "@/src/hepler";
 import Link from "next/link";
 
 export function ProductTableAdmin({ productData }: any) {

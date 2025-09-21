@@ -1,16 +1,16 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
 } from "./ui/carousel";
-import { cn } from "@/lib";
-import { useIsMobile } from "@/lib/Hooks";
 import Autoplay from "embla-carousel-autoplay";
 import SampleImage from "./sampleImage";
+import { navBarHeight } from "@/const";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/src/hooks/use-mobile";
 
 const slides = [
   {
@@ -63,9 +63,11 @@ export default function StackedCarousel() {
         }),
       ]}
       setApi={setApi}
-      className=" h-[80vh] lg:h-[calc(100vh-3rem)]"
+      className={`h-[80vh] lg:h-[calc(100vh-${navBarHeight})]`}
     >
-      <CarouselContent className=" h-[80vh]  lg:h-[calc(100vh-3rem)]">
+      <CarouselContent
+        className={`h-[80vh]  lg:h-[calc(100vh-${navBarHeight})]`}
+      >
         {slides.map((itemData, index) => (
           <CarouselItem
             className=" flex items-center justify-center bg-[#D5D6CF] w-screen"

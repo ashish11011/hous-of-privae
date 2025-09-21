@@ -1,6 +1,5 @@
 "use client";
-import SampleImage from "@/components/sampleImage";
-import { useIsMobile } from "@/lib/Hooks";
+import { useIsMobile } from "@/src/hooks/use-mobile";
 import Image from "next/image";
 
 export function HomeBanner() {

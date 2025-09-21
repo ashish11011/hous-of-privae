@@ -23,8 +23,8 @@ import Image from "next/image";
 
 import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
-import { useStore } from "@/hepler/store/zustand";
 import { CartProduct } from "@/types";
+import { useStore } from "@/src/hepler/store/zustand";
 
 export function CartSheet() {
   const {

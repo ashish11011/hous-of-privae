@@ -1,4 +1,4 @@
-import { getProdcutInfoBySlug, getSimillarProducts } from "../../../../../lib";
+import { getProdcutInfoBySlug, getSimillarProducts } from "@/lib";
 import ProductInformation from "./ProductInformation";
 import ShowMoreProducts from "./ShowMoreProducts";
 

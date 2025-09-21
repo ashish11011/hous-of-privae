@@ -1,4 +1,4 @@
-import { orderItemsTable, orderTable } from "../db/schema";
+import { orderItemsTable, orderTable } from "@/db/schema";
 import { db } from "./db";
 
 export const createNewMasterOrder = async (order: any) => {

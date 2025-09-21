@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { insertContactDetails } from "../../../../lib";
+import { insertContactDetails } from "@/lib";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);

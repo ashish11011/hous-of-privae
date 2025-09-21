@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useField, useFormikContext } from "formik";
-import { Label } from "./shadcn";
+import { Label } from "./ui/label";
 
 interface Option {
   value: string;

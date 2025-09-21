@@ -1,7 +1,6 @@
 "use server";
-import { AnyCnameRecord } from "dns";
-import { contactTable } from "../db/schema";
 import { db } from "./db";
+import { contactTable } from "@/db/schema";
 
 export const insertContactDetails = async ({
   name,

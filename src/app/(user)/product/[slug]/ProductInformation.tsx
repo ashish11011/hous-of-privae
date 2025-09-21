@@ -9,10 +9,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
-import { sampleProductData } from "@/const/data/sampleProdccutData";
-import { useStore } from "@/hepler/store/zustand";
-import { useIsMobile } from "@/lib/Hooks";
-import { InfoCircle } from "@/lib/incons";
+import { TInfoCircle } from "@/lib/icons";
+import { useStore } from "@/src/hepler/store/zustand";
+import { useIsMobile } from "@/src/hooks/use-mobile";
 import { CartProduct } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
@@ -180,7 +179,7 @@ const ProductAbout = ({ productData }: any) => {
 
       {/* Model Info */}
       <div className="text-sm text-gray-600 border rounded px-3 py-2 mb-4 flex items-center gap-3">
-        <InfoCircle />
+        <TInfoCircle />
         Model height: 176 cm · Size S
       </div>
 

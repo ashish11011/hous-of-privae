@@ -1,7 +1,7 @@
 "use server";
 import { eq } from "drizzle-orm";
-import { db } from "../../lib/db";
-import { product } from "../../db/productSchema";
+import { db } from "./db";
+import { product } from "@/db/productSchema";
 
 export const generateUniqueSlug = async (name: string) => {
   const base = name

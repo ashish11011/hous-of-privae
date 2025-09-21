@@ -13,8 +13,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, UserCircle } from "@/lib/incons";
-import { UserIcon } from "lucide-react";
+import { UserCircle, UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 export function NavBarDropdown({ userName }: any) {

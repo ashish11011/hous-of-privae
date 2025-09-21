@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import SessionWrapper from "@/components/authProvider";
+import SessionWrapper from "@/lib/auth/authProvider";
 
 const inter = Inter({
   weight: ["400"],

@@ -1,26 +1,26 @@
-import { Delivery, Fabric, Flag, HappyFace } from "@/lib/incons";
+import { TDelivery, TFabric, TFlag, THappyFace } from "@/lib/icons";
 
 const features = [
   {
-    Icon: Fabric,
+    Icon: TFabric,
     title: "Consciously Crafted",
     description:
       "Every piece is made using premium vegan fabrics - soft on you and the planet.",
   },
   {
-    Icon: Delivery,
+    Icon: TDelivery,
     title: "Fast & Reliable Delivery",
     description:
       "From our studio to your wardrobe - enjoy quick, safe, and seamless delivery.",
   },
   {
-    Icon: HappyFace,
+    Icon: THappyFace,
     title: "Love it or Return it",
     description:
       "Easy returns and exchanges - because your comfort and happiness come first.",
   },
   {
-    Icon: Flag,
+    Icon: TFlag,
     title: "Proudly Indian",
     description:
       "Born in India, made for every body - every thread reflects local craftsmanship and care.",
