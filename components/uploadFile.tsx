@@ -2,7 +2,7 @@ import { uploadFileToS3 } from "@/lib/s3-upload";
 import { Plus } from "lucide-react";
 import React, { useRef } from "react";
 
-export const UploadFile = ({ onChange }: any) => {
+const UploadFile = ({ onChange }: any) => {
   const ref = useRef<HTMLInputElement>();
 
   const handleFileUploadClick = () => {
@@ -32,3 +32,5 @@ export const UploadFile = ({ onChange }: any) => {
     </div>
   );
 };
+
+export default UploadFile;

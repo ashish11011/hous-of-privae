@@ -11,13 +11,6 @@ import { CATEGORY_1, CATEGORY_2 } from "@/const";
 export default function Home() {
   return (
     <div className=" w-full">
-      <div className="hidden md:block bg-green-500 text-white p-4">
-        {"Visible only on desktop (≥768px)"}
-      </div>
-      <div className="block md:hidden bg-red-500 text-white p-4">
-        {" Visible only on mobile (<768px)"}
-      </div>
-
       <Carousel />
       <Categories />
       <VideoPlay />

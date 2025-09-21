@@ -1,11 +1,12 @@
 "use client";
+
 import {
   LabelInput,
   LabelTextarea,
   MultiSelect,
   Select,
   UploadFile,
-} from "@/components";
+} from "@/components/index";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CATEGORY_1, CATEGORY_2, COLORS, MATERIALS, SIZES } from "@/const";

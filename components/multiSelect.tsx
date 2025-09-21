@@ -18,7 +18,7 @@ interface MultiSelectProps {
   placeholder?: string;
 }
 
-export const MultiSelect = ({
+const MultiSelect = ({
   labelName,
   name,
   options,
@@ -91,3 +91,5 @@ export const MultiSelect = ({
     </div>
   );
 };
+
+export default MultiSelect;

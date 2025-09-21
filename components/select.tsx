@@ -22,12 +22,7 @@ interface SelectProps {
   placeholder?: string;
 }
 
-export const Select = ({
-  labelName,
-  name,
-  options,
-  placeholder,
-}: SelectProps) => {
+const Select = ({ labelName, name, options, placeholder }: SelectProps) => {
   const [field, , helpers] = useField(name);
   const { setFieldValue } = useFormikContext();
 
@@ -56,3 +51,5 @@ export const Select = ({
     </div>
   );
 };
+
+export default Select;

@@ -1,5 +1,5 @@
 "use client";
-import { LabelInput } from "@/components";
+import { LabelInput } from "@/components/index";
 import {
   Table,
   TableBody,
@@ -10,7 +10,6 @@ import {
 import { Form, Formik } from "formik";
 import Image from "next/image";
 import React, { useState } from "react";
-import { user } from "../../../../db/userSchema";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { getColorNameByHex } from "@/src/hepler";

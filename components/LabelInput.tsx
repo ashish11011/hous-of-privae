@@ -5,10 +5,10 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 interface LabelInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  labelName: string;
+  labelName?: string;
 }
 
-export const LabelInput = ({ labelName, ...props }: LabelInputProps) => {
+const LabelInput = ({ labelName, ...props }: LabelInputProps) => {
   const [field, meta] = useField(props.name!);
   return (
     <div className=" space-y-1 w-full">
@@ -22,3 +22,5 @@ export const LabelInput = ({ labelName, ...props }: LabelInputProps) => {
     </div>
   );
 };
+
+export default LabelInput;

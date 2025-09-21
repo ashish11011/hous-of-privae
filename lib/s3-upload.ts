@@ -18,6 +18,5 @@ export async function uploadFileToS3(file: File, folder = "products") {
   };
 
   const upload = await s3.upload(params).promise();
-  console.log("upload:  ", JSON.stringify(upload?.Location));
   return upload?.Location;
 }

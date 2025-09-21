@@ -21,7 +21,7 @@ const NavBar = () => {
           </div>
         </Link>
         <div className=" ">
-          <div className="  xl:flex  w-full items-center">
+          <div className=" hidden xl:flex  w-full items-center">
             {navBarItems.map((item, idx: number) => {
               return (
                 <Link key={idx} href={`/category/${item.slug}`}>
@@ -35,7 +35,7 @@ const NavBar = () => {
 
       <NavBarClient />
 
-      <p className=" hidden lg:block">Basket</p>
+      {/* <p className=" hidden lg:block">Basket</p> */}
     </div>
   );
 };

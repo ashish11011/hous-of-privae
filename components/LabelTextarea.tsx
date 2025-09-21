@@ -9,7 +9,7 @@ interface LabelInputProps
   labelName: string;
 }
 
-export const LabelTextarea = ({ labelName, ...props }: LabelInputProps) => {
+const LabelTextarea = ({ labelName, ...props }: LabelInputProps) => {
   const [field, meta] = useField(props.name!);
   return (
     <div className=" space-y-1 w-full">
@@ -23,3 +23,5 @@ export const LabelTextarea = ({ labelName, ...props }: LabelInputProps) => {
     </div>
   );
 };
+
+export default LabelTextarea;
