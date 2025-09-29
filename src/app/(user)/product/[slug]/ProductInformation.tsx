@@ -134,6 +134,9 @@ const ProductAbout = ({ productData }: any) => {
       <p className="roboto text-lg text-gray-800 mb-3 font-medium">
         {productData.name}
       </p>
+      <p className="roboto text-lg text-gray-800 mb-3 font-medium">
+        {productData.description}
+      </p>
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">

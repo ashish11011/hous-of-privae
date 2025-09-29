@@ -1,4 +1,3 @@
-import React from "react";
 import ProductEdit from "./productEdit";
 import { getProdcutInfoBySlug } from "@/lib";
 
@@ -12,10 +11,12 @@ const Page = async ({ params }: any) => {
   }
 
   return (
-    <ProductEdit
-      productData={productData ? productData[0] : null}
-      slug={slug}
-    />
+    <>
+      <ProductEdit
+        productData={productData ? productData[0] : null}
+        slug={slug}
+      />
+    </>
   );
 };
 

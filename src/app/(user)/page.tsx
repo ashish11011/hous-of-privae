@@ -13,12 +13,12 @@ export default function Home() {
     <div className=" w-full">
       <Carousel />
       <Categories />
-      <VideoPlay />
-      <Categories2 />
+      {/* <VideoPlay /> */}
+      {/* <Categories2 /> */}
 
       <ProductCarousel />
-
-      <RevicesCarousel />
+      <div className="h-12"></div>
+      {/* <RevicesCarousel /> */}
       <BrandValues />
     </div>
   );
@@ -30,10 +30,10 @@ function Categories() {
       <p className="roboto text-4xl font2 font-bold md:font-semibold  text-center">
         Categories
       </p>
-      <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5">
+      <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
         {CATEGORY_1.map((item, idx) => {
           return (
-            <div key={idx} className="  p-0.5 w-full h-64 lg:h-96 ">
+            <div key={idx} className="  p-0.5 w-full h-64 lg:h-[28rem] ">
               <Link href={`category/${item.slug}`}>
                 <div className="group h-full cursor-pointer w-full overflow-hidden relative">
                   <Image
@@ -46,8 +46,9 @@ function Categories() {
                   <p
                     style={{
                       fontWeight: 800,
+                      textShadow: "2px 2px 4px rgba(0,0,0,0.8)", // X-offset, Y-offset, blur, color
                     }}
-                    className=" absolute top-1/2 left-1/2 text-black -translate-x-1/2 -translate-y-1/2  text-2xl text-center roboto line-clamp-2"
+                    className=" absolute top-1/2 left-1/2 text-gray-200 -translate-x-1/2 -translate-y-1/2  text-2xl text-center roboto line-clamp-2"
                   >
                     {item.name}
                   </p>

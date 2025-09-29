@@ -12,7 +12,11 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
-import { getColorNameByHex } from "@/src/hepler";
+import { COLORS } from "@/const";
+
+const getColorNameByHex = (hex: string) => {
+  return COLORS.find((item) => item.hex === hex)?.label;
+};
 
 const Page = () => {
   const { productStore } = useStore();

@@ -9,9 +9,10 @@ import {
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { ProductCard } from "./ProductCard";
-import { productItemData } from "@/const/data/product";
+import { useGetAllProducts } from "@/src/hepler";
 
-const ProductCarousel = () => {
+const ProductCarousel = async () => {
+  const productsData = await useGetAllProducts(1, 8);
   return (
     <div className=" px-4 ">
       <div className=" gap-3 lg:px-6 pt-3 pb-6 flex-col lg:flex-row flex items-center justify-between">
@@ -39,7 +40,7 @@ const ProductCarousel = () => {
       <div className="">
         <Carousel className="w-full max-w-[calc(100vw)] ">
           <CarouselContent className="-ml-1 pl-24 overflow-visible">
-            {productItemData.map((item, index) => (
+            {productsData?.products?.map((item, index) => (
               <CarouselItem key={index} className="pl-1 basis-auto ">
                 <ProductCard itemData={item} />
               </CarouselItem>

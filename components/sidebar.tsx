@@ -14,6 +14,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -22,6 +23,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 // Menu items.
 const items = [
@@ -35,16 +37,16 @@ const items = [
     url: "/admin/orders",
     icon: BoxesIcon,
   },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: UserRoundIcon,
-  },
-  {
-    title: "Review",
-    url: "/admin/review",
-    icon: MessageSquareCodeIcon,
-  },
+  // {
+  //   title: "Users",
+  //   url: "/admin/users",
+  //   icon: UserRoundIcon,
+  // },
+  // {
+  //   title: "Review",
+  //   url: "/admin/review",
+  //   icon: MessageSquareCodeIcon,
+  // },
   {
     title: "Contacts",
     url: "/admin/contacts",
@@ -55,11 +57,11 @@ const items = [
     url: "/admin/blog",
     icon: ChartNoAxesGanttIcon,
   },
-  {
-    title: "Subscriptions",
-    url: "/admin/subscriptions",
-    icon: MailCheckIcon,
-  },
+  // {
+  //   title: "Subscriptions",
+  //   url: "/admin/subscriptions",
+  //   icon: MailCheckIcon,
+  // },
 ];
 
 const SidebarAdmin = () => {
@@ -84,6 +86,11 @@ const SidebarAdmin = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button variant={"destructive"} size={"sm"}>
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 };

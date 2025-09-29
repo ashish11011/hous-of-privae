@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import React, { useRef } from "react";
 
 const UploadFile = ({ onChange }: any) => {
-  const ref = useRef<HTMLInputElement>();
+  const ref = useRef<any>();
 
   const handleFileUploadClick = () => {
     ref.current?.click();
@@ -27,7 +27,7 @@ const UploadFile = ({ onChange }: any) => {
         multiple={false}
         className=" hidden"
         type="file"
-        // ref={ref}
+        ref={ref}
       />
     </div>
   );

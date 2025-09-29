@@ -11,27 +11,35 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CATEGORY_1, CATEGORY_2, COLORS, MATERIALS, SIZES } from "@/const";
 import {
-  convertArrayToSelectOptions,
-  convertColorToSelectOptions,
-  convertSizeToSelectOptions,
-} from "@/src/hepler";
+  useConvertArrayToSelectOptions,
+  useConvertColorToSelectOptions,
+  useConvertSizeToSelectOptions,
+} from "@/src/hooks/convertHooks";
 
 import { Form, Formik, useFormikContext } from "formik";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 const ProductEdit = ({ productData, slug }: any) => {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const initialState = {
     name: productData?.name || "",
+    sku: productData?.sku || "",
+
     description: productData?.description || "",
     basePrice: productData?.basePrice || 0,
     categoryId1: productData?.categoryId1 || "",
     categoryId2: productData?.categoryId2 || "",
     slug: productData?.slug || "",
+
+    care: productData?.care || "",
+    style_note: productData?.style_note || "",
+    customization: productData?.customization || "",
+
     bannerImage: productData?.bannerImage || "",
     images: productData?.images || [],
     sizes: productData?.sizes || [],
@@ -63,6 +71,23 @@ const ProductEdit = ({ productData, slug }: any) => {
     }
   };
 
+  const handleItemDelete = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/products/delete", {
+        method: "POST",
+        body: JSON.stringify({ slug: productData.slug }),
+      });
+      if (res.status === 200) alert("Product deleted successfully");
+      router.push("/admin");
+    } catch (error) {
+      console.log(error);
+      alert("Product creation failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className=" p-4  flex  flex-wrap gap-8">
       <Formik
@@ -77,11 +102,34 @@ const ProductEdit = ({ productData, slug }: any) => {
             name="name"
             type="text"
           />
+          <LabelInput
+            labelName="SKU"
+            placeholder="Enter product SKU"
+            name="sku"
+            type="text"
+          />
           <LabelTextarea
             labelName="Description"
             placeholder="Enter product description"
             name="description"
           />
+          {/* @@@@@@@@@@@@@@@@@@@@@@ */}
+          <LabelTextarea
+            labelName="care"
+            placeholder="Enter product care"
+            name="care"
+          />
+          <LabelTextarea
+            labelName="style_note"
+            placeholder="Enter product style_note"
+            name="style_note"
+          />
+          <LabelTextarea
+            labelName="customization"
+            placeholder="Enter product customization"
+            name="customization"
+          />
+          ``
           <LabelInput
             labelName="Base Price"
             placeholder="Enter base price"
@@ -92,20 +140,20 @@ const ProductEdit = ({ productData, slug }: any) => {
             labelName="Category Level 1"
             placeholder="Category Level 1"
             name="categoryId1"
-            options={convertArrayToSelectOptions(CATEGORY_1)}
+            options={useConvertArrayToSelectOptions(CATEGORY_1)}
           />
           <Select
             labelName="Category Level 2"
             placeholder="Category Level 2"
             name="categoryId2"
-            options={convertArrayToSelectOptions(CATEGORY_2)}
+            options={useConvertArrayToSelectOptions(CATEGORY_2)}
           />
           <div className=" space-y-2 w-md">
             <MultiSelect
               labelName="Select Colors"
               name="colors"
               placeholder="Choose colors"
-              options={convertColorToSelectOptions(COLORS)}
+              options={useConvertColorToSelectOptions(COLORS)}
             />
             <SelectedColors />
           </div>
@@ -114,7 +162,7 @@ const ProductEdit = ({ productData, slug }: any) => {
               labelName="Select sizes"
               name="sizes"
               placeholder="Choose sizes"
-              options={convertSizeToSelectOptions(SIZES)}
+              options={useConvertSizeToSelectOptions(SIZES)}
             />
             <SelectedSizes />
           </div>
@@ -125,15 +173,26 @@ const ProductEdit = ({ productData, slug }: any) => {
               labelName="Select materials"
               name="materials"
               placeholder="Choose materials"
-              options={convertSizeToSelectOptions(MATERIALS)}
+              options={useConvertSizeToSelectOptions(MATERIALS)}
             />
             <SelectedMaterials />
           </div>
           <Button
             onClick={() => {
+              handleItemDelete();
+            }}
+            type="button"
+            variant={"destructive"}
+            disabled={loading}
+          >
+            Delete
+          </Button>
+          <Button
+            onClick={() => {
               console.log("clicked");
             }}
             type="submit"
+            disabled={loading}
           >
             Submit
           </Button>

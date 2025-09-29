@@ -4,12 +4,21 @@ import {
   varchar,
   timestamp,
   integer,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const product = pgTable("products", {
   // about product
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name"),
+  sku: varchar("sku"),
+  fabric: varchar("fabric"),
+
+  care: varchar("care"),
+  style_note: varchar("style_note"),
+  customization: varchar("customization"),
+
+  model_height: varchar("model_height"),
   description: varchar("description"),
   basePrice: integer("base_price"),
   categoryId1: varchar("category_id_1"),
@@ -22,6 +31,7 @@ export const product = pgTable("products", {
   sizes: varchar("sizes").array(),
   colors: varchar("colors").array(),
   materials: varchar("materials").array(),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 
   // timestamp
   createdAt: timestamp("created_at").notNull().defaultNow(),

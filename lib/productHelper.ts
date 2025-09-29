@@ -3,10 +3,6 @@ import { and, eq, not, or } from "drizzle-orm";
 import { db } from "./db";
 import { product } from "@/db/productSchema";
 
-export async function getAllProducts() {
-  return await db.select().from(product);
-}
-
 export async function createProduct(data: any) {
   const result = await db.insert(product).values({
     ...data,
@@ -66,8 +62,16 @@ export async function getProductByCategory(categoryID: string) {
 }
 
 export async function updateProdcutInfoBySlug({ slug, productDetails }: any) {
+  console.log("productDetails: ", productDetails);
   return await db
     .update(product)
     .set(productDetails)
+    .where(eq(product.slug, slug));
+}
+
+export async function deleteProductBySlug(slug: string) {
+  return await db
+    .update(product)
+    .set({ isDeleted: true })
     .where(eq(product.slug, slug));
 }

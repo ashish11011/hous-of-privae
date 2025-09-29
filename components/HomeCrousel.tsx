@@ -11,24 +11,25 @@ import SampleImage from "./sampleImage";
 import { navBarHeight } from "@/const";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/src/hooks/use-mobile";
+import Image from "next/image";
 
 const slides = [
   {
     id: 0,
-    image: "/C_1.webp",
-    imageMob: "/m1.jpeg",
+    image: "https://ik.imagekit.io/hop/crousel/web1.jpg",
+    imageMob: "https://ik.imagekit.io/hop/crousel/mb1.jpg",
     title: "Slide 1",
   },
   {
     id: 1,
-    image: "/C_2.webp",
-    imageMob: "/m2.jpeg",
+    image: "https://ik.imagekit.io/hop/crousel/web2.jpg",
+    imageMob: "https://ik.imagekit.io/hop/crousel/mb2.jpg",
     title: "Slide 2",
   },
   {
     id: 2,
-    image: "/C_3.webp",
-    imageMob: "/m3.jpeg",
+    image: "https://ik.imagekit.io/hop/crousel/web3.jpg",
+    imageMob: "https://ik.imagekit.io/hop/crousel/mb3.jpg",
     title: "Slide 3",
   },
 ];
@@ -63,26 +64,28 @@ export default function StackedCarousel() {
         }),
       ]}
       setApi={setApi}
-      className={`h-[80vh] lg:h-[calc(100vh-${navBarHeight})]`}
+      style={{ height: `calc(100vh - ${navBarHeight})` }}
+      className={cn(`h-[80vh] lg:h-[calc(100vh-${navBarHeight})]`)}
     >
       <CarouselContent
-        className={`h-[80vh]  lg:h-[calc(100vh-${navBarHeight})]`}
+        style={{ height: `calc(100vh - ${navBarHeight})` }}
+        className={cn(`h-[80vh] lg:h-[calc(100vh-${navBarHeight})]`)}
       >
         {slides.map((itemData, index) => (
           <CarouselItem
-            className=" flex items-center justify-center bg-[#D5D6CF] w-screen"
+            className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
             key={index}
           >
-            {/* <Image
+            <Image
               src={isMobile ? itemData.imageMob : itemData.image}
               alt={itemData.title}
               width={1200}
               height={1200}
               className=" h-full w-full object-cover"
-            /> */}
-            <div className=" size-96 ">
+            />
+            {/* <div className=" size-96 ">
               <SampleImage />
-            </div>
+            </div> */}
           </CarouselItem>
         ))}
       </CarouselContent>

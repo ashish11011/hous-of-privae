@@ -1,3 +1,5 @@
+"use client";
+import ShadcnPagination from "@/components/pagination";
 import {
   Table,
   TableBody,
@@ -6,45 +8,84 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getCategoryFromSlug } from "@/src/hepler";
+import { PAGINATION_LIMIT } from "@/const";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export function ProductTableAdmin({ productData }: any) {
+type Product = {
+  id: string;
+  name: string | null;
+  description: string | null;
+  basePrice: number | null;
+  categoryId1: string | null;
+  categoryId2: string | null;
+  slug: string | null;
+  bannerImage: string | null;
+  images: string[] | null;
+  sizes: string[] | null;
+  colors: string[] | null;
+  materials: string[] | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+interface ContactsTableProps {
+  productData: Product[];
+  total?: number;
+  currentPage?: number;
+}
+
+export function ProductTableAdmin({
+  productData,
+  total = 10,
+  currentPage = 1,
+}: ContactsTableProps) {
+  const router = useRouter();
+  const totalPages = Math.ceil(total / PAGINATION_LIMIT);
   return (
-    <Table className=" w-full">
-      {/* <TableCaption>A list of your recent items.</TableCaption> */}
-      <TableHeader>
-        <TableRow>
-          <TableHead className="">Item</TableHead>
-          <TableHead>Category1</TableHead>
-          <TableHead>Category2</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {productData.map((item: any) => (
-          <TableRow key={item.id}>
-            {/* <TableCell className="font-medium">{item.bannerImage}</TableCell> */}
-            <TableCell>
-              <Link href={`/admin/products/${item.slug}`}>{item.name}</Link>
-            </TableCell>
-            <TableCell className="">
-              {getCategoryFromSlug(item.categoryId1)?.name}
-            </TableCell>
-            <TableCell className="">
-              {" "}
-              {getCategoryFromSlug(item.categoryId2)?.name}
-            </TableCell>
-            <TableCell className=" text-right">{item.basePrice}</TableCell>
+    <div className=" w-full overflow-x-auto p-4 h-full">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Base Price</TableHead>
+            <TableHead>Category 1</TableHead>
+            <TableHead>Category 2</TableHead>
+            <TableHead>Created At</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-      {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter> */}
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {productData.map((product) => (
+            <TableRow key={product.id}>
+              <TableCell>
+                {product.name ? (
+                  <Link href={`/admin/products/${product.slug}`}>
+                    {product.name}
+                  </Link>
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell className=" max-w-24 overflow-hidden">
+                {product.description || "-"}
+              </TableCell>
+              <TableCell>
+                {product.basePrice != null ? `₹${product.basePrice}` : "-"}
+              </TableCell>
+              <TableCell>{product.categoryId1 || "-"}</TableCell>
+              <TableCell>{product.categoryId2 || "-"}</TableCell>
+
+              <TableCell>{product.createdAt.toLocaleDateString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ShadcnPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => router.push(`/admin?page=${page}`)}
+      />
+    </div>
   );
 }

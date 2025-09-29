@@ -1,4 +1,4 @@
-export const navBarHeight = "3-rem";
+export const navBarHeight = "2rem";
 export const BRAND_NAME = "Haus Of Privae";
 export const navBarItems = [
   // {

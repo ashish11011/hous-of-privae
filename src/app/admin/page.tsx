@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ProductTableAdmin } from "./productTable";
 import Link from "next/link";
-import { getAllProducts } from "@/lib";
+import { PAGINATION_LIMIT } from "@/const";
+import { useGetAllProducts } from "@/src/hepler";
 
-const Page = async () => {
-  const productData = await getAllProducts();
+const Page = async ({ searchParams }: any) => {
+  const currentPage = (await searchParams).page || 1;
+  const productData = await useGetAllProducts(currentPage, PAGINATION_LIMIT);
   return (
     <div className=" w-full p-4 space-y-8">
       <div>
@@ -12,7 +14,11 @@ const Page = async () => {
           <Button>Add new Product</Button>
         </Link>
       </div>
-      <ProductTableAdmin productData={productData} />
+      <ProductTableAdmin
+        productData={productData.products}
+        total={productData.total}
+        currentPage={Number(currentPage)}
+      />
     </div>
   );
 };
