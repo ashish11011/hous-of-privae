@@ -63,7 +63,7 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
               className="uppercase flex items-center gap-2 font-bold text-2xl cursor-pointer text-neutral-800 mt-10"
             >
               <TShoppingCart size={28} />
-              Basket
+              Cart
             </motion.p>
           </motion.div>
         </motion.div>

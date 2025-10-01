@@ -22,8 +22,8 @@ const slides = [
   },
   {
     id: 1,
-    image: "https://ik.imagekit.io/hop/crousel/web2.jpg",
-    imageMob: "https://ik.imagekit.io/hop/crousel/mb2.jpg",
+    image: "https://ik.imagekit.io/hop/crousel/web2-bg.jpg",
+    imageMob: "https://ik.imagekit.io/hop/crousel/mob2-bg.jpg",
     title: "Slide 2",
   },
   {
@@ -52,6 +52,71 @@ export default function StackedCarousel() {
     });
   }, [api]);
 
+  const slideCrouselItems = [
+    <CarouselItem
+      className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
+      key={0}
+    >
+      <Image
+        src={isMobile ? slides[0].imageMob : slides[0].image}
+        alt={slides[0].title}
+        width={1200}
+        height={1200}
+        className=" h-full w-full object-cover"
+      />
+    </CarouselItem>,
+    <CarouselItem
+      className=" flex relative items-center h-full justify-center bg-[#D5D6CF] w-screen"
+      key={0}
+    >
+      <Image
+        src={isMobile ? slides[1].imageMob : slides[1].image}
+        alt={slides[1].title}
+        width={1200}
+        height={1200}
+        className=" h-full absolute  inset-0 w-full object-cover"
+      />
+
+      <div className="text-white mx-auto w-full text-center p-2 md:p-4 max-w-7xl z-10 flex items-center justify-end h-[80%] space-y-6 flex-col">
+        <Image
+          src={"https://ik.imagekit.io/hop/white-logo.png"}
+          alt="logo"
+          className=" size-32 md:size-44 object-contain"
+          width={200}
+          height={200}
+        />
+        <p className=" text-xl md:text-3xl font-semibold">
+          Welcome to Haus of Privae
+        </p>
+        <p className=" md:text-2xl  ">
+          Thank you for visiting our world of timeless elegance. At Haus of
+          Privae, we believe luxury should not only be exquisite but also
+          responsible. Every piece we create blends meticulous craftsmanship,
+          refined design, and eco-conscious practices allowing you to embrace
+          sophistication without compromise. We are honored to share our vision
+          with you: a future where fashion celebrates individuality,
+          sustainability, and the art of living beautifully. Your presence here
+          is the first step in that journey with us.
+        </p>
+        <p className="md:text-xl">
+          Welcome to a more thoughtful kind of luxury.
+        </p>
+      </div>
+    </CarouselItem>,
+    <CarouselItem
+      className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
+      key={0}
+    >
+      <Image
+        src={isMobile ? slides[2].imageMob : slides[2].image}
+        alt={slides[2].title}
+        width={1200}
+        height={1200}
+        className=" h-full w-full object-cover"
+      />
+    </CarouselItem>,
+  ];
+
   if (isMobile === null) {
     return null;
   }
@@ -71,23 +136,9 @@ export default function StackedCarousel() {
         style={{ height: `calc(100vh - ${navBarHeight})` }}
         className={cn(`h-[80vh] lg:h-[calc(100vh-${navBarHeight})]`)}
       >
-        {slides.map((itemData, index) => (
-          <CarouselItem
-            className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
-            key={index}
-          >
-            <Image
-              src={isMobile ? itemData.imageMob : itemData.image}
-              alt={itemData.title}
-              width={1200}
-              height={1200}
-              className=" h-full w-full object-cover"
-            />
-            {/* <div className=" size-96 ">
-              <SampleImage />
-            </div> */}
-          </CarouselItem>
-        ))}
+        {slideCrouselItems.map((item, idx) =>
+          React.cloneElement(item, { key: idx })
+        )}
       </CarouselContent>
       {/* <CarouselPrevious />
       <CarouselNext /> */}

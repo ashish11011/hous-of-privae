@@ -6,7 +6,10 @@ import { useGetAllProducts } from "@/src/hepler";
 
 const Page = async ({ searchParams }: any) => {
   const currentPage = (await searchParams).page || 1;
-  const productData = await useGetAllProducts(currentPage, PAGINATION_LIMIT);
+  const productData: any = await useGetAllProducts(
+    currentPage,
+    PAGINATION_LIMIT
+  );
   return (
     <div className=" w-full p-4 space-y-8">
       <div>

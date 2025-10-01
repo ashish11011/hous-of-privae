@@ -4,7 +4,11 @@ import { product } from "@/db/productSchema";
 import { db } from "@/lib/db";
 import { eq, not } from "drizzle-orm";
 
-export async function useGetAllProducts(page: number, pageSize: number) {
+export async function useGetAllProducts(
+  page: number | null,
+  pageSize: number | null
+) {
+  if (!page || !pageSize) return await db.select().from(product);
   const offset = (page - 1) * pageSize;
 
   const products = await db

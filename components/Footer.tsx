@@ -51,7 +51,7 @@ const Footer = () => {
       </div>
 
       <p className="text-center text-sm text-gray-500 mt-6">
-        Copyright ©2025 Hous of Privae. All rights reserved
+        Copyright ©2025 Haus Of Privae. All rights reserved
       </p>
     </footer>
   );

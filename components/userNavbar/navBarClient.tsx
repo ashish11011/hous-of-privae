@@ -24,7 +24,7 @@ const NavBarClient = () => {
           />
         )}
 
-        <NavbarUserMenu />
+        {/* <NavbarUserMenu /> */}
         <CartSheet />
       </div>
     </>

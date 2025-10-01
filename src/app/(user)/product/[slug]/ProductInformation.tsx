@@ -18,7 +18,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function ProductInformation({ productData }: any) {
-  const images = productData.images || [];
+  const { images = [], bannerImage, ...productDetails } = productData;
   const imagesLength = images.length;
 
   const [isPageLoaded, setIsPageLoaded] = useState(false);
@@ -104,7 +104,30 @@ export default function ProductInformation({ productData }: any) {
   );
 }
 
-const ProductAbout = ({ productData }: any) => {
+export interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  fabric: string | null;
+  care: string | null;
+  style_note: string | null;
+  customization: string | null;
+  model_height: string | null;
+  description: string;
+  bannerImage: string;
+  basePrice: number;
+  categoryId1: string;
+  categoryId2: string | null;
+  slug: string;
+  images: string[];
+  sizes: string[];
+  colors: string[]; // hex codes
+  materials: string[];
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+const ProductAbout = ({ productData }: { productData: Product }) => {
   const { addItemToStore } = useStore();
 
   const [selectedColor, setSelectedColor] = useState(productData.colors?.[0]);
@@ -128,23 +151,44 @@ const ProductAbout = ({ productData }: any) => {
     }
   };
 
+  const productExtraDetails = [
+    {
+      name: "care",
+      value: productData.care,
+      label: "Care",
+    },
+    {
+      name: "style_note",
+      value: productData.style_note,
+      label: "Style Note",
+    },
+    {
+      name: "customization",
+      value: productData.customization,
+      label: "Customization",
+    },
+    // {
+    //   name: "model_height",
+    //   value: productData.model_height,
+    //   label: "Model Height",
+    // },
+  ];
+
   return (
     <div className=" h-fit sticky top-16">
       {/* Name */}
-      <p className="roboto text-lg text-gray-800 mb-3 font-medium">
+      <p className="roboto text-2xl  text-gray-800 mb-3 font-semibold">
         {productData.name}
       </p>
-      <p className="roboto text-lg text-gray-800 mb-3 font-medium">
-        {productData.description}
-      </p>
+      <p className="roboto  text-gray-800 mb-3">{productData.description}</p>
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
-        {productData.basePrice} INR
+        INR <span className="text-green-700">{productData.basePrice}</span>
       </p>
 
       {/* Color Selector */}
-      <div className="flex gap-2 items-center flex-wrap mb-6">
+      <div className="flex gap-2 items-center flex-wrap mb-4">
         {productData.colors?.map((color: string, idx: number) => (
           <button
             key={idx}
@@ -161,9 +205,6 @@ const ProductAbout = ({ productData }: any) => {
         ))}
       </div>
 
-      <Separator className="my-4" />
-
-      {/* Size Selector */}
       <div className="flex gap-2 items-center mb-6">
         {productData.sizes.map((size: string) => (
           <button
@@ -180,13 +221,37 @@ const ProductAbout = ({ productData }: any) => {
         ))}
       </div>
 
+      <Separator className="my-6" />
+
+      {/* Size Selector */}
+      <div>
+        <p className=" roboto text-xl  text-gray-800 mb-3 font-semibold">
+          Additional Information
+        </p>
+
+        <div className=" mb-4 space-y-3">
+          {productExtraDetails.map((extraDetailItem, idx) => {
+            return (
+              <div key={idx}>
+                <span className=" font-semibold">
+                  {extraDetailItem.label} -{" "}
+                </span>
+                <span>{extraDetailItem.value}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <Separator className="my-6" />
+
       {/* Model Info */}
-      <div className="text-sm text-gray-600 border rounded px-3 py-2 mb-4 flex items-center gap-3">
+      <div className="text-sm text-gray-600 border rounded px-3 py-2 mb-6 flex items-center gap-3">
         <TInfoCircle />
         Model height: 176 cm · Size S
       </div>
 
-      <p className=" mb-4">View size guide</p>
+      {/* <p className=" mb-4">View size guide</p> */}
 
       {/* Add to Basket */}
       <Button

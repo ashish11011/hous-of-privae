@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -52,11 +53,11 @@ const items = [
     url: "/admin/contacts",
     icon: ContactIcon,
   },
-  {
-    title: "Blog",
-    url: "/admin/blog",
-    icon: ChartNoAxesGanttIcon,
-  },
+  // {
+  //   title: "Blog",
+  //   url: "/admin/blog",
+  //   icon: ChartNoAxesGanttIcon,
+  // },
   // {
   //   title: "Subscriptions",
   //   url: "/admin/subscriptions",
@@ -65,6 +66,12 @@ const items = [
 ];
 
 const SidebarAdmin = () => {
+  const router = useRouter();
+  const handleAdminLogout = () => {
+    // clear local storage
+    localStorage.clear();
+    router.push("/");
+  };
   return (
     <Sidebar>
       <SidebarContent>
@@ -87,7 +94,7 @@ const SidebarAdmin = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button variant={"destructive"} size={"sm"}>
+        <Button onClick={handleAdminLogout} variant={"destructive"} size={"sm"}>
           Logout
         </Button>
       </SidebarFooter>

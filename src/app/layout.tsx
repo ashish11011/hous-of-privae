@@ -39,6 +39,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* google site indexing on bishnoi11011@gmail.com */}
+        <meta
+          name="google-site-verification"
+          content="BuaN502DjcGk6w1rWnu02FyN7YUZyL9m8J6g3NgFSto"
+        />
+      </head>
       <body
         cz-shortcut-listen="true"
         className={`   ${inter.className}  text-shadow-neutral-800 antialiased`}
