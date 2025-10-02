@@ -8,29 +8,15 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-// const roboto = Roboto({
-//   weight: ["400", "700", "900"],
-//   subsets: ["latin"],
-// });
-
-// const amiri = Amiri({
-//   weight: ["400", "700"],
-//   subsets: ["latin"],
-// });
-
-// const www = Blinker({
-//   weight: ["100", "200", "300", "400", "600", "700", "800", "900"],
-//   subsets: ["latin"],
-// });
-
-/* eslint-enable @typescript-eslint/no-unused-vars */
-
-export const metadata: Metadata = {
-  // title: "Hous Of Privae",
-  // description: "Hous Of Privae",
-};
+// export const metadata: Metadata = {
+//   title: "Hous Of Privae",
+//   description: "Hous Of Privae",
+//   icons: {
+//     icon: "/favicon.ico",
+//     shortcut: "/favicon.ico",
+//     apple: "/favicon.ico",
+//   },
+// };
 
 export default function RootLayout({
   children,
@@ -40,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* <link rel="icon" href="/favicon.ico" sizes="any" /> */}
         {/* google site indexing on bishnoi11011@gmail.com */}
         <meta
           name="google-site-verification"
@@ -48,7 +35,7 @@ export default function RootLayout({
       </head>
       <body
         cz-shortcut-listen="true"
-        className={`   ${inter.className}  text-shadow-neutral-800 antialiased`}
+        className={`   ${inter.className} bg-[#fff]  text-shadow-neutral-800 text-[#3d1700] antialiased`}
       >
         <SessionWrapper>{children}</SessionWrapper>
       </body>

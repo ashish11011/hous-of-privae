@@ -1,6 +1,5 @@
 "use client";
-import { ProductCard } from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
+import { motion } from "motion/react";
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +8,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
 import { TInfoCircle } from "@/lib/icons";
 import { useStore } from "@/src/hepler/store/zustand";
 import { useIsMobile } from "@/src/hooks/use-mobile";
@@ -16,6 +16,7 @@ import { CartProduct } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -131,11 +132,21 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   const { addItemToStore } = useStore();
 
   const [selectedColor, setSelectedColor] = useState(productData.colors?.[0]);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    productData.sizes?.[0]
+  );
 
   const sizes = ["XS", "S", "M", "L"]; // You can also make this dynamic
 
   const handleAddToCart = () => {
+    toast("Item added to cart", {
+      // description: "Sunday, December 03, 2023 at 9:00 AM",
+      // action: {
+      //   label: "Undo",
+      //   onClick: () => console.log("Undo"),
+      // },
+    });
+
     if (selectedColor && selectedSize) {
       const product: CartProduct = {
         id: productData.id,
@@ -176,15 +187,15 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
   return (
     <div className=" h-fit sticky top-16">
+      <Toaster />
+
       {/* Name */}
-      <p className="roboto text-2xl  text-gray-800 mb-3 font-semibold">
-        {productData.name}
-      </p>
-      <p className="roboto  text-gray-800 mb-3">{productData.description}</p>
+      <p className="roboto text-2xl   mb-3 font-semibold">{productData.name}</p>
+      <p className="roboto   mb-3">{productData.description}</p>
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
-        INR <span className="text-green-700">{productData.basePrice}</span>
+        INR <span className=" font-bold">{productData.basePrice}</span>
       </p>
 
       {/* Color Selector */}
@@ -192,10 +203,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         {productData.colors?.map((color: string, idx: number) => (
           <button
             key={idx}
-            onClick={() => setSelectedColor(color)}
-            className={`size-8 shrink-0 p-0.5 rounded-full border-2 ${
-              selectedColor === color ? "border-black" : "border-gray-300"
-            }`}
+            // onClick={() => setSelectedColor(color)}
+            className={`size-8 shrink-0 p-0.5 rounded-full border-2 
+
+            `}
           >
             <div
               className="w-full h-full rounded-full"
@@ -221,11 +232,20 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         ))}
       </div>
 
+      {/* Add to Basket */}
+      <motion.button
+        onClick={() => handleAddToCart()}
+        whileTap={{ scale: 0.98, backgroundColor: "#666" }}
+        className="w-full bg-[#000] uppercase text-white font-semibold py-3 rounded"
+      >
+        ADD TO wardrobe
+      </motion.button>
+
       <Separator className="my-6" />
 
       {/* Size Selector */}
       <div>
-        <p className=" roboto text-xl  text-gray-800 mb-3 font-semibold">
+        <p className=" roboto text-xl   mb-3 font-semibold">
           Additional Information
         </p>
 
@@ -245,22 +265,18 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       <Separator className="my-6" />
 
+      <div>
+        <p className=" roboto text-xl   mb-3 font-semibold">Return & Refund</p>
+
+        <p className=" mb-4">
+          Hassle-free 7-day return and exchange available.
+        </p>
+      </div>
       {/* Model Info */}
       <div className="text-sm text-gray-600 border rounded px-3 py-2 mb-6 flex items-center gap-3">
         <TInfoCircle />
-        Model height: 176 cm · Size S
+        Model height: {productData.model_height} · Size - S
       </div>
-
-      {/* <p className=" mb-4">View size guide</p> */}
-
-      {/* Add to Basket */}
-      <Button
-        size={"lg"}
-        onClick={() => handleAddToCart()}
-        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded"
-      >
-        ADD TO BASKET
-      </Button>
     </div>
   );
 };

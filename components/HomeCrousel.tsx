@@ -7,7 +7,6 @@ import {
   CarouselItem,
 } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import SampleImage from "./sampleImage";
 import { navBarHeight } from "@/const";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/src/hooks/use-mobile";
@@ -77,7 +76,7 @@ export default function StackedCarousel() {
         className=" h-full absolute  inset-0 w-full object-cover"
       />
 
-      <div className="text-white mx-auto w-full text-center p-2 md:p-4 max-w-7xl z-10 flex items-center justify-end h-[80%] space-y-6 flex-col">
+      <div className="text-white mx-auto w-full p-2 md:p-4 max-w-7xl z-10 flex items-center justify-end h-[80%] space-y-5 flex-col">
         <Image
           src={"https://ik.imagekit.io/hop/white-logo.png"}
           alt="logo"
@@ -85,20 +84,20 @@ export default function StackedCarousel() {
           width={200}
           height={200}
         />
-        <p className=" text-xl md:text-3xl font-semibold">
+        <p className=" text-xl md:text-2xl font-semibold">
           Welcome to Haus of Privae
         </p>
-        <p className=" md:text-2xl  ">
+        <p className=" md:text-xl  ">
           Thank you for visiting our world of timeless elegance. At Haus of
           Privae, we believe luxury should not only be exquisite but also
           responsible. Every piece we create blends meticulous craftsmanship,
           refined design, and eco-conscious practices allowing you to embrace
-          sophistication without compromise. We are honored to share our vision
-          with you: a future where fashion celebrates individuality,
+          sophistication without compromise. <br /> We are honored to share our
+          vision with you: a future where fashion celebrates individuality,
           sustainability, and the art of living beautifully. Your presence here
           is the first step in that journey with us.
         </p>
-        <p className="md:text-xl">
+        <p className=" text-xl md:text-2xl font-semibold">
           Welcome to a more thoughtful kind of luxury.
         </p>
       </div>

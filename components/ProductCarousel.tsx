@@ -27,13 +27,13 @@ const ProductCarousel = async () => {
             />
             <p
               style={{ wordSpacing: "6px" }}
-              className=" text-4xl font-semibold md:pr-6 font2 uppercase tracking-tight"
+              className=" text-2xl md:text-4xl font-semibold md:pr-6 font2 capitalize tracking-tight"
             >
               It may interest you
             </p>
           </div>
         </div>
-        <Link href={`/product`} className=" w-full">
+        <Link href={`/product`} className=" w-full md:w-fit ml-auto">
           <div className=" w-full md:w-fit text-center duration-300 hover:bg-neutral-800 hover:text-white py-2 md:py-3 px-4 border border-black rounded-full text-lg roboto font-medium cursor-pointer">
             See all styles
           </div>
@@ -42,7 +42,7 @@ const ProductCarousel = async () => {
 
       <div className="">
         <Carousel className="w-full max-w-[calc(100vw)] ">
-          <CarouselContent className="-ml-1 pl-24 overflow-visible">
+          <CarouselContent className="-ml-1  overflow-visible">
             {productsData?.products?.map((item: any, index: number) => (
               <CarouselItem key={index} className="pl-1 basis-auto ">
                 <ProductCard itemData={item} />
@@ -60,4 +60,4 @@ const ProductCarousel = async () => {
 export default ProductCarousel;
 
 const buttonStyle =
-  "rounded-xs bg-neutral-800 hover:scale-105  cursor-pointer hover:bg-neutral-950 hover:text-white text-white size-10 z-20";
+  "rounded-xs bg-neutral-800 hover:scale-105 disabled:hidden cursor-pointer hover:bg-neutral-950 hover:text-white text-white size-10 z-20";

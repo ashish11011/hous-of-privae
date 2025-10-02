@@ -4,7 +4,7 @@ import React from "react";
 const ShowMoreProducts = ({ simillarProducts }: any) => {
   return (
     <div>
-      <p className=" my-10 md:mt-20 md:mb-12 text-3xl roboto font-medium text-center">
+      <p className=" my-10 md:mt-20 md:mb-12 text-3xl roboto font-medium capitalize text-center">
         Shop the look
       </p>
 

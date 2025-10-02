@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { insertContactDetails } from "@/lib";
+import { Mail, PhoneCall } from "lucide-react";
+import Link from "next/link";
+import { link } from "fs";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
@@ -59,10 +62,25 @@ export default function ContactPage() {
     }
   }
 
+  const contactDetails = [
+    {
+      icon: <PhoneCall size={36} />,
+      label: "Call us",
+      value: "+91 7023117408",
+      link: "tel:+917023117408",
+    },
+    {
+      icon: <Mail size={36} />,
+      label: "Mail",
+      value: "example@example.com",
+      link: "mailto:example@example.com",
+    },
+  ];
+
   return (
     <main className="bg-white px-6 py-16 md:px-12 lg:px-32">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-medium text-center mb-12">
+        <h1 className="text-2xl md:text-4xl font-medium text-center mb-12">
           Contact Us
         </h1>
 
@@ -164,6 +182,21 @@ export default function ContactPage() {
             )}
           </div>
         </form>
+
+        <div className=" w-full flex flex-col sm:flex-row justify-center items-center mt-5 sm:mt-10 gap-4">
+          {contactDetails.map((item, index) => (
+            <div
+              className=" w-full flex items-center justify-center gap-2 flex-col py-5"
+              key={index}
+            >
+              {item.icon}
+              <p className=" font-semibold text-xl">{item.label}</p>
+              <Link href={item.link} className=" underline">
+                {item.value}
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );

@@ -35,6 +35,7 @@ const ProductEdit = ({ productData, slug }: any) => {
     categoryId1: productData?.categoryId1 || "",
     categoryId2: productData?.categoryId2 || "",
     slug: productData?.slug || "",
+    model_height: productData?.model_height || "",
 
     care: productData?.care || "",
     style_note: productData?.style_note || "",
@@ -129,7 +130,11 @@ const ProductEdit = ({ productData, slug }: any) => {
             placeholder="Enter product customization"
             name="customization"
           />
-          ``
+          <LabelTextarea
+            labelName="Model Height"
+            placeholder="Enter model height"
+            name="model_height"
+          />
           <LabelInput
             labelName="Base Price"
             placeholder="Enter base price"

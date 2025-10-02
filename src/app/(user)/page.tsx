@@ -4,6 +4,7 @@ import Image from "next/image";
 import BrandValues from "./BrandValue";
 import Link from "next/link";
 import { CATEGORY_1 } from "@/const";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 86400;
 
@@ -51,13 +52,14 @@ export default function Home() {
       <div className="h-12"></div>
       {/* <RevicesCarousel /> */}
       <BrandValues />
+      <CoutureSection />
     </div>
   );
 }
 
 function Categories() {
   return (
-    <div className=" py-10 space-y-8">
+    <div className=" pt-10 pb-4 space-y-8">
       <p className="roboto text-4xl font2 font-bold md:font-semibold  text-center">
         Categories
       </p>
@@ -74,12 +76,13 @@ function Categories() {
                     height={800}
                     className=" h-full group-hover:scale-110 duration-300  w-full object-cover"
                   />
+                  <div className=" absolute top-0 left-0 w-full h-full bg-black opacity-30"></div>
                   <p
                     style={{
-                      fontWeight: 800,
-                      textShadow: "2px 2px 4px rgba(0,0,0,0.8)", // X-offset, Y-offset, blur, color
+                      fontWeight: 600,
+                      // textShadow: "2px 2px 4px rgba(0,0,0,0.8)", // X-offset, Y-offset, blur, color
                     }}
-                    className=" absolute top-1/2 left-1/2 text-gray-200 -translate-x-1/2 -translate-y-1/2  text-2xl text-center roboto line-clamp-2"
+                    className=" absolute p-4 bottom-0 left-0 roboto text-gray-200  w-full text-xl  md:text-3xl roboto line-clamp-2"
                   >
                     {item.name}
                   </p>
@@ -144,3 +147,43 @@ function Categories() {
 //     </div>
 //   );
 // }
+
+function CoutureSection() {
+  return (
+    <div className="min-h-[24rem] md:min-h-[40rem] py-10 px-4  flex flex-col items-center justify-end w-full relative">
+      <Image
+        src="https://ik.imagekit.io/hop/crousel/tour.jpeg"
+        className=" object-cover absolute inset-0 w-full h-full"
+        width={800}
+        height={800}
+        alt="banner"
+      />
+      <div className=" flex space-y-8 sm:space-y-12 flex-col  z-10 h-full text-white">
+        <p className=" text-center text-xl md:text-5xl font-medium font2 capitalize">
+          thoughtful kind of luxury
+        </p>
+        <div className=" flex flex-col md:flex-row gap-5 w-full items-center justify-center">
+          {" "}
+          <Link href="/contact-us" target="_blank">
+            <Button
+              className=" w-60 bg-transparent rounded-xs"
+              variant={"outline"}
+              size={"lg"}
+            >
+              Contact Us
+            </Button>
+          </Link>
+          <Link href="https://wa.me/917023117408" target="_blank">
+            <Button
+              className=" w-60 bg-transparent rounded-xs"
+              variant={"outline"}
+              size={"lg"}
+            >
+              WhatsApp
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

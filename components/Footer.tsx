@@ -9,7 +9,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#FFFBF8] text-gray-800 py-12 px-6 pt-16 md:pt-32">
+    <footer className="bg-[#faf9f9]  py-12 px-6 pt-16 md:pt-32">
       <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3  gap-6 max-w-6xl mx-auto text-sm">
         {footerLinks.map((section, index) => (
           <div
@@ -22,7 +22,7 @@ const Footer = () => {
             <ul className="space-y-1">
               {section.items.map((item, idx) => (
                 <Link href={item.slug} key={idx}>
-                  <li className=" text-lg  text-gray-600">{item.name}</li>
+                  <li className=" text-lg text-yellow-950 ">{item.name}</li>
                 </Link>
               ))}
             </ul>
@@ -32,14 +32,14 @@ const Footer = () => {
           <h4 className="font-semibold  text-xl mb-3">
             Offers, New Arrivals, <br /> Restocks and More.
           </h4>
-          <button className="bg-green-600 w-full roboto hover:bg-green-800 text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto">
+          <button className="bg-yellow-950 w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto">
             Stay Updated
             <TWhatsApp strokeWidth={1.5} />
           </button>
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4 text-xl text-gray-800">
+      <div className="mt-8 flex justify-center gap-4 text-xl ">
         <TFacebook className="size-8 hover:scale-110 duration-200 cursor-pointer" />
         <TInstagram className="size-8 hover:scale-110 duration-200 cursor-pointer" />
         <TTwitter className="size-8 hover:scale-110 duration-200 cursor-pointer" />

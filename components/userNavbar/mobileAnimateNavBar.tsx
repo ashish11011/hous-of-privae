@@ -1,11 +1,23 @@
 import { navBarItems } from "@/const";
 import { TShoppingCart } from "@/lib/icons";
-import { X } from "lucide-react";
+import { Instagram, Mail, PhoneCall, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import React from "react";
+import { Separator } from "../ui/separator";
 
 const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
+  const contactIconsDetails = [
+    {
+      icon: <Instagram size={32} />,
+    },
+    {
+      icon: <Mail size={32} />,
+    },
+    {
+      icon: <PhoneCall size={32} />,
+    },
+  ];
   return (
     <AnimatePresence>
       {isMobileNavOpen && (
@@ -45,7 +57,7 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
                     hidden: { opacity: 0, y: 10 },
                     visible: { opacity: 1, y: 0 },
                   }}
-                  className="uppercase font-bold text-2xl cursor-pointer text-neutral-700"
+                  className="capitalize font-bold text-2xl cursor-pointer "
                   onClick={() => {
                     setIsMobileNavOpen(false);
                   }}
@@ -55,7 +67,37 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
               </Link>
             ))}
 
-            <motion.p
+            <Separator className="my-4 w-full" />
+
+            <Link href={`/about-us`}>
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                className="capitalize font-bold text-2xl cursor-pointer "
+                onClick={() => {
+                  setIsMobileNavOpen(false);
+                }}
+              >
+                About Us
+              </motion.div>
+            </Link>
+
+            <div className=" flex flex-wrap">
+              {contactIconsDetails.map((item, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    className=" flex items-center justify-center size-20 border"
+                  >
+                    {item.icon}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* <motion.p
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0 },
@@ -64,7 +106,7 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
             >
               <TShoppingCart size={28} />
               Cart
-            </motion.p>
+            </motion.p> */}
           </motion.div>
         </motion.div>
       )}

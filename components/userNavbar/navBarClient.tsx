@@ -1,30 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import MobileAnimateNavBar from "./mobileAnimateNavBar";
-import { MenuIcon } from "lucide-react";
+import React from "react";
 import { CartSheet } from "../cart/cartSheet";
 import { useSession } from "next-auth/react";
 import { NavBarDropdown } from "./dripdownMenu";
 import Link from "next/link";
 
 const NavBarClient = () => {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-
   return (
     <>
-      <MobileAnimateNavBar
-        isMobileNavOpen={isMobileNavOpen}
-        setIsMobileNavOpen={setIsMobileNavOpen}
-      />
-      <div className=" flex gap-3 items-center">
-        {!isMobileNavOpen && (
-          <MenuIcon
-            onClick={() => setIsMobileNavOpen(true)}
-            className=" block xl:hidden"
-          />
-        )}
-
-        {/* <NavbarUserMenu /> */}
+      <div className=" flex gap-3 items-center justify-end">
         <CartSheet />
       </div>
     </>

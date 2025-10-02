@@ -7,7 +7,6 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -40,6 +39,7 @@
     "motion": "^12.19.1",
     "next": "15.3.4",
     "next-auth": "^4.24.11",
+    "next-themes": "^0.4.6",
     "pg": "^8.16.3",
     "pg-core": "^0.1.15",
     "postgres": "^3.4.7",
@@ -47,6 +47,7 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.3.1",
     "slugify": "^1.6.6",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "yup": "^1.7.0",
     "zustand": "^5.0.6"
