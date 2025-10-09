@@ -95,26 +95,25 @@ export const CATEGORY_1 = [
     id: "c1a1e1b1-1234-4d3a-9f0a-abc111def001",
     name: "Sarees",
     slug: "sarees",
-    image: "https://ik.imagekit.io/hop/category/sarees.jpg?w=300&h=300",
+    image: "/category/sarees.jpg?w=300&h=300",
   },
   {
     id: "c1a1e1b2-1234-4d3a-9f0a-abc111def002",
     name: "Occasion Wear",
     slug: "occasion-wear",
-    image: "https://ik.imagekit.io/hop/category/occasion-wear.jpg?w=300&h=300",
+    image: "/category/occasion-wear.jpg?w=300&h=300",
   },
   {
     id: "c1a1e1b5-1234-4d3a-9f0a-abc111def005",
     name: "Kurta Chunni Set",
     slug: "kurta-chunni-set",
-    image:
-      "https://ik.imagekit.io/hop/category/kurta-chunni-set.jpg?w=300&h=300",
+    image: "/category/kurta-chunni-set.jpg?w=300&h=300",
   },
   {
     id: "c1a1e1b9-1234-4d3a-9f0a-abc111def009",
     name: "Ready To Wear",
     slug: "ready-to-wear",
-    image: "https://ik.imagekit.io/hop/category/ready-to-wear.jpg?w=300&h=300",
+    image: "/category/ready-to-wear.jpg?w=300&h=300",
   },
 ];
 

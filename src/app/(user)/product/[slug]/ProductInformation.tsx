@@ -17,6 +17,7 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { convertS3ToImageKit } from "@/src/hepler";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -47,10 +48,13 @@ export default function ProductInformation({ productData }: any) {
 
                 return (
                   <div key={idx} className={`${widthClass} p-0.5 h-auto`}>
-                    <img
+                    <Image
                       className="w-full h-auto object-cover "
-                      src={image}
+                      src={convertS3ToImageKit(image)}
                       alt={`Image ${idx + 1}`}
+                      width={100}
+                      height={100}
+                      priority
                     />
                   </div>
                 );
@@ -68,10 +72,13 @@ export default function ProductInformation({ productData }: any) {
                 <CarouselContent>
                   {images.map((image: string, idx: number) => (
                     <CarouselItem key={idx}>
-                      <img
+                      <Image
                         className="w-full h-auto object-cover "
-                        src={image}
+                        src={convertS3ToImageKit(image)}
                         alt={`Image ${idx + 1}`}
+                        width={100}
+                        height={100}
+                        priority
                       />
                     </CarouselItem>
                   ))}
@@ -81,13 +88,15 @@ export default function ProductInformation({ productData }: any) {
               </Carousel>
               <div className=" flex overflow-x-auto gap-3 p-3">
                 {images.map((image: string, idx: number) => {
+                  console.log(convertS3ToImageKit(image));
                   return (
                     <Image
                       className=" w-16 h-auto"
-                      src={image}
+                      src={convertS3ToImageKit(image)}
                       alt={`Image ${idx + 1}`}
                       width={100}
                       height={100}
+                      priority
                     />
                   );
                 })}

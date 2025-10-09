@@ -120,7 +120,7 @@ function CoutureSection() {
   return (
     <div className="min-h-[24rem] md:min-h-[40rem] py-10 px-4  flex flex-col items-center justify-end w-full relative">
       <Image
-        src="https://ik.imagekit.io/hop/crousel/tour.jpeg"
+        src="/crousel/tour.jpeg"
         className=" object-cover absolute inset-0 w-full h-full"
         width={800}
         height={800}

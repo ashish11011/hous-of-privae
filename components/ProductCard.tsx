@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { convertS3ToImageKit } from "@/src/hepler";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,7 +10,7 @@ export function ProductCard({ itemData, className }: any) {
       className={cn(" shrink-0 flex w-72 lg:w-80 flex-col  ", className)}
     >
       <Image
-        src={itemData.bannerImage}
+        src={convertS3ToImageKit(itemData.bannerImage)}
         alt={itemData.name}
         width={800}
         height={800}

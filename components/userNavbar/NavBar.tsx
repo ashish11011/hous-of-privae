@@ -31,7 +31,7 @@ const NavBar = () => {
         className=" flex gap-3 w-full justify-center items-center"
       >
         <Image
-          src="/logo-nobg.png"
+          src="/white-logo.png"
           alt="logo"
           width={50}
           height={50}

@@ -3,7 +3,7 @@ import AWS from "aws-sdk";
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-  secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_KEY,
+  secretAccessKey: process.env.NEXT_S3_SECRET_KEY,
   region: process.env.NEXT_PUBLIC_S3_REGION,
 });
 

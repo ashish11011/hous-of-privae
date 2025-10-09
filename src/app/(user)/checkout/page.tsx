@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
+import { convertS3ToImageKit } from "@/src/hepler";
 
 const getColorNameByHex = (hex: string) => {
   return COLORS.find((item) => item.hex === hex)?.label;
@@ -128,9 +129,7 @@ const Page = () => {
               <div className="relative w-16 h-auto shrink-0 rounded-lg md:w-20">
                 {/* image of product */}
                 <Image
-                  // src={}
-                  // src={convertS3ToImageKit(item.image)}
-                  src={item.bannerImage}
+                  src={convertS3ToImageKit(item.bannerImage)}
                   alt={item.name}
                   height={100}
                   width={100}

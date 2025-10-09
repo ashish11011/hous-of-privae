@@ -9,13 +9,6 @@ export function HomeBanner() {
     return null;
   }
   return (
-    // <Image
-    //   src={isMobile ? "/home_banner_mob.webp" : "/home_banner.jpg"}
-    //   alt="banner"
-    //   width={800}
-    //   height={800}
-    //   className=" h-auto w-full object-cover"
-    // />
     <div className=" w-full">
       <div>
         <div className=" hidden sm:block">

@@ -96,7 +96,7 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-12 px-6 items-center">
           <div>
             <Image
-              src="https://ik.imagekit.io/hop/ab-4_0o2SYzT-l"
+              src="/ab-4_0o2SYzT-l"
               alt="The Journey of Haus of Privae"
               width={600}
               height={400}
@@ -142,7 +142,7 @@ export default function AboutPage() {
         </div>
         <div className="order-1 md:order-2">
           <Image
-            src="https://ik.imagekit.io/hop/ab-3.jpg"
+            src="/ab-3.jpg"
             alt="Haus of Privae Goal"
             width={600}
             height={400}

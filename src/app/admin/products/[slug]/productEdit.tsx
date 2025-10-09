@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CATEGORY_1, CATEGORY_2, COLORS, MATERIALS, SIZES } from "@/const";
+import { convertS3ToImageKit } from "@/src/hepler";
 import {
   useConvertArrayToSelectOptions,
   useConvertColorToSelectOptions,
@@ -275,7 +276,7 @@ const BannerImage = () => {
       {values.bannerImage ? (
         <div className=" w-fit h-fit relative">
           <Image
-            src={values.bannerImage}
+            src={convertS3ToImageKit(values.bannerImage)}
             width={200}
             height={200}
             alt="banner"
@@ -304,7 +305,7 @@ const ProductImages = () => {
           return (
             <div key={image} className=" relative">
               <Image
-                src={image}
+                src={convertS3ToImageKit(image)}
                 width={200}
                 height={200}
                 className=" w-32 h-auto object-contain"

@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { CartProduct } from "@/types";
 import { useStore } from "@/src/hepler/store/zustand";
+import { convertS3ToImageKit } from "@/src/hepler";
 
 export function CartSheet() {
   const {
@@ -69,9 +70,7 @@ export function CartSheet() {
                   <div className="col-span-1 flex w-full flex-col gap-3 md:flex-row  md:space-x-4">
                     <div className="relative w-16 h-auto shrink-0 rounded-lg md:w-20">
                       <Image
-                        // src={}
-                        // src={convertS3ToImageKit(item.image)}
-                        src={item.bannerImage}
+                        src={convertS3ToImageKit(item.bannerImage)}
                         alt={item.name}
                         height={100}
                         width={100}

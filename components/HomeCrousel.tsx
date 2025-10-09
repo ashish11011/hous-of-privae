@@ -15,20 +15,20 @@ import Image from "next/image";
 const slides = [
   {
     id: 0,
-    image: "https://ik.imagekit.io/hop/crousel/web1.jpg",
-    imageMob: "https://ik.imagekit.io/hop/crousel/mb1.jpg",
+    image: "/crousel/web1.jpg",
+    imageMob: "/crousel/mb1.jpg",
     title: "Slide 1",
   },
   {
     id: 1,
-    image: "https://ik.imagekit.io/hop/crousel/web2-bg.jpg",
-    imageMob: "https://ik.imagekit.io/hop/crousel/mob2-bg.jpg",
+    image: "/crousel/web2-bg.jpg",
+    imageMob: "/crousel/mob2-bg.jpg",
     title: "Slide 2",
   },
   {
     id: 2,
-    image: "https://ik.imagekit.io/hop/crousel/web3.jpg",
-    imageMob: "https://ik.imagekit.io/hop/crousel/mb3.jpg",
+    image: "/crousel/web3.jpg",
+    imageMob: "/crousel/mb3.jpg",
     title: "Slide 3",
   },
 ];
@@ -78,7 +78,7 @@ export default function StackedCarousel() {
 
       <div className="text-white mx-auto w-full p-2 md:p-4 max-w-7xl z-10 flex items-center justify-end h-[80%] space-y-5 flex-col">
         <Image
-          src={"https://ik.imagekit.io/hop/white-logo.png"}
+          src={"/white-logo.png"}
           alt="logo"
           className=" size-32 md:size-44 object-contain"
           width={200}
