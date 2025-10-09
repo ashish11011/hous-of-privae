@@ -34,15 +34,13 @@ export const authOptions = {
             .from(userTable)
             .where(eq(userTable.email, credentials.username)); // Adjust this line if using username instead of email
         } catch (error) {
-          console.log(user, error);
+          console.log(error);
         }
 
         if (!user) {
-          console.log("User not found");
           return null;
         }
 
-        console.log("user: ", user);
         user = user[0];
         if (user) {
           return {

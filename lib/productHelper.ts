@@ -62,7 +62,6 @@ export async function getProductByCategory(categoryID: string) {
 }
 
 export async function updateProdcutInfoBySlug({ slug, productDetails }: any) {
-  console.log("productDetails: ", productDetails);
   return await db
     .update(product)
     .set(productDetails)

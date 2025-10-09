@@ -1,3 +1,41 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Privacy Policy | Haus of Privae" },
+  description:
+    "Learn how Haus of Privae protects your personal information. Our privacy policy ensures trust, transparency, and safety in your luxury shopping experience.",
+  alternates: { canonical: "https://www.hausofprivae.com/privacy-policy" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Privacy Policy | Haus of Privae",
+    description:
+      "Haus of Privae’s Privacy Policy outlines how we collect, use, and protect your data for a secure and premium experience.",
+    url: "https://www.hausofprivae.com/privacy-policy",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Haus of Privae",
+    description:
+      "Read Haus of Privae’s Privacy Policy to understand how your data is protected while you enjoy luxury fashion shopping.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">

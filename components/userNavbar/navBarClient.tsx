@@ -20,7 +20,6 @@ export default NavBarClient;
 
 async function NavbarUserMenu() {
   const session = await getServerSession(authOptions);
-  console.log("session: ", session);
   if (session) {
     return (
       <div className=" z-50">

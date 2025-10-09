@@ -1,3 +1,43 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Terms & Conditions | Haus of Privae" },
+  description:
+    "Read the Terms and Conditions of Haus of Privae. Our policies ensure transparency, trust, and clarity for every luxury shopping experience.",
+  alternates: {
+    canonical: "https://www.hausofprivae.com/terms-and-conditions",
+  },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Terms & Conditions | Haus of Privae",
+    description:
+      "Haus of Privae’s Terms and Conditions outline your rights and responsibilities while shopping with our luxury fashion brand.",
+    url: "https://www.hausofprivae.com/terms-and-conditions",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms & Conditions | Haus of Privae",
+    description:
+      "Understand Haus of Privae’s Terms and Conditions to ensure a safe and luxurious shopping experience.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
+
 export default function TermsAndConditionsPage() {
   return (
     <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">

@@ -1,7 +1,49 @@
-"use client";
-
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { Metadata } from "next";
+import MotionHeading from "./motionHeading";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "About Us | Haus of Privae",
+  },
+  description:
+    "Discover the story behind Haus of Privae — a luxury fashion house built on empowerment, sustainability, and timeless design. Learn how we’re redefining modern couture for every body.",
+  alternates: {
+    canonical: "https://www.hausofprivae.com/about-us",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "About Haus of Privae | The Story Behind the Luxury Fashion Brand",
+    description:
+      "Haus of Privae stands for luxury with purpose — combining sustainable craftsmanship, inclusivity, and timeless design to empower every individual through fashion.",
+    url: "https://www.hausofprivae.com/about-us",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Haus of Privae | The Vision Behind the Brand",
+    description:
+      "Step into the story of Haus of Privae — where luxury meets empowerment, and every creation is a statement of confidence and consciousness.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -15,15 +57,7 @@ export default function AboutPage() {
           className="object-cover opacity-30"
         /> */}
         <div className="relative z-10 max-w-3xl mx-auto px-4 ">
-          <motion.h1
-            className="text-4xl md:text-6xl font-bold tracking-wide mb-12"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            ✨ A Dream Called{" "}
-            <span className="text-gray-800">Haus of Privae</span> ✨
-          </motion.h1>
+          <MotionHeading />
           <p className="text-base md:text-lg text-gray-700">
             Dressing is not just about clothing, but about power - the power to
             express, redefine, and own every room you walk into.

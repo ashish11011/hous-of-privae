@@ -1,3 +1,41 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Returns & Refunds | Haus of Privae" },
+  description:
+    "Learn about Haus of Privae's returns and refunds policy. We ensure a smooth, transparent process to provide you with confidence in your luxury purchases.",
+  alternates: { canonical: "https://www.hausofprivae.com/returns-and-refunds" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Returns & Refunds | Haus of Privae",
+    description:
+      "Read Haus of Privae’s returns and refunds policy. Luxury shopping with clarity, convenience, and customer satisfaction guaranteed.",
+    url: "https://www.hausofprivae.com/returns-and-refunds",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Returns & Refunds | Haus of Privae",
+    description:
+      "Understand Haus of Privae’s returns and refunds process for a smooth and transparent shopping experience.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
+
 export default function ReturnAndRefundPage() {
   return (
     <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">

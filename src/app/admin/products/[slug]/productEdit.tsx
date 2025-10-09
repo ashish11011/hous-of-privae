@@ -49,7 +49,6 @@ const ProductEdit = ({ productData, slug }: any) => {
   };
 
   const handleFormSubmit = async (values: any) => {
-    console.log("values: ", values);
     try {
       if (slug === "create") {
         await fetch("/api/admin/products/create", {

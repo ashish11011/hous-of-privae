@@ -1,3 +1,41 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Order & Shipping | Haus of Privae" },
+  description:
+    "Get all details about ordering and shipping with Haus of Privae. Luxury fashion delivered safely and efficiently to your doorstep.",
+  alternates: { canonical: "https://www.hausofprivae.com/order-and-shipping" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    title: "Order & Shipping | Haus of Privae",
+    description:
+      "Learn about Haus of Privae’s ordering and shipping process. Premium garments delivered with care and attention.",
+    url: "https://www.hausofprivae.com/order-and-shipping",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Order & Shipping | Haus of Privae",
+    description:
+      "Discover Haus of Privae’s order and shipping policies for a seamless luxury shopping experience.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
+
 export default function ShippingAndDeliveryPage() {
   return (
     <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">

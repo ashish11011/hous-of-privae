@@ -8,15 +8,49 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-// export const metadata: Metadata = {
-//   title: "Hous Of Privae",
-//   description: "Hous Of Privae",
-//   icons: {
-//     icon: "/favicon.ico",
-//     shortcut: "/favicon.ico",
-//     apple: "/favicon.ico",
-//   },
-// };
+export const metadata: Metadata = {
+  title: {
+    default: "Haus of Privae | Luxury Clothing Brand",
+    template: "%s | Haus of Privae",
+  },
+  description:
+    "Haus of Privae is a luxury clothing brand that blends sophistication with contemporary style. Discover premium collections crafted for elegance and individuality.",
+  alternates: {
+    canonical: "https://www.hausofprivae.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Haus of Privae | Luxury Clothing Brand",
+    description:
+      "Explore Haus of Privae — where timeless elegance meets modern luxury. Shop exclusive fashion crafted for those who dare to stand apart.",
+    url: "https://www.hausofprivae.com",
+    siteName: "Haus of Privae",
+    images: [
+      {
+        url: "https://ik.imagekit.io/hop/white-logo.png",
+        width: 512,
+        height: 512,
+        alt: "Haus of Privae Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Haus of Privae | Luxury Clothing Brand",
+    description:
+      "Discover the art of luxury fashion with Haus of Privae — a premium brand redefining modern elegance.",
+    images: ["https://ik.imagekit.io/hop/white-logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -26,13 +60,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* <link rel="icon" href="/favicon.ico" sizes="any" /> */}
-        {/* google site indexing on bishnoi11011@gmail.com */}
-        {/* <meta
-          name="google-site-verification"
-          content="BuaN502DjcGk6w1rWnu02FyN7YUZyL9m8J6g3NgFSto"
-        /> */}
-
         {/* google site verification on housofprivae.com */}
         <meta
           name="google-site-verification"

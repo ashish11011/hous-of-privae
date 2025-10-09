@@ -8,38 +8,6 @@ import { Button } from "@/components/ui/button";
 
 export const revalidate = 86400;
 
-// Metadata
-export const metadata = {
-  title: {
-    absolute: "Haus of privae",
-  },
-  description: "Haus of Privae is an luxury clothing brand.",
-  alternates: {
-    canonical: "https://www.hausofprivae.com/",
-  },
-  // keywords: [
-  //   "Roamify Planners",
-  //   "Roamify",
-  //   "travel planner",
-  //   "travel",
-  //   "trips",
-  //   "bali trip",
-  //   "honeymoon trip",
-  //   "corporate trip",
-  // ],
-  robots: {
-    index: true,
-    follow: true,
-  },
-  openGraph: {
-    title: "Haus of Privae",
-    description: "Haus of Privae is an luxury clothing brand.",
-    url: "https://www.hausofprivae.com/",
-    siteName: "Haus of Privae",
-    type: "website",
-  },
-};
-
 export default function Home() {
   return (
     <div className=" w-full">
