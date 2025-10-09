@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { Signout } from "@/src/hepler/auth";
 
 // Menu items.
 const items = [
@@ -94,7 +95,7 @@ const SidebarAdmin = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button onClick={handleAdminLogout} variant={"destructive"} size={"sm"}>
+        <Button onClick={Signout} variant={"destructive"} size={"sm"}>
           Logout
         </Button>
       </SidebarFooter>

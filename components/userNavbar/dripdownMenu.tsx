@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,18 +14,25 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Signout } from "@/src/hepler/auth";
 import { UserCircle, UserIcon } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export function NavBarDropdown({ userName }: any) {
+  const { data: session, status } = useSession();
+
+  if (status != "authenticated") {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className=" hover:bg-gray-200 rounded-md duration-200 py-1 px-2 flex items-center gap-1.5">
+        <div className=" cursor-pointer rounded-md duration-200 py-1 px-2 flex items-center gap-1.5">
           {/* <Button variant={"outline"}>{userName}</Button> */}
 
           <UserCircle />
-          <p>You</p>
+          <p className=" hidden md:block">{session.user?.name || "You"}</p>
         </div>
       </DropdownMenuTrigger>
 
@@ -80,9 +88,9 @@ export function NavBarDropdown({ userName }: any) {
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuItem disabled>API</DropdownMenuItem> */}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem onClick={Signout}>
           Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+          {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

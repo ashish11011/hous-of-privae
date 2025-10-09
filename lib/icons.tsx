@@ -1,6 +1,7 @@
 import {
   IconBrandCraft,
   IconBrandFacebook,
+  IconBrandGoogle,
   IconBrandInstagram,
   IconBrandLinkedin,
   IconBrandTwitter,
@@ -61,4 +62,8 @@ export const TFlag = (props: IconProps) => {
 };
 export const TInfoCircle = (props: IconProps) => {
   return <IconInfoCircle {...props} />;
+};
+
+export const Tgoogle = (props: IconProps) => {
+  return <IconBrandGoogle {...props} />;
 };

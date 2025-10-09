@@ -12,10 +12,7 @@ const Footer = () => {
     <footer className="bg-[#faf9f9]  py-12 px-6 pt-16 md:pt-32">
       <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3  gap-6 max-w-6xl mx-auto text-sm">
         {footerLinks.map((section, index) => (
-          <div
-            key={index}
-            className="flex  flex-col md:text-center md:items-center"
-          >
+          <div key={index} className="flex  flex-col ">
             <h4 className="font-semibold font2 text-xl mb-3">
               {section.title}
             </h4>
@@ -32,10 +29,13 @@ const Footer = () => {
           <h4 className="font-semibold  text-xl mb-3">
             Offers, New Arrivals, <br /> Restocks and More.
           </h4>
-          <button className="bg-yellow-950 w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto">
+          <Link
+            href={"https://wa.me/917023117408"}
+            className="bg-yellow-950 w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto"
+          >
             Stay Updated
             <TWhatsApp strokeWidth={1.5} />
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -66,6 +66,7 @@ const footerLinks = [
       { name: "About Us", slug: "/about-us" },
       { name: "Privacy Policy", slug: "/privacy-policy" },
       { name: "Terms & Conditions", slug: "/terms-and-conditions" },
+      { name: "Trend Talks", slug: "/blog" },
     ],
   },
   {

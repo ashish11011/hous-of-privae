@@ -1,15 +1,16 @@
-"use client";
 import React from "react";
 import { CartSheet } from "../cart/cartSheet";
-import { useSession } from "next-auth/react";
-import { NavBarDropdown } from "./dripdownMenu";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { NavBarDropdown } from "./dripdownMenu";
+import { authOptions } from "@/lib/auth/auth";
 
 const NavBarClient = () => {
   return (
     <>
       <div className=" flex gap-3 items-center justify-end">
         <CartSheet />
+        <NavbarUserMenu />
       </div>
     </>
   );
@@ -17,10 +18,10 @@ const NavBarClient = () => {
 
 export default NavBarClient;
 
-function NavbarUserMenu() {
-  const { data: session, status } = useSession();
-
-  if (status === "authenticated") {
+async function NavbarUserMenu() {
+  const session = await getServerSession(authOptions);
+  console.log("session: ", session);
+  if (session) {
     return (
       <div className=" z-50">
         <NavBarDropdown userName={session?.user?.name} />

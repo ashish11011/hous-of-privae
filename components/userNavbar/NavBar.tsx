@@ -7,14 +7,16 @@ import NavbarMobileMenu from "./navbarMobileMenu";
 
 const NavBar = () => {
   return (
-    <div className=" sticky  top-0 z-50 bg-[#fff] grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
-      <div className=" hidden xl:flex  gap-4 items-center">
+    <div className=" sticky  top-0 z-50 bg-[#38080d] text-white grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
+      <div className=" hidden 2xl:flex gap-4 items-center">
         <div className=" ">
           <div className="  w-full items-center">
             {navBarItems.map((item, idx: number) => {
               return (
                 <Link key={idx} href={`/category/${item.slug}`}>
-                  <Button variant={"link"}>{item.name}</Button>
+                  <Button className=" px-2 text-white" variant={"link"}>
+                    {item.name}
+                  </Button>
                 </Link>
               );
             })}

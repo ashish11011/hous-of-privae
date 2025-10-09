@@ -158,12 +158,11 @@ function CoutureSection() {
         height={800}
         alt="banner"
       />
-      <div className=" flex space-y-8 sm:space-y-12 flex-col  z-10 h-full text-white">
+      <div className=" flex space-y-8 sm:space-y-20 flex-col z-10 h-full text-white">
         <p className=" text-center text-xl md:text-5xl font-medium font2 capitalize">
-          thoughtful kind of luxury
+          exquisite luxury, flawlessly tailored
         </p>
-        <div className=" flex flex-col md:flex-row gap-5 w-full items-center justify-center">
-          {" "}
+        <div className="flex flex-col md:flex-row gap-5 w-full items-center justify-center">
           <Link href="/contact-us" target="_blank">
             <Button
               className=" w-60 bg-transparent rounded-xs"

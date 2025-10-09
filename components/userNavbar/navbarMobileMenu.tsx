@@ -7,7 +7,7 @@ const NavBarClient = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className=" flex xl:hidden">
+    <div className=" flex 2xl:hidden">
       <MobileAnimateNavBar
         isMobileNavOpen={isMobileNavOpen}
         setIsMobileNavOpen={setIsMobileNavOpen}
@@ -16,7 +16,7 @@ const NavBarClient = () => {
         {!isMobileNavOpen && (
           <MenuIcon
             onClick={() => setIsMobileNavOpen(true)}
-            className=" block xl:hidden"
+            className=" block 2xl:hidden"
           />
         )}
       </div>

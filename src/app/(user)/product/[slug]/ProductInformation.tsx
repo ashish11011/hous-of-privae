@@ -236,7 +236,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       <motion.button
         onClick={() => handleAddToCart()}
         whileTap={{ scale: 0.98, backgroundColor: "#666" }}
-        className="w-full bg-[#000] uppercase text-white font-semibold py-3 rounded"
+        className="w-full bg-[#38080d] uppercase text-white font-semibold py-3 rounded"
       >
         ADD TO wardrobe
       </motion.button>
