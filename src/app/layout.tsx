@@ -28,9 +28,15 @@ export default function RootLayout({
       <head>
         {/* <link rel="icon" href="/favicon.ico" sizes="any" /> */}
         {/* google site indexing on bishnoi11011@gmail.com */}
-        <meta
+        {/* <meta
           name="google-site-verification"
           content="BuaN502DjcGk6w1rWnu02FyN7YUZyL9m8J6g3NgFSto"
+        /> */}
+
+        {/* google site verification on housofprivae.com */}
+        <meta
+          name="google-site-verification"
+          content="NQhsdCb-hJZhM8qtdWqudLIiuHozu5OTRkn-5WjLmhs"
         />
       </head>
       <body

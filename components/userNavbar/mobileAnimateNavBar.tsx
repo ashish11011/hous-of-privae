@@ -1,4 +1,4 @@
-import { navBarItems } from "@/const";
+import { EMAIL_URL, LINKEDIN_URL, navBarItems } from "@/const";
 import { TShoppingCart } from "@/lib/icons";
 import { Instagram, Mail, PhoneCall, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -10,9 +10,11 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
   const contactIconsDetails = [
     {
       icon: <Instagram size={32} />,
+      url: LINKEDIN_URL,
     },
     {
       icon: <Mail size={32} />,
+      url: EMAIL_URL,
     },
     {
       icon: <PhoneCall size={32} />,

@@ -199,7 +199,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       </p>
 
       {/* Color Selector */}
-      <div className="flex gap-2 items-center flex-wrap mb-4">
+      {/* <div className="flex gap-2 items-center flex-wrap mb-4">
         {productData.colors?.map((color: string, idx: number) => (
           <button
             key={idx}
@@ -214,7 +214,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             ></div>
           </button>
         ))}
-      </div>
+      </div> */}
 
       <div className="flex gap-2 items-center mb-6">
         {productData.sizes.map((size: string) => (

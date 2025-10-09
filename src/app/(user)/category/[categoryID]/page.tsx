@@ -3,12 +3,12 @@ import { CATEGORY_1 } from "@/const";
 import { getProductByCategory } from "@/lib";
 import React from "react";
 
-export async function generateStaticParams() {
-  const categories = CATEGORY_1; // should return list of category IDs like [{ categoryID: 'shoes' }, { categoryID: 'bags' }]
-  return categories.map((cat) => ({
-    categoryID: cat.id,
-  }));
-}
+// export async function generateStaticParams() {
+//   const categories = CATEGORY_1; // should return list of category IDs like [{ categoryID: 'shoes' }, { categoryID: 'bags' }]
+//   return categories.map((cat) => ({
+//     categoryID: cat.id,
+//   }));
+// }
 
 export const revalidate = 86400;
 

@@ -1,4 +1,11 @@
 import {
+  FACEBOOK_URL,
+  INSTAGRAM_URL,
+  LINKEDIN_URL,
+  TWITTER_URL,
+  WHATSAPP_URL,
+} from "@/const";
+import {
   TFacebook,
   TInstagram,
   TLinkedIn,
@@ -39,17 +46,13 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4 text-xl ">
-        <TFacebook className="size-8 hover:scale-110 duration-200 cursor-pointer" />
-        <TInstagram className="size-8 hover:scale-110 duration-200 cursor-pointer" />
-        <TTwitter className="size-8 hover:scale-110 duration-200 cursor-pointer" />
-        {/* <Globe  /> */}
-        {/* <Printer  /> */}
-        <TLinkedIn className="size-8 hover:scale-110 duration-200 cursor-pointer" />
-        <TWhatsApp className="size-8 hover:scale-110 duration-200 cursor-pointer" />
-        {/* <FaWhatsapp /> */}
+      <div className="mt-8 flex justify-center gap-4 text-xl">
+        {socialLinks.map(({ icon, url }, index) => (
+          <Link href={url} target="_blank" key={index}>
+            {icon}
+          </Link>
+        ))}
       </div>
-
       <p className="text-center text-sm text-gray-500 mt-6">
         Copyright ©2025 Haus Of Privae. All rights reserved
       </p>
@@ -76,5 +79,38 @@ const footerLinks = [
       { name: "Returns & Refunds", slug: "/returns-and-refunds" },
       { name: "Contact Us", slug: "/contact-us" },
     ],
+  },
+];
+
+const socialLinks = [
+  {
+    icon: (
+      <TFacebook className="size-8 hover:scale-110 duration-200 cursor-pointer" />
+    ),
+    url: FACEBOOK_URL,
+  },
+  {
+    icon: (
+      <TInstagram className="size-8 hover:scale-110 duration-200 cursor-pointer" />
+    ),
+    url: INSTAGRAM_URL,
+  },
+  {
+    icon: (
+      <TTwitter className="size-8 hover:scale-110 duration-200 cursor-pointer" />
+    ),
+    url: TWITTER_URL,
+  },
+  {
+    icon: (
+      <TLinkedIn className="size-8 hover:scale-110 duration-200 cursor-pointer" />
+    ),
+    url: LINKEDIN_URL,
+  },
+  {
+    icon: (
+      <TWhatsApp className="size-8 hover:scale-110 duration-200 cursor-pointer" />
+    ),
+    url: WHATSAPP_URL,
   },
 ];

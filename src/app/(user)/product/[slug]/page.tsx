@@ -3,12 +3,12 @@ import ProductInformation from "./ProductInformation";
 import ShowMoreProducts from "./ShowMoreProducts";
 import { useGetAllProducts } from "@/src/hepler";
 
-export async function generateStaticParams() {
-  const products: any = await useGetAllProducts(null, null);
-  return products.map((cat: any) => ({
-    productID: cat.id,
-  }));
-}
+// export async function generateStaticParams() {
+//   const products: any = await useGetAllProducts(null, null);
+//   return products.map((cat: any) => ({
+//     productID: cat.id,
+//   }));
+// }
 
 export const revalidate = 86400;
 
