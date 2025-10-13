@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "@/lib/auth/authProvider";
+import Script from "next/script";
 
 const inter = Inter({
   weight: ["400"],
@@ -57,6 +58,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Haus of Privae",
+    url: "https://www.hausofprivae.com",
+    logo: "https://www.hausofprivae.com/logo.png",
+    sameAs: [
+      "https://www.instagram.com/hausofprivae",
+      "https://www.facebook.com/hausofprivae",
+    ],
+  };
+
   return (
     <html lang="en">
       <head>
@@ -64,6 +77,16 @@ export default function RootLayout({
         <meta
           name="google-site-verification"
           content="NQhsdCb-hJZhM8qtdWqudLIiuHozu5OTRkn-5WjLmhs"
+        />
+        <meta
+          name="keywords"
+          content="sustainable fashion, luxury clothing, ethical wear, Haus of Privae, handmade fashion"
+        />
+        <Script
+          id="schema-org"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       </head>
       <body
