@@ -1,5 +1,5 @@
 export const convertS3ToImageKit = (s3Url: string): string => {
-  return s3Url.replace(
+  return s3Url?.replace(
     "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/",
     "/"
   );
