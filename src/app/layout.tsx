@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Haus of Privae",
   },
   description:
-    "Haus of Privae is a luxury clothing brand that blends sophistication with contemporary style. Discover premium collections crafted for elegance and individuality.",
+    "Haus of Privae is a premium luxury clothing brand redefining modern elegance. Explore curated fashion collections designed for individuality, sophistication, and timeless style.",
   alternates: {
     canonical: "https://www.hausofprivae.com",
   },
@@ -63,10 +63,11 @@ export default function RootLayout({
     "@type": "Organization",
     name: "Haus of Privae",
     url: "https://www.hausofprivae.com",
-    logo: "https://www.hausofprivae.com/logo.png",
+    logo: "https://ik.imagekit.io/hop/white-logo.png",
     sameAs: [
       "https://www.instagram.com/hausofprivae",
-      "https://www.facebook.com/hausofprivae",
+      "https://twitter.com/hausofprivae",
+      "https://www.pinterest.com/hausofprivae",
     ],
   };
 
