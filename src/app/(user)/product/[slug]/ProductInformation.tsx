@@ -17,7 +17,7 @@ import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { convertS3ToImageKit } from "@/src/hepler";
+import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -204,7 +204,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
-        INR <span className=" font-bold">{productData.basePrice}</span>
+        INR{" "}
+        <span className=" font-bold">
+          {formatNumberWithCommas(productData.basePrice)}
+        </span>
       </p>
 
       {/* Color Selector */}

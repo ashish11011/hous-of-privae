@@ -89,12 +89,13 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
             <div className=" flex flex-wrap">
               {contactIconsDetails.map((item, idx) => {
                 return (
-                  <div
+                  <Link
+                    href={item.url ? item.url : "/"}
                     key={idx}
                     className=" flex items-center justify-center size-20 border"
                   >
                     {item.icon}
-                  </div>
+                  </Link>
                 );
               })}
             </div>

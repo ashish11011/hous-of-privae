@@ -9,4 +9,4 @@ export const INSTAGRAM_URL =
 export const FACEBOOK_URL =
   "https://www.facebook.com/profile.php?id=61581904642998";
 export const WHATSAPP_URL = "https://wa.me/917023117408";
-export const EMAIL_URL = "mailto: queries.hausofprivae@gmail.com";
+export const EMAIL_URL = "mailto:queries.hausofprivae@gmail.com";

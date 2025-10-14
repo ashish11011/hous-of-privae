@@ -57,8 +57,8 @@ export default function ContactPage() {
     {
       icon: <Mail size={36} />,
       label: "Mail",
-      value: "example@example.com",
-      link: "mailto:example@example.com",
+      value: "queries.hausofprivae@gmail.com",
+      link: "mailto:queries.hausofprivae@gmail.com",
     },
   ];
 

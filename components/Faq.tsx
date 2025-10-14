@@ -90,7 +90,7 @@ const faqs = [
     category: "Contact & Support",
     question: "How can I reach Haus of Privae?",
     answer: `You can reach us via the Contact Us page or email us at 
-    info@hausofprivae.com. Our client relations team will assist with customization, sizing, 
+    queries.hausofprivae@gmail.com. Our client relations team will assist with customization, sizing, 
     or order queries.`,
   },
 ];
