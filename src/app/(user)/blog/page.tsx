@@ -6,7 +6,7 @@ export const metadata = {
     absolute: "Haus of Privae Blog | Fashion, Power & Purpose",
   },
   description:
-    "Explore the Haus of Privae Blog — stories of luxury, inclusivity, sustainability, and empowerment through conscious fashion.",
+    "Explore the Haus of Privae Blog - stories of luxury, inclusivity, sustainability, and empowerment through conscious fashion.",
   alternates: {
     canonical: "https://www.hausofprivae.com/blog",
   },
@@ -17,7 +17,7 @@ export const metadata = {
   openGraph: {
     title: "Haus of Privae Blog | Fashion, Power & Purpose",
     description:
-      "Discover powerful fashion narratives from Haus of Privae — where luxury meets sustainability and inclusivity.",
+      "Discover powerful fashion narratives from Haus of Privae - where luxury meets sustainability and inclusivity.",
     url: "https://www.hausofprivae.com/blog",
     siteName: "Haus of Privae",
     type: "website",
@@ -29,7 +29,7 @@ const blogs = [
     id: 1,
     title: "Haus of Privae - Where Fashion Meets Power",
     description:
-      "Luxury | Inclusivity | Sustainability | Empowerment — Discover how Haus of Privae redefines modern luxury with conscious craftsmanship and power dressing.",
+      "Luxury | Inclusivity | Sustainability | Empowerment - Discover how Haus of Privae redefines modern luxury with conscious craftsmanship and power dressing.",
     slug: "haus-of-privae-where-fashion-meets-power",
     color: "#B89146", // Deep Royal Gold
   },

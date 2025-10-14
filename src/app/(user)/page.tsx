@@ -5,6 +5,7 @@ import BrandValues from "./BrandValue";
 import Link from "next/link";
 import { CATEGORY_1 } from "@/const";
 import { Button } from "@/components/ui/button";
+import FaqSection from "@/components/Faq";
 
 export const revalidate = 86400;
 
@@ -21,6 +22,7 @@ export default function Home() {
       {/* <RevicesCarousel /> */}
       <BrandValues />
       <CoutureSection />
+      <FaqSection />
     </div>
   );
 }

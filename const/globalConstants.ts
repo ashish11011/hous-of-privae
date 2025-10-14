@@ -105,8 +105,8 @@ export const CATEGORY_1 = [
   },
   {
     id: "c1a1e1b5-1234-4d3a-9f0a-abc111def005",
-    name: "Kurta Chunni Set",
-    slug: "kurta-chunni-set",
+    name: "Loungeware",
+    slug: "loungeware",
     image: "/category/kurta-chunni-set.jpg?w=300&h=300",
   },
   {

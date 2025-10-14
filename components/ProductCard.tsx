@@ -20,7 +20,7 @@ export function ProductCard({ itemData, className }: any) {
       <div className=" p-1 flex flex-col">
         <p className=" line-clamp-1">{itemData.name}</p>
         <p className=" text-red-400 text-sm roboto font-semibold">
-          {itemData.basePrice} INR
+          INR {itemData.basePrice}
         </p>
       </div>
     </Link>
