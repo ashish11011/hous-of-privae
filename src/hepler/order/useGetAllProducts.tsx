@@ -2,7 +2,7 @@
 
 import { product } from "@/db/productSchema";
 import { db } from "@/lib/db";
-import { eq, not } from "drizzle-orm";
+import { eq, ilike, not } from "drizzle-orm";
 
 export async function useGetAllProducts(
   page: number | null,
@@ -22,4 +22,11 @@ export async function useGetAllProducts(
   const total = Number(totalResult);
 
   return { products, total };
+}
+
+export async function useGetSearchedProducts(searchString: string) {
+  return await db
+    .select()
+    .from(product)
+    .where(ilike(product.name, `%${searchString}%`));
 }

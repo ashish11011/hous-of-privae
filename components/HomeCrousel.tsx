@@ -53,18 +53,6 @@ export default function StackedCarousel() {
 
   const slideCrouselItems = [
     <CarouselItem
-      className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
-      key={0}
-    >
-      <Image
-        src={isMobile ? slides[0].imageMob : slides[0].image}
-        alt={slides[0].title}
-        width={1200}
-        height={1200}
-        className=" h-full w-full object-cover"
-      />
-    </CarouselItem>,
-    <CarouselItem
       className=" flex relative items-center h-full justify-center bg-[#D5D6CF] w-screen"
       key={0}
     >
@@ -102,6 +90,19 @@ export default function StackedCarousel() {
         </p>
       </div>
     </CarouselItem>,
+    <CarouselItem
+      className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
+      key={0}
+    >
+      <Image
+        src={isMobile ? slides[0].imageMob : slides[0].image}
+        alt={slides[0].title}
+        width={1200}
+        height={1200}
+        className=" h-full w-full object-cover"
+      />
+    </CarouselItem>,
+
     <CarouselItem
       className=" flex items-center h-full justify-center bg-[#D5D6CF] w-screen"
       key={0}

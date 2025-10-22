@@ -44,86 +44,211 @@ export default function ShippingAndDeliveryPage() {
           Shipping & Delivery Policy
         </h1>
 
-        {/* Shipping Partners */}
+        {/* Ready-to-Ship Products */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">1. Our Shipping Partners</h2>
+          <h2 className="text-xl font-semibold">1. Ready-to-Ship Products</h2>
           <p>
-            At Haus of Privae, we work with trusted logistics partners like{" "}
-            <strong>Blue Dart</strong> and <strong>Delhivery</strong> to ensure
-            your order reaches you safely and on time. All shipments are fully
-            insured until delivered.
-          </p>
-        </div>
-
-        {/* Delivery Attempts */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">
-            2. Delivery Attempts & Communication
-          </h2>
-          <p>
-            For <strong>Cash on Delivery (COD)</strong> orders, our delivery
-            partner may reach out to confirm your availability. If you're
-            unavailable during the first attempt, you can:
+            Products available in standard sizes without alterations or
+            customizations.
           </p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Request a new delivery time</li>
             <li>
-              Arrange to collect your package from the nearest courier facility
+              <strong>Processing & Dispatch:</strong> 3–7 business days from the
+              date of purchase.
+            </li>
+            <li>
+              <strong>Delivery (India):</strong>
+              <ul className="list-disc list-inside ml-6">
+                <li>Metro Cities: 2–5 business days post-dispatch</li>
+                <li>Other Cities & Towns: 5–7 business days post-dispatch</li>
+              </ul>
+            </li>
+            <li>
+              <strong>International Shipping:</strong> Dispatched within 7
+              business days. Timelines vary based on location and customs.
             </li>
           </ul>
         </div>
 
-        {/* Shipping Timelines */}
+        {/* Altered Products */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">
-            3. Estimated Delivery Timelines
+            2. Altered Products (Customized Fit)
           </h2>
           <p>
-            Orders are typically shipped within{" "}
-            <strong>3 to 7 business days</strong> from the date of confirmation.
-            Delivery timelines may vary based on location, pincode, and external
-            factors.
+            Minor alterations such as sleeve length, hemline, or waist
+            adjustments.
           </p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              <strong>Dispatch (India):</strong> Within 10 business days
+              depending on the adjustment.
+            </li>
+            <li>
+              <strong>Delivery (India):</strong>
+              <ul className="list-disc list-inside ml-6">
+                <li>Metro Cities: 2–5 business days post-dispatch</li>
+                <li>Other Cities: 5–7 business days post-dispatch</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Note:</strong> Alterations are not available for
+              international orders.
+            </li>
+          </ul>
         </div>
 
-        {/* Delays & Responsibility */}
+        {/* Customized / Bespoke Products */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">4. Delays & Limitations</h2>
+          <h2 className="text-xl font-semibold">
+            3. Customized / Bespoke Products
+          </h2>
           <p>
-            While we strive to meet expected timelines, delays may occur due to
-            weather, high volumes, or courier-related issues. Haus of Privae is
-            not liable for such delays once the order has been dispatched.
+            Made-to-order designs based on your measurements, colors, and
+            embellishment preferences.
           </p>
-          <p>
-            If the delivery attempt fails due to incorrect address or
-            unavailability, the courier may reschedule or hold the package at a
-            nearby hub for pickup.
-          </p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              <strong>Dispatch:</strong> Typically within 30–45 business days,
+              depending on design complexity.
+            </li>
+            <li>
+              <strong>Delivery (India):</strong>
+              <ul className="list-disc list-inside ml-6">
+                <li>Metro Cities: 2–5 business days post-dispatch</li>
+                <li>Other Cities: 5–7 business days post-dispatch</li>
+              </ul>
+            </li>
+            <li>
+              <strong>International Orders:</strong> Customization is available;
+              timelines discussed post-order.
+            </li>
+          </ul>
         </div>
 
-        {/* Order Tracking */}
+        {/* Notes */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">5. Tracking Your Order</h2>
-          <p>
-            Once your order is shipped, you’ll receive an email or SMS with the
-            tracking details. You can track your shipment via the link shared or
-            by visiting the courier partner’s official website.
-          </p>
+          <h2 className="text-xl font-semibold">4. Important Notes</h2>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              Timelines are estimated and may vary during festivals or courier
+              delays.
+            </li>
+            <li>
+              You’ll receive tracking information via email or WhatsApp once
+              shipped.
+            </li>
+            <li>
+              Items in the same order may ship together or separately based on
+              availability.
+            </li>
+          </ul>
         </div>
 
-        {/* Customer Support */}
+        {/* Shipping Charges */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">6. Need Help?</h2>
+          <h2 className="text-xl font-semibold">5. Shipping Charges</h2>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              <strong>India:</strong> Free shipping on orders above ₹15,000.
+              Nominal fee for orders below.
+            </li>
+            <li>
+              <strong>International:</strong> Charges calculated at checkout
+              based on weight and location.
+            </li>
+          </ul>
+        </div>
+
+        {/* Customs & Duties */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            6. Customs & Duties (International Orders)
+          </h2>
           <p>
-            If you have any concerns or need assistance regarding your shipment,
-            feel free to reach out to our team at{" "}
-            <span className="font-medium">support@hausofprivae.com</span>. We're
-            here to help!
+            Customers are responsible for import duties, taxes, and customs
+            fees. Haus of Privaé is not liable for customs-related delays.
           </p>
         </div>
 
+        {/* Support */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            7. Delivery Support & Urgent Queries
+          </h2>
+          <p>For any shipping-related queries, reach us at:</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>
+              <strong>Email:</strong>{" "}
+              <a
+                href="mailto:orders@hausofprivae.com"
+                className="text-blue-600 underline"
+              >
+                orders@hausofprivae.com
+              </a>
+            </li>
+            <li>
+              <strong>Phone:</strong> +91-XXXXXXXXXX (Mon–Sat, 10 AM–6 PM IST)
+            </li>
+            <li>
+              For urgent help, message us on WhatsApp with your order number.
+            </li>
+          </ul>
+        </div>
+
+        {/* FAQs */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">
+            8. Frequently Asked Questions
+          </h2>
+          <div className="space-y-2">
+            <p>
+              <strong>Q1:</strong> Can I expedite the shipping for a ready
+              product?
+            </p>
+            <p>
+              <em>Yes.</em> Contact us before placing the order to check
+              availability for expedited domestic shipping.
+            </p>
+
+            <p>
+              <strong>Q2:</strong> Are alterations available for international
+              orders?
+            </p>
+            <p>
+              <em>No.</em> International orders are shipped in standard sizes
+              only.
+            </p>
+
+            <p>
+              <strong>Q3:</strong> Can I request customization for international
+              orders?
+            </p>
+            <p>
+              <em>Yes.</em> Bespoke customization is available. Timelines are
+              confirmed post-order.
+            </p>
+
+            <p>
+              <strong>Q4:</strong> How will I know when my order is shipped?
+            </p>
+            <p>
+              You’ll get tracking details via email and WhatsApp after dispatch.
+            </p>
+
+            <p>
+              <strong>Q5:</strong> What happens if my order is delayed?
+            </p>
+            <p>
+              In rare cases of delays, our team will proactively inform you of
+              revised timelines.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer note */}
         <p className="text-sm text-gray-500 pt-6 text-center">
-          Last updated: July 26, 2025
+          Last updated: October 23, 2025
         </p>
       </section>
     </main>

@@ -4,11 +4,19 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { NavBarDropdown } from "./dripdownMenu";
 import { authOptions } from "@/lib/auth/auth";
+import { SearchIcon } from "lucide-react";
 
 const NavBarClient = () => {
   return (
     <>
       <div className=" flex gap-3 items-center justify-end">
+        <Link
+          href="/search"
+          className=" flex gap-1 items-center justify-center"
+        >
+          <SearchIcon className=" size-6 sm:size-5" />
+          <p className=" hidden sm:block">Search</p>
+        </Link>
         <CartSheet />
         <NavbarUserMenu />
       </div>
