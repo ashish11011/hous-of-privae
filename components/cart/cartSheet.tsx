@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { CartProduct } from "@/types";
 import { useStore } from "@/src/hepler/store/zustand";
-import { convertS3ToImageKit } from "@/src/hepler";
+import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
 
 export function CartSheet() {
   const {
@@ -106,8 +106,11 @@ export function CartSheet() {
                   </div>
 
                   <div className=" flex flex-col justify-between gap-2">
-                    <div className="col-span-1 text-right text-lg text-green-700">
-                      ₹{(item.basePrice * item.quantity).toFixed(2)}
+                    <div className="col-span-1 text-right whitespace-nowrap text-green-700">
+                      INR{" "}
+                      {formatNumberWithCommas(
+                        (item.basePrice * item.quantity) as number
+                      )}
                     </div>
                     <div className="col-span-1 border border-gray-400  rounded-3xl overflow-hidden flex h-fit items-center justify-end  gap-2">
                       <button
@@ -149,7 +152,7 @@ export function CartSheet() {
                 <TableBody>
                   <TableRow className=" hover:bg-neutral-200">
                     <TableHead>Taxes</TableHead>
-                    <TableCell className=" w-52 text-xl">Rs 0</TableCell>
+                    <TableCell className=" w-52 text-xl">INR 0</TableCell>
                   </TableRow>
 
                   <TableRow className=" hover:bg-neutral-200">
@@ -159,14 +162,14 @@ export function CartSheet() {
                   <TableRow className=" hover:bg-neutral-200">
                     <TableHead>Total</TableHead>
                     <TableCell className=" w-52 text-xl">
-                      Rs{" "}
-                      {cart
-                        .reduce(
+                      INR{" "}
+                      {formatNumberWithCommas(
+                        cart.reduce(
                           (total: number, item: CartProduct) =>
                             total + item.basePrice * item.quantity,
                           0
                         )
-                        .toFixed(2)}
+                      )}
                     </TableCell>
                   </TableRow>
                 </TableBody>

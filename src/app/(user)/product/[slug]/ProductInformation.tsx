@@ -148,7 +148,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   const sizes = ["XS", "S", "M", "L"]; // You can also make this dynamic
 
   const handleAddToCart = () => {
-    toast("Item added to cart", {
+    toast.success("Item added to cart", {
       // description: "Sunday, December 03, 2023 at 9:00 AM",
       // action: {
       //   label: "Undo",
@@ -196,7 +196,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
   return (
     <div className=" h-fit sticky top-16">
-      <Toaster />
+      <Toaster position="top-right" />
 
       {/* Name */}
       <p className="roboto text-2xl   mb-3 font-semibold">{productData.name}</p>
