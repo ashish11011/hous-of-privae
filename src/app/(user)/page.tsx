@@ -6,10 +6,12 @@ import Link from "next/link";
 import { CATEGORY_1 } from "@/const";
 import { Button } from "@/components/ui/button";
 import FaqSection from "@/components/Faq";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
 
 export const revalidate = 86400;
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className=" w-full">
       <Carousel />

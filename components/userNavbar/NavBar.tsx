@@ -8,13 +8,9 @@ import {
   navBarItems,
 } from "@/const";
 import NavBarClient from "./navBarClient";
-import NavbarMobileMenu from "./navbarMobileMenu";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -43,20 +39,6 @@ const NavBar = () => {
     <div className=" sticky  top-0 z-50 bg-[#38080d] text-white grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
       {/* <div className=" hidden 2xl:flex gap-4 items-center"> */}
       <div className=" flex gap-4 items-center">
-        {/* <div className=" ">
-          <div className="  w-full items-center">
-            {navBarItems.map((item, idx: number) => {
-              return (
-                <Link key={idx} href={`/category/${item.slug}`}>
-                  <Button className=" px-2 text-white" variant={"link"}>
-                    {item.name}
-                  </Button>
-                </Link>
-              );
-            })}
-          </div>
-        </div> */}
-        {/* <Menu /> */}
         <SheetDemo />
       </div>
 

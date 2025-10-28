@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { NavBarDropdown } from "./dripdownMenu";
 import { authOptions } from "@/lib/auth/auth";
 import { SearchIcon } from "lucide-react";
+import { getUserByEmail } from "@/lib/auth/getUserTypeFromEmail";
 
 const NavBarClient = () => {
   return (
@@ -29,9 +30,10 @@ export default NavBarClient;
 async function NavbarUserMenu() {
   const session = await getServerSession(authOptions);
   if (session) {
+    const userData = await getUserByEmail(session?.email);
     return (
       <div className=" z-50">
-        <NavBarDropdown userName={session?.user?.name} />
+        <NavBarDropdown userName={userData?.name} />
       </div>
     );
   }

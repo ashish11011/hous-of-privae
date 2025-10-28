@@ -1,9 +1,8 @@
-export const users = [
-  {
-    id: "1",
-    username: "ashish",
-    email: "housofprivae.com",
-    password: "ashish",
-    user_type: "admin",
-  },
-];
+const USER_TYPE = {
+  "1": "Admin",
+  "2": "Customer",
+} as const;
+
+export function getUserType(code: string): string | undefined {
+  return USER_TYPE[code as keyof typeof USER_TYPE];
+}

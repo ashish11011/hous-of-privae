@@ -1,12 +1,17 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { db } from "../db";
-import { userTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { users } from "@/const";
+import { cognitoClient } from "./cognitoClient";
+import crypto from "crypto";
+import {
+  InitiateAuthCommand,
+  AuthFlowType, // ✅ import the enum
+} from "@aws-sdk/client-cognito-identity-provider";
+import jwt from "jsonwebtoken";
+import { getUserByEmail, insertUser } from "./getUserTypeFromEmail";
+import { CLIENT_ID, generateSecretHash } from "./generateHash";
 
 export const authOptions = {
-  secret: process.env.NEXTAUTH_SECRET, // ✅ Include this line
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -20,37 +25,39 @@ export const authOptions = {
           return null;
         }
 
-        // const user = users.find(
-        //   (u) =>
-        //     u.username === credentials?.username &&
-        //     u.password === credentials?.password
-        // );
+        const secretHash = generateSecretHash(credentials.username);
 
-        // Fetch user by email or username
-        let user;
+        const params = {
+          AuthFlow: AuthFlowType.USER_PASSWORD_AUTH, // ✅ use the enum
+          ClientId: CLIENT_ID,
+          AuthParameters: {
+            USERNAME: credentials.username,
+            PASSWORD: credentials.password,
+            SECRET_HASH: secretHash,
+          },
+        };
+
         try {
-          user = await db
-            .select()
-            .from(userTable)
-            .where(eq(userTable.email, credentials.username)); // Adjust this line if using username instead of email
-        } catch (error) {
-          console.log(error);
-        }
+          const command = new InitiateAuthCommand(params);
+          const response = await cognitoClient.send(command);
+          const auth = response.AuthenticationResult;
 
-        if (!user) {
+          if (!auth?.AccessToken) return null;
+
+          const idToken = auth.IdToken;
+          const decoded: any = jwt.decode(idToken as string);
+          // console.log(decoded);
+          // console.log(decoded["custom:id"]);
+          return {
+            username: credentials.username,
+            id: decoded.sub,
+            email: decoded.email,
+          };
+        } catch (err) {
+          console.error("Cognito auth error:", err);
+          throw new Error("Cognito auth error");
           return null;
         }
-
-        user = user[0];
-        if (user) {
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            user_type: user.user_type,
-          };
-        }
-        return null;
       },
     }),
 
@@ -66,43 +73,58 @@ export const authOptions = {
     strategy: "jwt" as const,
   },
   callbacks: {
-    // Called when JWT is created/updated
+    async signIn({ user }: any) {
+      if (!user) return false; // Reject sign in
+      return true;
+    },
     async jwt({ token, user, account, profile }: any) {
-      // On first login (user exists only at login)
       if (user) {
-        // If login is via credentials, keep user_type
         if (account?.provider === "credentials") {
-          token.user = user;
+          console.log("User: ", user);
+          token.username = user.username;
+          token.id = user["custom:id"];
+          token.email = user.email;
+
+          const userData = await getUserByEmail(user.email);
+
+          console.log(userData);
+          if (!userData) {
+            throw new Error("USER_NOT_FOUND");
+          }
+
+          token.user_type = userData.user_type;
         }
 
-        // If login is via Google
         if (account?.provider === "google") {
-          // Check if user is known in your DB (optional)
-          const existingUser = users.find((u) => u.email === user.email);
-
+          const existingUser = await getUserByEmail(user.email);
           if (existingUser) {
-            token.user = {
-              id: existingUser.id,
-              name: existingUser.username,
-              email: existingUser.email,
-              user_type: existingUser.user_type,
-            };
+            token.username = existingUser.email;
+            token.id = existingUser.id;
+            token.email = existingUser.email;
+            token.user_type = existingUser.user_type;
           } else {
-            // New user → default role
-            token.user = {
-              id: user.id,
+            const userData = {
               name: user.name,
               email: user.email,
-              user_type: "customer",
             };
+            const newUserData = await insertUser(userData);
+
+            token.email = newUserData[0].email;
+            token.id = newUserData[0].id;
+            token.username = newUserData[0].email;
+            token.user_type = newUserData[0].user_type;
           }
         }
       }
+
       return token;
     },
-    // Called when session is checked
     async session({ session, token }: any) {
-      session.user = token.user;
+      session.username = token.username;
+      session.email = token.email;
+      session.id = token.id;
+      session.user_type = token.user_type;
+
       return session;
     },
   },
