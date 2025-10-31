@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Signout } from "@/src/hepler/auth";
-import { UserCircle, UserIcon } from "lucide-react";
+import { Heart, ShoppingCart, User, UserCircle, UserIcon } from "lucide-react";
 import Link from "next/link";
 
 export function NavBarDropdown({ userName }: any) {
@@ -35,13 +35,22 @@ export function NavBarDropdown({ userName }: any) {
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href="/profile" className=" hover:bg-gray-50 py-2.5">
+              <User />
               Profile
             </Link>
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/orders" className=" hover:bg-gray-50 py-2.5">
+              <ShoppingCart />
               Orders
+            </Link>
+            {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/my-wishlist" className=" hover:bg-gray-50 py-2.5">
+              <Heart />
+              <p> My wishlist</p>
             </Link>
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>

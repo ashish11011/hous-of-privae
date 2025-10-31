@@ -15,6 +15,15 @@ interface StoreState {
   increaseQuantity: (index: functionParams) => void;
   decreaseQuantity: (index: functionParams) => void;
 }
+type wishlistType = {
+  id: string;
+};
+
+interface WishlistState {
+  productWishlist: wishlistType[];
+  addItemToWishlist: (id: string) => void;
+  removeItemFromWishlist: (id: string) => void;
+}
 
 export const useStore = create<StoreState>()(
   persist(
@@ -72,6 +81,43 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "cart-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
+
+export const userWishlistStore = create<WishlistState>()(
+  persist(
+    (set, get) => ({
+      productWishlist: [],
+
+      addItemToWishlist: (item) => {
+        const existingIndex = get().productWishlist.findIndex(
+          (p) => p.id === item
+        );
+
+        if (existingIndex !== -1) {
+          return;
+        }
+        set(
+          (state) => ({
+            productWishlist: [...state.productWishlist, { id: item }],
+          }),
+          false
+        );
+      },
+
+      removeItemFromWishlist: (id: string) => {
+        set((state) => {
+          const updated = state.productWishlist.filter(
+            (item) => item.id !== id
+          );
+          return { productWishlist: updated };
+        });
+      },
+    }),
+    {
+      name: "wishlist-storage",
       storage: createJSONStorage(() => localStorage),
     }
   )
