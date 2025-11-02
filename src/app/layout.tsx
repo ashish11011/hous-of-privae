@@ -79,6 +79,7 @@ export default function RootLayout({
           name="google-site-verification"
           content="NQhsdCb-hJZhM8qtdWqudLIiuHozu5OTRkn-5WjLmhs"
         />
+        <meta name="msvalidate.01" content="2F488A99AE94CB7DCADBDBE323CCB8A0" />
         <meta
           name="keywords"
           content="sustainable fashion, luxury clothing, ethical wear, Haus of Privae, handmade fashion"
