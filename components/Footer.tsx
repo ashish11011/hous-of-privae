@@ -1,3 +1,4 @@
+"use client";
 import {
   FACEBOOK_URL,
   INSTAGRAM_URL,
@@ -13,10 +14,36 @@ import {
   TWhatsApp,
 } from "@/lib/icons";
 import Link from "next/link";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import {
+  InputGroup,
+  InputGroupButton,
+  InputGroupInput,
+} from "./ui/input-group";
+import { useState } from "react";
+import { set } from "react-hook-form";
+import { toast } from "sonner";
+import { Toaster } from "./ui/sonner";
 
 const Footer = () => {
+  const [subscribeInput, setSubscribeInput] = useState("");
+  const sbmitSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (subscribeInput.trim() != "") {
+      console.log(subscribeInput);
+      toast.success("Subscribed successfully");
+    } else {
+      toast.error("Please enter your email");
+    }
+
+    setSubscribeInput("");
+  };
   return (
     <footer className="bg-[#faf9f9]  py-12 px-6 pt-16 md:pt-32">
+      <Toaster position="top-right" />
+
       <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3  gap-6 max-w-6xl mx-auto text-sm">
         {footerLinks.map((section, index) => (
           <div key={index} className="flex  flex-col ">
@@ -33,9 +60,24 @@ const Footer = () => {
           </div>
         ))}
         <div className="flex gap-2 font2 flex-col md:text-center md:items-center">
-          <h4 className="font-semibold  text-xl mb-3">
-            Offers, New Arrivals, <br /> Restocks and More.
-          </h4>
+          <Label className=" w-full text-xl text-left">
+            Get instider access
+          </Label>
+          <form
+            onSubmit={sbmitSubscribe}
+            className=" flex flex-col gap-2 md:flex-row w-full"
+          >
+            <InputGroup>
+              <InputGroupInput
+                type="email"
+                placeholder="Enter your email"
+                className="border border-gray-300"
+                value={subscribeInput}
+                onChange={(e) => setSubscribeInput(e.target.value)}
+              />
+              <InputGroupButton type="submit">Subscribe</InputGroupButton>
+            </InputGroup>
+          </form>
           <Link
             href={"https://wa.me/917023117408"}
             className="bg-yellow-950 w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto"

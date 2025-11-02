@@ -1,4 +1,4 @@
-import { user } from "./userSchema";
+import { taileredFit, user } from "./userSchema";
 import { product } from "./productSchema";
 import { review } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
@@ -11,6 +11,7 @@ import {
 } from "./orderSchema";
 
 export const productTable = product;
+export const taileredFits = taileredFit;
 
 export const orderTable = order;
 

@@ -27,6 +27,8 @@ import {
 import { Heart, Minus, Plus } from "lucide-react";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
+import TailoredFitFormModal from "@/components/productCustomization";
+import SizeGuideSheet from "@/components/sizeChartSheet";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -222,7 +224,6 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       {/* Name */}
       <p className="roboto text-2xl   mb-1 font-semibold">{productData.name}</p>
       <p className=" mb-3">{productData.sku}</p>
-      <p className="roboto   mb-3">{productData.description}</p>
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
@@ -366,7 +367,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       <Separator className="my-6" />
 
-      <Accordion defaultValue={["1", "2", "3", "4"]} type="multiple">
+      <Accordion defaultValue={["1", "2", "3", "4", "5"]} type="multiple">
         <AccordionItem value="1">
           <AccordionTrigger>Return & Refund</AccordionTrigger>
           <AccordionContent>
@@ -397,6 +398,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               <TInfoCircle />
               Model height: {productData.model_height} · Size - S
             </div>
+            <SizeGuideSheet />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="4">
@@ -412,6 +414,12 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="5">
+          <AccordionTrigger>Product Description</AccordionTrigger>
+          <AccordionContent>
+            <p className="roboto   mb-3">{productData.description}</p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="6">
           <AccordionTrigger>Want to customize?</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-muted-foreground">
@@ -430,6 +438,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 +91&nbsp;70231&nbsp;17408
               </a>
               .
+              <TailoredFitFormModal />
             </p>
           </AccordionContent>
         </AccordionItem>

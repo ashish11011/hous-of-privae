@@ -8,6 +8,7 @@ import {
   Home,
   MailCheckIcon,
   MessageSquareCodeIcon,
+  Shirt,
   UserRoundIcon,
 } from "lucide-react";
 
@@ -53,6 +54,11 @@ const items = [
     title: "Contacts",
     url: "/admin/contacts",
     icon: ContactIcon,
+  },
+  {
+    title: "Tailored Fit",
+    url: "/admin/tailoredfit",
+    icon: Shirt,
   },
   // {
   //   title: "Blog",

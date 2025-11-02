@@ -17,3 +17,17 @@ export const user = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const taileredFit = pgTable("tailered_fit", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  unit: varchar("unit", { length: 20 }).notNull(), // inches / cm
+  chest: varchar("chest", { length: 20 }),
+  underbust: varchar("underbust", { length: 20 }),
+  waist: varchar("waist", { length: 20 }),
+  hips: varchar("hips", { length: 20 }),
+  shoulderLength: varchar("shoulder_length", { length: 20 }),
+  bottomLength: varchar("bottom_length", { length: 20 }),
+  additional: varchar("additional"),
+  contact: varchar("contact", { length: 20 }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
