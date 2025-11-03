@@ -26,6 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { CartProduct } from "@/types";
 import { useStore } from "@/src/hepler/store/zustand";
 import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
+import { ShowProductPrice } from "@/lib/productHealper";
 
 export function CartSheet() {
   const {
@@ -107,10 +108,9 @@ export function CartSheet() {
 
                   <div className=" flex flex-col justify-between gap-2">
                     <div className="col-span-1 text-right whitespace-nowrap text-green-700">
-                      INR{" "}
-                      {formatNumberWithCommas(
-                        (item.basePrice * item.quantity) as number
-                      )}
+                      <ShowProductPrice
+                        price={item.basePrice * item.quantity}
+                      />
                     </div>
                     <div className="col-span-1 border border-gray-400  rounded-3xl overflow-hidden flex h-fit items-center justify-end  gap-2">
                       <button
@@ -152,7 +152,9 @@ export function CartSheet() {
                 <TableBody>
                   <TableRow className=" hover:bg-neutral-200">
                     <TableHead>Taxes</TableHead>
-                    <TableCell className=" w-52 text-xl">INR 0</TableCell>
+                    <TableCell className=" w-52 text-xl">
+                      <ShowProductPrice price={0} />
+                    </TableCell>
                   </TableRow>
 
                   <TableRow className=" hover:bg-neutral-200">
@@ -162,14 +164,13 @@ export function CartSheet() {
                   <TableRow className=" hover:bg-neutral-200">
                     <TableHead>Total</TableHead>
                     <TableCell className=" w-52 text-xl">
-                      INR{" "}
-                      {formatNumberWithCommas(
-                        cart.reduce(
+                      <ShowProductPrice
+                        price={cart.reduce(
                           (total: number, item: CartProduct) =>
                             total + item.basePrice * item.quantity,
                           0
-                        )
-                      )}
+                        )}
+                      />
                     </TableCell>
                   </TableRow>
                 </TableBody>

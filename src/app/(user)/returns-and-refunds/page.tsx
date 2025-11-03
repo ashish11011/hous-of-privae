@@ -237,11 +237,11 @@ export default function ReturnAndRefundPage() {
                 href="mailto:orders@hausofprivae.com"
                 className="text-blue-600 underline"
               >
-                orders@hausofprivae.com
+                queries.hausofprivae@gmail.com
               </a>
             </li>
             <li>
-              <strong>Phone:</strong> +91-XXXXXXXXXX (Mon–Sat, 10 AM–6 PM IST)
+              <strong>Phone:</strong>+917023117408 (Mon–Sat, 10 AM–6 PM IST)
             </li>
             <li>
               <strong>WhatsApp:</strong> For urgent support, message us with

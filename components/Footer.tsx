@@ -61,7 +61,7 @@ const Footer = () => {
         ))}
         <div className="flex gap-2 font2 flex-col md:text-center md:items-center">
           <Label className=" w-full text-xl text-left">
-            Get instider access
+            Get insider access
           </Label>
           <form
             onSubmit={sbmitSubscribe}
@@ -71,7 +71,7 @@ const Footer = () => {
               <InputGroupInput
                 type="email"
                 placeholder="Enter your email"
-                className="border border-gray-300"
+                className=""
                 value={subscribeInput}
                 onChange={(e) => setSubscribeInput(e.target.value)}
               />

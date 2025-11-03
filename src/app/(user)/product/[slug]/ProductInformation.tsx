@@ -29,6 +29,7 @@ import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import TailoredFitFormModal from "@/components/productCustomization";
 import SizeGuideSheet from "@/components/sizeChartSheet";
+import { ShowProductPrice } from "@/lib/productHealper";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -227,10 +228,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
-        INR{" "}
-        <span className=" font-bold">
-          {formatNumberWithCommas(productData.basePrice)}
-        </span>
+        <ShowProductPrice price={productData.basePrice} />
       </p>
 
       {/* Color Selector */}
@@ -367,7 +365,30 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       <Separator className="my-6" />
 
-      <Accordion defaultValue={["1", "2", "3", "4", "5"]} type="multiple">
+      <Accordion defaultValue={["1", "2", "3", "4", "5", "6"]} type="multiple">
+        <AccordionItem value="6">
+          <AccordionTrigger>Want to customize?</AccordionTrigger>
+          <AccordionContent>
+            <p className="text-sm text-muted-foreground">
+              We'd love to help you create something unique. Please email us at{" "}
+              <a
+                href="mailto:queries.hausofprivae@gmail.com"
+                className="text-primary underline hover:text-primary/80"
+              >
+                queries.hausofprivae@gmail.com
+              </a>{" "}
+              or call us at{" "}
+              <a
+                href="tel:+917023117408"
+                className="text-primary underline hover:text-primary/80"
+              >
+                +91&nbsp;70231&nbsp;17408
+              </a>
+              .
+              <TailoredFitFormModal />
+            </p>
+          </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="1">
           <AccordionTrigger>Return & Refund</AccordionTrigger>
           <AccordionContent>
@@ -407,7 +428,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             <p className="text-sm text-muted-foreground">
               Your order will be delivered within{" "}
               <span className="font-medium text-foreground">
-                3-5 business days
+                7-10 business days
               </span>
               .
             </p>
@@ -417,29 +438,6 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           <AccordionTrigger>Product Description</AccordionTrigger>
           <AccordionContent>
             <p className="roboto   mb-3">{productData.description}</p>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="6">
-          <AccordionTrigger>Want to customize?</AccordionTrigger>
-          <AccordionContent>
-            <p className="text-sm text-muted-foreground">
-              We'd love to help you create something unique. Please email us at{" "}
-              <a
-                href="mailto:queries.hausofprivae@gmail.com"
-                className="text-primary underline hover:text-primary/80"
-              >
-                queries.hausofprivae@gmail.com
-              </a>{" "}
-              or call us at{" "}
-              <a
-                href="tel:+917023117408"
-                className="text-primary underline hover:text-primary/80"
-              >
-                +91&nbsp;70231&nbsp;17408
-              </a>
-              .
-              <TailoredFitFormModal />
-            </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

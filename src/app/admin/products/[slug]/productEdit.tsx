@@ -9,7 +9,14 @@ import {
 } from "@/components/index";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { CATEGORY_1, CATEGORY_2, COLORS, MATERIALS, SIZES } from "@/const";
+import {
+  CATEGORY_1,
+  CATEGORY_2,
+  COLORS,
+  MATERIALS,
+  moreSidebarCategories,
+  SIZES,
+} from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
 import {
   useConvertArrayToSelectOptions,
@@ -145,7 +152,10 @@ const ProductEdit = ({ productData, slug }: any) => {
             labelName="Category Level 1"
             placeholder="Category Level 1"
             name="categoryId1"
-            options={useConvertArrayToSelectOptions(CATEGORY_1)}
+            options={useConvertArrayToSelectOptions([
+              ...CATEGORY_1,
+              ...moreSidebarCategories,
+            ])}
           />
           <Select
             labelName="Category Level 2"

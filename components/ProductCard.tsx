@@ -1,3 +1,4 @@
+import { ShowProductPrice } from "@/lib/productHealper";
 import { cn } from "@/lib/utils";
 import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
 import Image from "next/image";
@@ -20,7 +21,7 @@ export function ProductCard({ itemData, className }: any) {
       <div className=" p-1 flex flex-col">
         <p className=" line-clamp-1">{itemData.name}</p>
         <p className=" text-red-400 text-sm roboto font-semibold">
-          INR {formatNumberWithCommas(itemData.basePrice)}
+          <ShowProductPrice price={itemData.basePrice} />
         </p>
       </div>
     </Link>

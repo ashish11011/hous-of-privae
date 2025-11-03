@@ -87,7 +87,7 @@ export const COLORS = [
   { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
 ];
 
-export const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+export const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "semi-stitched"];
 export const MATERIALS = ["Cotton", "Wool", "Silk", "Leather", "Linen"];
 
 export const CATEGORY_1 = [
@@ -113,7 +113,15 @@ export const CATEGORY_1 = [
     id: "c1a1e1b9-1234-4d3a-9f0a-abc111def009",
     name: "Ready To Wear",
     slug: "ready-to-wear",
-    image: "/category/ready-to-wear.jpg?w=300&h=300",
+    image: "//1759177487581-Copy of 2S0A7588.webp?w=300&h=300",
+  },
+];
+
+export const moreSidebarCategories = [
+  {
+    id: 11,
+    name: "Clearance",
+    slug: "clearance",
   },
 ];
 

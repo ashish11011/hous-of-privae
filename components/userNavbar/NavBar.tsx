@@ -15,9 +15,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { LinkedinIcon, Mail, MenuIcon, PhoneCall } from "lucide-react";
+import {
+  BookText,
+  LinkedinIcon,
+  Mail,
+  MenuIcon,
+  PhoneCall,
+} from "lucide-react";
 import CatList from "./catList";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
 
 const contactIconsDetails = [
   {
@@ -39,7 +46,13 @@ const NavBar = () => {
     <div className=" sticky  top-0 z-50 bg-[#38080d] text-white grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
       {/* <div className=" hidden 2xl:flex gap-4 items-center"> */}
       <div className=" flex gap-4 items-center">
-        <SheetDemo />
+        <SidebarNavSheet />
+        <Link href={"/blog"}>
+          <Button className=" text-white" variant={"link"}>
+            <BookText />
+            <p className=" hidden md:block"> Privae Atelier</p>
+          </Button>
+        </Link>
       </div>
 
       {/* <NavbarMobileMenu /> */}
@@ -69,7 +82,7 @@ const NavBar = () => {
 
 export default NavBar;
 
-function SheetDemo() {
+function SidebarNavSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
