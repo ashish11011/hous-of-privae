@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { NavBarDropdown } from "./dripdownMenu";
 import { authOptions } from "@/lib/auth/auth";
-import { SearchIcon } from "lucide-react";
+import { LogIn, SearchIcon } from "lucide-react";
 import { getUserByEmail } from "@/lib/auth/getUserTypeFromEmail";
 
 const NavBarClient = () => {
@@ -39,6 +39,7 @@ async function NavbarUserMenu() {
   }
   return (
     <Link href="/auth/login">
+      <LogIn />
       <p className=" hidden lg:block">Login</p>
     </Link>
   );
