@@ -80,7 +80,7 @@ const Footer = () => {
           </form>
           <Link
             href={"https://wa.me/917023117408"}
-            className="bg-yellow-950 w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto"
+            className="bg-[#2e0e2c] w-full roboto text-white px-8 py-2 rounded-xs mt-auto  text-xl font-medium cursor-pointer flex items-center justify-center gap-2 mx-auto"
           >
             Stay Updated
             <TWhatsApp strokeWidth={1.5} />

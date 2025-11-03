@@ -43,7 +43,7 @@ const contactIconsDetails = [
 
 const NavBar = () => {
   return (
-    <div className=" sticky  top-0 z-50 bg-[#38080d] text-white grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
+    <div className=" sticky  top-0 z-50 bg-[#2e0e2c] text-white grid grid-cols-3 w-full items-center gap-6 justify-between px-3 md:px-5">
       {/* <div className=" hidden 2xl:flex gap-4 items-center"> */}
       <div className=" flex gap-4 items-center">
         <SidebarNavSheet />
@@ -90,7 +90,7 @@ function SidebarNavSheet() {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className=" max-w-none w-full sm:max-w-sm border-none sm:border-r bg-[#38080d] text-white"
+        className=" max-w-none w-full sm:max-w-sm border-none sm:border-r bg-[#2e0e2c] text-white"
       >
         <SheetHeader>
           <SheetTitle className=" text-gray-300">Categories</SheetTitle>
