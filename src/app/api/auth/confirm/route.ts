@@ -26,13 +26,11 @@ export async function POST(request: NextRequest) {
   try {
     const command = new ConfirmSignUpCommand(params);
     const awsResponse = await cognitoClient.send(command);
-    console.log("awsResponse: ", awsResponse);
     const userCommand = new AdminGetUserCommand({
       UserPoolId: USER_POOL_ID,
       Username: email,
     });
     const awsUserData = await cognitoClient.send(userCommand);
-    console.log("awsUserData: ", awsUserData);
 
     if (awsResponse) {
       const user = {

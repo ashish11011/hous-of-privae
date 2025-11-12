@@ -9,6 +9,7 @@ import {
   MailCheckIcon,
   MessageSquareCodeIcon,
   Shirt,
+  TicketPercent,
   UserRoundIcon,
 } from "lucide-react";
 
@@ -59,6 +60,11 @@ const items = [
     title: "Tailored Fit",
     url: "/admin/tailoredfit",
     icon: Shirt,
+  },
+  {
+    title: "Manage Coupons",
+    url: "/admin/coupons",
+    icon: TicketPercent,
   },
   // {
   //   title: "Blog",

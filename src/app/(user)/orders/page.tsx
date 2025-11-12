@@ -5,7 +5,6 @@ import React from "react";
 
 const page = async () => {
   const orderData = await getUserOrderData();
-  console.log(orderData);
   if (!orderData || orderData.length === 0)
     return (
       <div className=" py-32 space-y-3 text-center px-6 text-xl  text-gray-600 capitalize ">

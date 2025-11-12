@@ -1,5 +1,5 @@
 {
-  "id": "49ba9850-8e5c-4f6b-a162-593ad39f2499",
+  "id": "5466a1af-f781-47d5-a468-1a0824edf6e8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -205,6 +205,83 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.order_item": {
+      "name": "order_item",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "order_item_order_id_order_id_fk": {
+          "name": "order_item_order_id_order_id_fk",
+          "tableFrom": "order_item",
+          "tableTo": "order",
+          "columnsFrom": [
+            "order_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "order_item_product_id_products_id_fk": {
+          "name": "order_item_product_id_products_id_fk",
+          "tableFrom": "order_item",
+          "tableTo": "products",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.order": {
       "name": "order",
       "schema": "",
@@ -222,21 +299,33 @@
           "primaryKey": false,
           "notNull": true
         },
-        "status_id": {
-          "name": "status_id",
+        "status": {
+          "name": "status",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true,
-          "default": "'91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87'"
+          "default": "'pending'"
         },
-        "items": {
-          "name": "items",
-          "type": "varchar[]",
+        "address_line_1": {
+          "name": "address_line_1",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "shipping_address": {
-          "name": "shipping_address",
+        "address_line_2": {
+          "name": "address_line_2",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -307,6 +396,42 @@
           "primaryKey": false,
           "notNull": false
         },
+        "sku": {
+          "name": "sku",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fabric": {
+          "name": "fabric",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "care": {
+          "name": "care",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "style_note": {
+          "name": "style_note",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "customization": {
+          "name": "customization",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_height": {
+          "name": "model_height",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "description": {
           "name": "description",
           "type": "varchar",
@@ -315,6 +440,12 @@
         },
         "base_price": {
           "name": "base_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "semi_stitched_price": {
+          "name": "semi_stitched_price",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -335,7 +466,7 @@
           "name": "slug",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "banner_image": {
           "name": "banner_image",
@@ -367,6 +498,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "is_deleted": {
+          "name": "is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -382,10 +520,49 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "slug_idx": {
+          "name": "slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "products_slug_unique": {
+          "name": "products_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -487,6 +664,87 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.tailered_fit": {
+      "name": "tailered_fit",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "unit": {
+          "name": "unit",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chest": {
+          "name": "chest",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "underbust": {
+          "name": "underbust",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "waist": {
+          "name": "waist",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hips": {
+          "name": "hips",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shoulder_length": {
+          "name": "shoulder_length",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bottom_length": {
+          "name": "bottom_length",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additional": {
+          "name": "additional",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contact": {
+          "name": "contact",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -514,13 +772,50 @@
           "name": "number",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "password": {
           "name": "password",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "user_type": {
+          "name": "user_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "address_line_1": {
+          "name": "address_line_1",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address_line_2": {
+          "name": "address_line_2",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pincode": {
+          "name": "pincode",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -546,13 +841,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
-        },
-        "users_number_unique": {
-          "name": "users_number_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "number"
           ]
         }
       },

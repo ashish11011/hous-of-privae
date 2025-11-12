@@ -15,7 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Signout } from "@/src/hepler/auth";
-import { Heart, ShoppingCart, User, UserCircle, UserIcon } from "lucide-react";
+import {
+  CirclePoundSterling,
+  Heart,
+  ShoppingCart,
+  User,
+  UserCircle,
+  UserIcon,
+} from "lucide-react";
 import Link from "next/link";
 
 export function NavBarDropdown({ userName }: any) {
@@ -26,7 +33,9 @@ export function NavBarDropdown({ userName }: any) {
           {/* <Button variant={"outline"}>{userName}</Button> */}
 
           <UserCircle />
-          <p className=" capitalize hidden md:block">{userName || "You"}</p>
+          <p className=" capitalize hidden md:block line-clamp-1">
+            {userName?.split(" ")[0] || "You"}
+          </p>
         </div>
       </DropdownMenuTrigger>
 
@@ -51,6 +60,13 @@ export function NavBarDropdown({ userName }: any) {
             <Link href="/my-wishlist" className=" hover:bg-gray-50 py-2.5">
               <Heart />
               <p> My wishlist</p>
+            </Link>
+            {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/loyalty-points" className=" hover:bg-gray-50 py-2.5">
+              <CirclePoundSterling />
+              <p>Loyalty Points</p>
             </Link>
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>

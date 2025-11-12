@@ -14,6 +14,14 @@ import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
+import { checkCoupon } from "@/src/hepler/coupons/coupon.helper";
 
 const getColorNameByHex = (hex: string) => {
   return COLORS.find((item) => item.hex === hex)?.label;
@@ -91,10 +99,10 @@ const Page = () => {
   };
 
   return (
-    <div className=" mx-auto max-w-4xl">
-      <h1 className=" text-2xl">Checkout</h1>
-      <div className=" grid grid-cols-2  gap-3   divide-x-2 ">
-        <div>
+    <div className=" mx-auto max-w-4xl p-4">
+      <h1 className=" text-2xl mb-4">Checkout</h1>
+      <div className=" grid grid-cols-1 md:grid-cols-2  gap-3 md:divide-x-2 ">
+        <div className=" pr-4 order-2 md:order-none">
           <Formik
             initialValues={userDetailInitialValues}
             onSubmit={handlePlaceOrder}
@@ -117,15 +125,16 @@ const Page = () => {
                 <LabelInput labelName="State" name="state" />
               </div>
               <LabelInput labelName="Pincode" name="pincode" type="number" />
+              <DiscountInput />
               <Button type="submit" className=" w-full" size={"lg"}>
                 Place Order
               </Button>
             </Form>
           </Formik>
         </div>
-        <div className=" space-y-4">
-          {productStore.map((item) => (
-            <div className="  flex gap-4" key={item.id}>
+        <div className=" order-1 md:order-none space-y-4">
+          {productStore.map((item, idx) => (
+            <div className="  flex gap-4" key={idx}>
               <div className="relative w-16 h-auto shrink-0 rounded-lg md:w-20">
                 {/* image of product */}
                 <Image
@@ -203,8 +212,6 @@ const Page = () => {
               </TableBody>
             </Table>
           </div>
-
-          <div></div>
         </div>
       </div>
     </div>
@@ -212,3 +219,36 @@ const Page = () => {
 };
 
 export default Page;
+
+function DiscountInput() {
+  const [couponCode, setCouponCode] = useState("");
+  const [message, setMessage] = useState<any>("");
+  async function applyCoupon(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    try {
+      const res = await checkCoupon(couponCode);
+      console.log(res);
+    } catch (error: any) {
+      console.error(error);
+      setMessage(error);
+    }
+  }
+  return (
+    <div className=" space-y-1">
+      <Label>Add Coupon</Label>
+      <InputGroup className=" w-full">
+        <InputGroupInput
+          value={couponCode}
+          onChange={(e) => setCouponCode(e.currentTarget.value)}
+          placeholder="WELCOME10"
+        />
+        <InputGroupAddon align={"inline-end"}>
+          <InputGroupButton onClick={applyCoupon} className=" cursor-pointer">
+            Apply
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+      <p>{message}</p>
+    </div>
+  );
+}

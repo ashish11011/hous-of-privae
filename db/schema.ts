@@ -1,4 +1,4 @@
-import { taileredFit, user } from "./userSchema";
+import { coupon, couponTransaction, taileredFit, user } from "./userSchema";
 import { product } from "./productSchema";
 import { review } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
@@ -18,13 +18,14 @@ export const orderTable = order;
 export const orderItemsTable = orderItem;
 
 export const userTable = user;
+export const userCoupons = coupon;
+export const usercouponTransaction = couponTransaction;
 
 export const reviewsTable = review;
 
 export const contactTable = contact;
 
 export const blogTable = blog;
-
 export const blogFormTable = blogForm;
 
 export const subscriptionTable = subscription;

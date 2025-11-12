@@ -24,12 +24,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Heart, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Heart, Minus, Plus } from "lucide-react";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import TailoredFitFormModal from "@/components/productCustomization";
 import SizeGuideSheet from "@/components/sizeChartSheet";
 import { ShowProductPrice } from "@/lib/productHealper";
+import { useRouter } from "next/navigation";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
@@ -100,7 +101,6 @@ export default function ProductInformation({ productData }: any) {
               </Carousel>
               <div className=" flex overflow-x-auto gap-3 p-3">
                 {images.map((image: string, idx: number) => {
-                  console.log(convertS3ToImageKit(image));
                   return (
                     <Image
                       className=" w-16 h-auto"
@@ -138,6 +138,7 @@ export interface Product {
   description: string;
   bannerImage: string;
   basePrice: number;
+  semiStitchedPrice?: number;
   categoryId1: string;
   categoryId2: string | null;
   slug: string;
@@ -154,22 +155,15 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     useStore();
   const { addItemToWishlist, productWishlist, removeItemFromWishlist } =
     userWishlistStore();
-  const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(productData.colors?.[0]);
   const [selectedSize, setSelectedSize] = useState<string | null>(
     productData.sizes?.[0]
   );
 
-  const sizes = ["XS", "S", "M", "L"]; // You can also make this dynamic
+  const router = useRouter();
 
   const handleAddToCart = () => {
-    toast.success("Item added to cart", {
-      // description: "Sunday, December 03, 2023 at 9:00 AM",
-      // action: {
-      //   label: "Undo",
-      //   onClick: () => console.log("Undo"),
-      // },
-    });
+    toast.success("Item added to cart", {});
 
     if (selectedColor && selectedSize) {
       const product: CartProduct = {
@@ -219,16 +213,30 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     toast.success("Added to wishlist");
   }
 
+  function handleBackClick() {
+    router.push("/");
+  }
+  function getProdcutPrice() {
+    if (selectedSize === "semi-stitched" && productData.semiStitchedPrice) {
+      return productData.semiStitchedPrice;
+    }
+    return productData.basePrice;
+  }
+
   return (
     <div className=" h-fit sticky top-16">
       <Toaster position="top-right" />
       {/* Name */}
+      <Button className=" !px-0" variant={"link"} onClick={handleBackClick}>
+        <ArrowLeft />
+        Back
+      </Button>
       <p className="roboto text-2xl   mb-1 font-semibold">{productData.name}</p>
       <p className=" mb-3">{productData.sku}</p>
 
       {/* Price */}
       <p className="roboto tracking-wider mb-6 font-semibold">
-        <ShowProductPrice price={productData.basePrice} />
+        <ShowProductPrice price={getProdcutPrice()} />
       </p>
 
       {/* Color Selector */}
@@ -249,7 +257,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         ))}
       </div> */}
 
-      <div className="flex gap-2 items-center mb-6">
+      <div className="flex gap-2 flex-wrap items-center">
         {productData.sizes.map((size: string) => (
           <button
             key={size}
@@ -264,6 +272,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           </button>
         ))}
       </div>
+      <SizeGuideSheet />
 
       {/* <div className="col-span-1 max-w-56 h-12 border border-gray-400  rounded overflow-hidden flex items-center justify-end  gap-2">
         <button
@@ -389,12 +398,25 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="1">
-          <AccordionTrigger>Return & Refund</AccordionTrigger>
+        <AccordionItem value="4">
+          <AccordionTrigger>Delivery Info</AccordionTrigger>
           <AccordionContent>
-            Hassle-free 7-day return and exchange available.
+            <p className="text-sm text-muted-foreground">
+              Your order will be delivered within{" "}
+              <span className="font-medium text-foreground">
+                7-10 business days
+              </span>
+              .
+            </p>
           </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="5">
+          <AccordionTrigger>Product Description</AccordionTrigger>
+          <AccordionContent>
+            <p className="roboto   mb-3">{productData.description}</p>
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="2">
           <AccordionTrigger>Additional Information</AccordionTrigger>
           <AccordionContent>
@@ -412,32 +434,21 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             </div>
           </AccordionContent>
         </AccordionItem>
+
+        <AccordionItem value="1">
+          <AccordionTrigger>Return & Refund</AccordionTrigger>
+          <AccordionContent>
+            Hassle-free 7-day return and exchange available.
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="3">
-          <AccordionTrigger>Modle Info</AccordionTrigger>
+          <AccordionTrigger>Model Info</AccordionTrigger>
           <AccordionContent>
             <div className="text-sm text-gray-600 border rounded px-3 py-2  flex items-center gap-3">
               <TInfoCircle />
               Model height: {productData.model_height} · Size - S
             </div>
-            <SizeGuideSheet />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="4">
-          <AccordionTrigger>Delivery Info</AccordionTrigger>
-          <AccordionContent>
-            <p className="text-sm text-muted-foreground">
-              Your order will be delivered within{" "}
-              <span className="font-medium text-foreground">
-                7-10 business days
-              </span>
-              .
-            </p>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="5">
-          <AccordionTrigger>Product Description</AccordionTrigger>
-          <AccordionContent>
-            <p className="roboto   mb-3">{productData.description}</p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

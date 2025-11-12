@@ -15,7 +15,7 @@ const NavBarClient = () => {
           href="/search"
           className=" flex gap-1 items-center justify-center"
         >
-          <SearchIcon className=" size-6 sm:size-5" />
+          <SearchIcon size={22} className="" />
           <p className=" hidden sm:block">Search</p>
         </Link>
         <CartSheet />
@@ -38,8 +38,8 @@ async function NavbarUserMenu() {
     );
   }
   return (
-    <Link href="/auth/login">
-      <LogIn />
+    <Link className=" flex gap-1.5 items-center" href="/auth/login">
+      <LogIn size={20} />
       <p className=" hidden lg:block">Login</p>
     </Link>
   );

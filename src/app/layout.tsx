@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "@/lib/auth/authProvider";
 import Script from "next/script";
+import { TWhatsApp } from "@/lib/icons";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const inter = Inter({
   weight: ["400"],
@@ -96,6 +99,17 @@ export default function RootLayout({
         className={`   ${inter.className} bg-[#fff]  text-shadow-neutral-800 text-[#3d1700] antialiased`}
       >
         <SessionWrapper>{children}</SessionWrapper>
+        {/* <div className=" bg-yellow-950 text-white p-1.5">
+        </div> */}
+        <Link
+          href={`https://wa.me/+917023117408?text=Welcome%20to%20Haus%20of%20Privae%20%E2%9C%A8%0AWe%E2%80%99re%20delighted%20to%20have%20you%20here.%0A%0AStep%20into%20a%20world%20of%20refined%20craftsmanship%2C%20where%20every%20creation%20embodies%20elegance%20and%20individuality.%0A%0AOur%20team%20would%20be%20delighted%20to%20assist%20you%20with%20product%20or%20order-related%20queries%2C%20private%20appointments%2C%20or%20customization%20requests%20crafted%20exclusively%20for%20you.%0A%0AMay%20we%20know%20what%20you%E2%80%99d%20like%20help%20with%20today%3F
+`}
+          target="_blank"
+        >
+          <Button className="h-auto w-auto size-12 hover:scale-110 duration-150 cursor-pointer fixed bottom-8 right-8 z-50 rounded-full ">
+            <TWhatsApp className=" size-8" />
+          </Button>
+        </Link>
       </body>
     </html>
   );

@@ -59,17 +59,20 @@ const ProductEdit = ({ productData, slug }: any) => {
   const handleFormSubmit = async (values: any) => {
     try {
       if (slug === "create") {
-        await fetch("/api/admin/products/create", {
+        const res = await fetch("/api/admin/products/create", {
           method: "POST",
           body: JSON.stringify(values),
         });
-        alert("Product created successfully");
+        const resMsg = await res.json();
+        alert(resMsg.msg);
       } else {
-        await fetch("/api/admin/products/update", {
+        const res = await fetch("/api/admin/products/update", {
           method: "POST",
           body: JSON.stringify(values),
         });
-        alert("Product updated successfully");
+        const resMsg = await res.json();
+
+        alert(resMsg.msg);
       }
 
       router.push("/admin");
@@ -146,6 +149,12 @@ const ProductEdit = ({ productData, slug }: any) => {
             labelName="Base Price"
             placeholder="Enter base price"
             name="basePrice"
+            type="number"
+          />
+          <LabelInput
+            labelName="Semi Stitched Price"
+            placeholder="Enter base price"
+            name="semiStitchedPrice"
             type="number"
           />
           <Select

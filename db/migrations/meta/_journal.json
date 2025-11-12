@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1752496120373,
-      "tag": "0000_furry_retro_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1752500321524,
-      "tag": "0001_right_boomerang",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1752501987853,
-      "tag": "0002_ambiguous_joseph",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1754249135482,
-      "tag": "0003_yellow_silver_fox",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1754249418093,
-      "tag": "0004_flimsy_switch",
+      "when": 1762254012341,
+      "tag": "0000_stormy_vertigo",
       "breakpoints": true
     }
   ]

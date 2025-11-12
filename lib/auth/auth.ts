@@ -21,7 +21,6 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
@@ -46,8 +45,6 @@ export const authOptions = {
 
           const idToken = auth.IdToken;
           const decoded: any = jwt.decode(idToken as string);
-          // console.log(decoded);
-          // console.log(decoded["custom:id"]);
           return {
             username: credentials.username,
             id: decoded.sub,
@@ -80,14 +77,12 @@ export const authOptions = {
     async jwt({ token, user, account, profile }: any) {
       if (user) {
         if (account?.provider === "credentials") {
-          console.log("User: ", user);
           token.username = user.username;
           token.id = user["custom:id"];
           token.email = user.email;
 
           const userData = await getUserByEmail(user.email);
 
-          console.log(userData);
           if (!userData) {
             throw new Error("USER_NOT_FOUND");
           }

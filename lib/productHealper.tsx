@@ -22,7 +22,6 @@ export const ShowProductPrice = ({ price }: { price: number }) => {
 
   if (currency === "USD") {
     const value = price / DOLLAR_CONVERSION_VALUE;
-    console.log(price);
     return <> USD {value.toFixed(2)}</>;
   }
 };

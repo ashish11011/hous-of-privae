@@ -40,7 +40,6 @@ export default function TailoredFitFormModal() {
       return;
     }
     const payload = { unit, ...form };
-    console.log("Tailored Fit Submission:", payload);
     const res = await fetch("/api/tailored-fit", {
       method: "POST",
       headers: {

@@ -32,7 +32,6 @@ const Footer = () => {
   const sbmitSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (subscribeInput.trim() != "") {
-      console.log(subscribeInput);
       toast.success("Subscribed successfully");
     } else {
       toast.error("Please enter your email");

@@ -124,20 +124,20 @@ function CoutureSection() {
   return (
     <div className="min-h-[24rem] md:min-h-[40rem] py-10 px-4  flex flex-col items-center justify-end w-full relative">
       <Image
-        src="/crousel/tour.jpeg"
+        src="/contact%20us%20banner.jpg"
         className=" object-cover absolute inset-0 w-full h-full"
         width={800}
         height={800}
         alt="banner"
       />
-      <div className=" flex space-y-8 sm:space-y-20 flex-col z-10 h-full text-white">
-        <p className=" text-center text-xl md:text-5xl font-medium font2 capitalize">
+      <div className=" flex space-y-8 sm:space-y-20 mb-20 flex-col z-10 h-full text-white">
+        {/* <p className=" text-center text-xl md:text-5xl font-medium font2 capitalize">
           exquisite luxury, flawlessly tailored
-        </p>
-        <div className="flex flex-col md:flex-row gap-5 w-full items-center justify-center">
+        </p> */}
+        <div className="flex flex-col md:flex-row gap-5  w-full items-center justify-center">
           <Link href="/contact-us" target="_blank">
             <Button
-              className=" w-60 bg-transparent rounded-xs"
+              className=" w-60 bg-transparent font-bold rounded-xs"
               variant={"outline"}
               size={"lg"}
             >
@@ -146,7 +146,7 @@ function CoutureSection() {
           </Link>
           <Link href="https://wa.me/917023117408" target="_blank">
             <Button
-              className=" w-60 bg-transparent rounded-xs"
+              className=" w-60 bg-transparent font-bold rounded-xs"
               variant={"outline"}
               size={"lg"}
             >
