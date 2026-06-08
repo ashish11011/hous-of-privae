@@ -3,17 +3,17 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  // const token = await getToken({
+  //   req: request,
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // });
 
-  const { pathname } = request.nextUrl;
+  // const { pathname } = request.nextUrl;
 
-  // Not logged in
-  if (!token) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
-  }
+  // // Not logged in
+  // if (!token) {
+  //   return NextResponse.redirect(new URL("/auth/login", request.url));
+  // }
 
   // Not an admin
   // if (token?.user?.user_type !== "1") {
