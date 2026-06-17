@@ -66,7 +66,7 @@ const ProductCard = ({
       <Link
         href={`/product/${product.slug}`}
         onMouseMove={handleMove}
-        className="product-cursor-area block relative overflow-hidden md:hover:cursor-none"
+        className="product-cursor-area block relative overflow-hidden"
       >
         <div className={`relative `}>
           <ImageWithSkeleton
