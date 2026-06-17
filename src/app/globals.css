@@ -12,6 +12,54 @@
   font-family: "roboto", sans-serif;
 }
 
+.section-rule {
+  width: 80px;
+  height: 1px;
+  margin: 0 auto;
+  background-color: hsl(var(--gold) / 0.45);
+}
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: hsl(var(--gold));
+}
+
+
+.product-cursor-area { position: relative; }
+.product-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate3d(calc(var(--x, 0px) - 50%), calc(var(--y, 0px) - 50%), 0) scale(0.85);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 20;
+  background: hsl(var(--gold) / 0.95);
+  color: hsl(var(--primary-foreground));
+  font-family: var(--font-body);
+  font-size: 9.5px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px hsl(var(--foreground) / 0.18);
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-cursor-area:hover .product-cursor {
+    opacity: 1;
+    transform: translate3d(calc(var(--x, 0px) - 50%), calc(var(--y, 0px) - 50%), 0) scale(1);
+  }
+}
+
+
+
+
+
 @custom-variant dark (&:is(.dark *));
 
 /* @theme inline {
@@ -141,6 +189,7 @@
   --destructive: oklch(0.5770 0.2450 27.3250);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.9220 0 0);
+  --gold: 40 60% 50%;
   --input: oklch(0.9220 0 0);
   --ring: oklch(0.7080 0 0);
   --chart-1: oklch(0.8100 0.1000 252);

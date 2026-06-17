@@ -95,25 +95,29 @@ export const CATEGORY_1 = [
     id: "c1a1e1b1-1234-4d3a-9f0a-abc111def001",
     name: "Sarees",
     slug: "sarees",
-    image: "/category/sarees.jpg?w=300&h=300",
+    image: "https://ik.imagekit.io/hop/category/sarees.jpg?w=300&h=300",
+    tagline: "Elegance woven in every thread",
   },
   {
     id: "c1a1e1b2-1234-4d3a-9f0a-abc111def002",
     name: "Occasion Wear",
     slug: "occasion-wear",
-    image: "/category/occasion-wear.jpg?w=300&h=300",
+    image: "https://ik.imagekit.io/hop/category/occasion-wear.jpg?w=300&h=300",
+    tagline: "Timeless elegance, modern silhouettes",
   },
   {
     id: "c1a1e1b5-1234-4d3a-9f0a-abc111def005",
     name: "Loungewear",
     slug: "loungewear",
-    image: "/category/kurta-chunni-set.jpg?w=300&h=300",
+    image: "https://ik.imagekit.io/hop/category/kurta-chunni-set.jpg?w=300&h=300",
+    tagline: "Effortless style meets everyday comfort",
   },
   {
     id: "c1a1e1b9-1234-4d3a-9f0a-abc111def009",
     name: "Ready To Wear",
     slug: "ready-to-wear",
-    image: "//1759177487581-Copy of 2S0A7588.webp?w=300&h=300",
+    image: "https://ik.imagekit.io/hop/1759177487581-Copy of 2S0A7588.webp?w=300&h=300",
+    tagline: "Modern silhouettes, effortless style",
   },
 ];
 

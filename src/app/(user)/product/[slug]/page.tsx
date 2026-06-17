@@ -24,8 +24,10 @@ const Page = async ({ params }: { params: any }) => {
 
   return (
     <>
-      <ProductInformation productData={safeProductData} />
-      <ShowMoreProducts simillarProducts={simillarProducts} />
+      <div className=" container mx-auto px-6">
+        <ProductInformation productData={safeProductData} />
+        {/* <ShowMoreProducts simillarProducts={simillarProducts} /> */}
+      </div>
     </>
   );
 };

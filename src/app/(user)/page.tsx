@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import FaqSection from "@/components/Faq";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
+import ImageWithSkeleton from "@/components/ImageWithSkeleton";
+import { Categories } from "./Categories";
+import BrandStorySection from "./BrandStory";
+import AppointmentSection from "./AppointmentSection";
+import NotesFromJaipur from "./NoteFromJaipur";
+import WatchTheMaisonSection from "./WatchTheMaisonSection";
 
 export const revalidate = 86400;
 
@@ -15,58 +21,33 @@ export default async function Home() {
   return (
     <div className=" w-full">
       <Carousel />
+
       <Categories />
+      <div className="section-rule my-2" />
       {/* <VideoPlay /> */}
       {/* <Categories2 /> */}
 
       <ProductCarousel />
       <div className="h-12"></div>
       {/* <RevicesCarousel /> */}
-      <BrandValues />
-      <CoutureSection />
+      {/* <BrandValues /> */}
+      {/* <CoutureSection /> */}
+      {/* <div className="section-rule my-2" /> */}
+      {/* <div className="reveal"><WatchTheMaisonSection /></div> */}
+      {/* <div className="section-rule my-2" /> */}
+      <div className="reveal"><NotesFromJaipur /></div>
+      <div className="section-rule my-2" />
+      <div id="privae-studio" className="reveal">
+        <AppointmentSection />
+      </div>
+      <div className="reveal"><BrandStorySection /></div>
       <FaqSection />
+      <div className="h-16"></div>
     </div>
   );
 }
 
-function Categories() {
-  return (
-    <div className=" pt-10 pb-4 space-y-8">
-      <p className="roboto text-4xl font2 font-bold md:font-semibold  text-center">
-        Categories
-      </p>
-      <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4">
-        {CATEGORY_1.map((item, idx) => {
-          return (
-            <div key={idx} className="  p-0.5 w-full h-64 lg:h-[28rem] ">
-              <Link href={`category/${item.slug}`}>
-                <div className="group h-full cursor-pointer w-full overflow-hidden relative">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={800}
-                    height={800}
-                    className=" h-full group-hover:scale-110 duration-300  w-full object-cover"
-                  />
-                  <div className=" absolute top-0 left-0 w-full h-full bg-black opacity-30"></div>
-                  <p
-                    style={{
-                      fontWeight: 600,
-                      // textShadow: "2px 2px 4px rgba(0,0,0,0.8)", // X-offset, Y-offset, blur, color
-                    }}
-                    className=" absolute p-4 bottom-0 left-0 roboto text-gray-200  w-full text-xl  md:text-3xl roboto line-clamp-2"
-                  >
-                    {item.name}
-                  </p>
-                </div>
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+
 
 // function Categories2() {
 //   return (

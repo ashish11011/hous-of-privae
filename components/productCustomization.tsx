@@ -76,8 +76,8 @@ export default function TailoredFitFormModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className=" mt-4" variant="default">
-          Open Tailored Fit Form
+        <Button className=" text-xs underline h-fit py-0" variant="link">
+          Privae Fit
         </Button>
       </DialogTrigger>
 

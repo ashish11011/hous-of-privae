@@ -6,6 +6,7 @@ import Script from "next/script";
 import { TWhatsApp } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { CurrencyProvider } from "@/contextCurrencyContext";
 
 const inter = Inter({
   weight: ["400"],
@@ -98,7 +99,9 @@ export default function RootLayout({
         cz-shortcut-listen="true"
         className={`   ${inter.className} bg-[#fff]  text-shadow-neutral-800 text-[#3d1700] antialiased`}
       >
-        <SessionWrapper>{children}</SessionWrapper>
+        <CurrencyProvider>
+          <SessionWrapper>{children}</SessionWrapper>
+        </CurrencyProvider>
         {/* <div className=" bg-yellow-950 text-white p-1.5">
         </div> */}
         <Link

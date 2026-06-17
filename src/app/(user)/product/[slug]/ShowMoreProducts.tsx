@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/ProductCard";
+// import { ProductCard } from "@/components/ProductCard";
 import React from "react";
 
 const ShowMoreProducts = ({ simillarProducts }: any) => {
@@ -9,13 +9,13 @@ const ShowMoreProducts = ({ simillarProducts }: any) => {
       </p>
 
       <div className=" px-4 grid max-w-7xl mx-auto grid-cols-2 md:grid-cols-4 pb-8 gap-2 md:gap-4 w-full">
-        {simillarProducts.map((item: any, index: number) => (
+        {/* {simillarProducts.map((item: any, index: number) => (
           <ProductCard
             key={index}
             className=" lg:w-full w-full"
             itemData={item}
           />
-        ))}
+        ))} */}
       </div>
     </div>
   );

@@ -55,44 +55,44 @@ const faqs = [
     answer: `Each piece includes specific care instructions on its product page. We recommend 
     dry cleaning or gentle handwashing to preserve craftsmanship and longevity.`,
   },
-  {
-    category: "Payments & Pricing",
-    question: "What payment options are available?",
-    answer: `We accept all major credit/debit cards, UPI, and net banking. For international 
-    customers, payments can be made through secure international gateways available at checkout.`,
-  },
-  {
-    category: "Customer Experience",
-    question: "Can I visit Haus of Privae in person?",
-    answer: `Yes, you can visit our Jaipur studio for personalized styling sessions and 
-    one-on-one consultations. Schedule an appointment via our Contact Us page.`,
-  },
-  {
-    category: "Stay Connected",
-    question: "How can I stay updated about new launches and collections?",
-    answer: `Follow us on Instagram for updates, or subscribe to our newsletter to receive 
-    exclusive previews, style stories, and collection updates directly in your inbox.`,
-  },
-  {
-    category: "Packaging & Gifting",
-    question: "Do you offer gift packaging or notes?",
-    answer: `Yes. Every order is beautifully wrapped in our signature Haus of Privae packaging. 
-    You can also include a personalized note for gifting during checkout.`,
-  },
-  {
-    category: "Product Availability",
-    question: "Do you restock sold-out pieces?",
-    answer: `Our collections are produced in limited quantities to maintain exclusivity. 
-    Restocks are rare, but you can contact our team to inquire about custom recreations 
-    of select designs.`,
-  },
-  {
-    category: "Contact & Support",
-    question: "How can I reach Haus of Privae?",
-    answer: `You can reach us via the Contact Us page or email us at 
-    queries.hausofprivae@gmail.com. Our client relations team will assist with customization, sizing, 
-    or order queries.`,
-  },
+  // {
+  //   category: "Payments & Pricing",
+  //   question: "What payment options are available?",
+  //   answer: `We accept all major credit/debit cards, UPI, and net banking. For international 
+  //   customers, payments can be made through secure international gateways available at checkout.`,
+  // },
+  // {
+  //   category: "Customer Experience",
+  //   question: "Can I visit Haus of Privae in person?",
+  //   answer: `Yes, you can visit our Jaipur studio for personalized styling sessions and 
+  //   one-on-one consultations. Schedule an appointment via our Contact Us page.`,
+  // },
+  // {
+  //   category: "Stay Connected",
+  //   question: "How can I stay updated about new launches and collections?",
+  //   answer: `Follow us on Instagram for updates, or subscribe to our newsletter to receive 
+  //   exclusive previews, style stories, and collection updates directly in your inbox.`,
+  // },
+  // {
+  //   category: "Packaging & Gifting",
+  //   question: "Do you offer gift packaging or notes?",
+  //   answer: `Yes. Every order is beautifully wrapped in our signature Haus of Privae packaging. 
+  //   You can also include a personalized note for gifting during checkout.`,
+  // },
+  // {
+  //   category: "Product Availability",
+  //   question: "Do you restock sold-out pieces?",
+  //   answer: `Our collections are produced in limited quantities to maintain exclusivity. 
+  //   Restocks are rare, but you can contact our team to inquire about custom recreations 
+  //   of select designs.`,
+  // },
+  // {
+  //   category: "Contact & Support",
+  //   question: "How can I reach Haus of Privae?",
+  //   answer: `You can reach us via the Contact Us page or email us at 
+  //   queries.hausofprivae@gmail.com. Our client relations team will assist with customization, sizing, 
+  //   or order queries.`,
+  // },
 ];
 
 export default function FaqSection() {

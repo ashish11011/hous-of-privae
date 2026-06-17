@@ -64,7 +64,7 @@ export default function SizeGuideSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className=" mb-4 underline px-0" variant="link">
+        <Button className="text-xs underline px-0 !h-fit !p-0" variant="link">
           View Size Guide
         </Button>
       </SheetTrigger>

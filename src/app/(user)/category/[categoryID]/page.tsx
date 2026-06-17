@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/ProductCard";
+// import { ProductCard } from "@/components/ProductCard";
 import { CATEGORY_1 } from "@/const";
 import { getProductByCategory } from "@/lib";
 import React from "react";
@@ -24,7 +24,7 @@ const Page = async ({ params }: { params: any }) => {
         Category - {categoryID}
       </h3>
       <div className="  grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {productsData.map((item, idx) => {
+        {/* {productsData.map((item, idx) => {
           return (
             <ProductCard
               className=" w-full lg:w-full"
@@ -32,7 +32,7 @@ const Page = async ({ params }: { params: any }) => {
               key={idx}
             />
           );
-        })}
+        })} */}
       </div>
     </div>
   );

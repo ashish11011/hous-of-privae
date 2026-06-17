@@ -31,50 +31,76 @@ import TailoredFitFormModal from "@/components/productCustomization";
 import SizeGuideSheet from "@/components/sizeChartSheet";
 import { ShowProductPrice } from "@/lib/productHealper";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
   const imagesLength = images.length;
 
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [mainImage, setMainImage] = useState<string>(images[0] || bannerImage);
+
   useEffect(() => {
     setIsPageLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      setMainImage(images[0]);
+    } else if (bannerImage) {
+      setMainImage(bannerImage);
+    }
+  }, [images, bannerImage]);
 
   const isMobile = useIsMobile();
 
   return (
     <>
-      <div className="grid grid-cols-4 lg:grid-cols-6 w-full gap-4">
+      <div className="  grid grid-cols-12 gap-6">
         {/* Left Side - Images */}
 
         {isPageLoaded ? (
           !isMobile ? (
-            <div className="w-full col-span-4 flex flex-wrap">
-              {images.map((image: string, idx: number) => {
-                let widthClass = "w-1/2"; // Default width
+            <div className=" col-span-12 w-full md:col-span-5 flex flex-col gap-4">
+              {/* Main Image */}
+              <div className="w-full bg-neutral-50 relative">
+                {mainImage && (
+                  <Image
+                    className="w-full h-auto object-cover"
+                    src={convertS3ToImageKit(mainImage)}
+                    alt="Main Product Image"
+                    width={800}
+                    height={1000}
+                    priority
+                  />
+                )}
+              </div>
 
-                // For odd number of images, last row can be 3
-                if (imagesLength % 2 !== 0 && idx >= imagesLength - 3) {
-                  widthClass = "w-1/3";
-                }
-
-                return (
-                  <div key={idx} className={`${widthClass} p-0.5 h-auto`}>
+              {/* Thumbnail Images */}
+              <div className="flex w-full flex-wrap gap-3">
+                {images.map((image: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setMainImage(image)}
+                    className={`shrink-0 border-2 transition-all ${mainImage === image
+                      ? "border-neutral-800"
+                      : "border-transparent hover:border-gray-300"
+                      }`}
+                  >
                     <Image
-                      className="w-full h-auto object-cover "
+                      className="w-20 md:w-24 lg:w-28 h-auto object-cover"
                       src={convertS3ToImageKit(image)}
-                      alt={`Image ${idx + 1}`}
+                      alt={`Thumbnail ${idx + 1}`}
                       width={100}
                       height={100}
                       priority
                     />
-                  </div>
-                );
-              })}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className=" col-span-4">
+            <div className=" col-span-12">
               <Carousel
                 plugins={[
                   Autoplay({
@@ -118,7 +144,7 @@ export default function ProductInformation({ productData }: any) {
         ) : null}
 
         {/* Right Side - Placeholder */}
-        <div className="w-full p-4 md:p-6 xl:p-10 col-span-4 lg:col-span-2">
+        <div className="w-full p-4 md:p-6 xl:p-10 col-span-12 md:col-span-7">
           <ProductAbout productData={productData} />
         </div>
       </div>
@@ -224,243 +250,243 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   }
 
   return (
-    <div className=" h-fit sticky top-16">
+    <div className="flex flex-col gap-6 h-fit sticky top-16 text-neutral-800">
       <Toaster position="top-right" />
-      {/* Name */}
-      <Button className=" !px-0" variant={"link"} onClick={handleBackClick}>
-        <ArrowLeft />
-        Back
-      </Button>
-      <p className="roboto text-2xl   mb-1 font-semibold">{productData.name}</p>
-      <p className=" mb-3">{productData.sku}</p>
 
-      {/* Price */}
-      <p className="roboto tracking-wider mb-6 font-semibold">
-        <ShowProductPrice price={getProdcutPrice()} />
-      </p>
-
-      {/* Color Selector */}
-      {/* <div className="flex gap-2 items-center flex-wrap mb-4">
-        {productData.colors?.map((color: string, idx: number) => (
-          <button
-            key={idx}
-            // onClick={() => setSelectedColor(color)}
-            className={`size-8 shrink-0 p-0.5 rounded-full border-2 
-
-            `}
-          >
-            <div
-              className="w-full h-full rounded-full"
-              style={{ backgroundColor: color }}
-            ></div>
-          </button>
-        ))}
-      </div> */}
-
-      <div className="flex gap-2 flex-wrap items-center">
-        {productData.sizes.map((size: string) => (
-          <button
-            key={size}
-            onClick={() => setSelectedSize(size)}
-            className={`px-4 py-1 border rounded-full text-sm  font-medium transition ${
-              selectedSize === size
-                ? "bg-neutral-100 text-black ring-2 ring-blue-400"
-                : "border-gray-400 text-gray-800"
-            }`}
-          >
-            {size}
-          </button>
-        ))}
-      </div>
-      <SizeGuideSheet />
-
-      {/* <div className="col-span-1 max-w-56 h-12 border border-gray-400  rounded overflow-hidden flex items-center justify-end  gap-2">
-        <button
-          className="flex items-center justify-center hover:bg-neutral-200 cursor-pointer px-3 py-2 duration-200 h-full w-full "
-
-        >
-          <Minus size={16} />
-        </button>
-        <span className="">
-
-        </span>
-        <button className="flex items-center justify-center hover:bg-neutral-200 cursor-pointer px-3 py-2 duration-200 h-full w-full ">
-          <Plus size={16} />
-        </button>
-      </div> */}
-
-      <div className=" w-full grid grid-cols-2 gap-4">
-        {productStore.filter(
-          (item) => item.id === productData.id && item.size === selectedSize
-        )[0]?.quantity ? (
-          <ButtonGroup className=" w-full">
-            <Button
-              className=" w-16 h-10"
-              onClick={() =>
-                decreaseQuantity({
-                  id: productData.id,
-                  color: selectedColor,
-                  size: selectedSize as string,
-                })
-              }
-              variant={"outline"}
-            >
-              <Minus />
-            </Button>
-            <ButtonGroupText className=" w-16 h-10 text-center">
-              <p className=" w-full">
-                {
-                  productStore.filter(
-                    (item) =>
-                      item.id === productData.id && item.size === selectedSize
-                  )[0]?.quantity
-                }
-              </p>
-            </ButtonGroupText>
-            <Button
-              className=" w-16 h-10"
-              onClick={() =>
-                increaseQuantity({
-                  id: productData.id,
-                  color: selectedColor,
-                  size: selectedSize as string,
-                })
-              }
-              variant={"outline"}
-            >
-              <Plus />
-            </Button>
-          </ButtonGroup>
-        ) : (
-          <Button
-            size={"lg"}
-            onClick={() => handleAddToCart()}
-            className=" h-10 uppercase"
-          >
-            ADD TO wardrobe
-          </Button>
-        )}
-        {productWishlist.filter((item) => item.id === productData.id)[0] ? (
-          <Button
-            onClick={() => removeWishlistHandler(productData.id)}
-            variant={"outline"}
-            className=" h-10"
-            size={"lg"}
-          >
-            <Heart fill="#38080d" />
-            <p>Remove item</p>
-          </Button>
-        ) : (
-          <Button
-            onClick={() => addWishlistHandler(productData.id)}
-            variant={"outline"}
-            className=" h-10"
-            size={"lg"}
-          >
-            <Heart />
-            <p>Add to wishlist</p>
-          </Button>
-        )}
-      </div>
-
-      {/* Size Selector */}
-      {/* <div>
-        <p className=" roboto text-xl   mb-3 font-semibold">
-          Additional Information
+      {/* Header section */}
+      <div>
+        <div className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 uppercase w-max mb-3">New</div>
+        <h1 className="text-3xl font-serif mb-1 text-neutral-800">{productData.name}</h1>
+        <p className="text-xs text-neutral-400 uppercase tracking-widest mb-4">SKU: {productData.sku}</p>
+        <p className="text-xl text-primary font-medium mb-4">
+          <ShowProductPrice price={getProdcutPrice()} />
         </p>
+        <p className="text-sm text-neutral-600 leading-relaxed">
+          {productData.description || "A whisper of lilac, drawn long and lit from within. Made to drift through unhurried evenings."}
+        </p>
+      </div>
 
-        
-      </div> */}
+      {/* Variant Selection */}
+      <div className="space-y-3">
+        <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Choose Variant</p>
+        <div className="grid grid-cols-2 gap-0 border border-neutral-300">
+          <button className="bg-primary text-primary-foreground py-3 text-xs tracking-widest uppercase font-medium">Stitched</button>
+          <button className="bg-transparent text-neutral-500 py-3 text-xs tracking-widest uppercase font-medium">Unstitched</button>
+        </div>
+      </div>
 
-      <Separator className="my-6" />
+      {/* Details Grid */}
+      <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-xs">
+        <div>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Fabric</p>
+          <p className="text-neutral-600">{productData.fabric || "Pure Chanderi Silk"}</p>
+        </div>
+        <div>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Color</p>
+          {/* <p className="text-neutral-600">{productData.colors?.[0] || "Lilac"}</p> */}
+          <div style={{
+            backgroundColor: productData.colors?.[0]
+          }} className={` h-8 w-20 `}></div>
+        </div>
+        <div>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Occasion</p>
+          <p className="text-neutral-600">Festive, Pooja, Wedding Guest</p>
+        </div>
+        <div>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Work</p>
+          <p className="text-neutral-600">Hand Embroidery, Mirror Work</p>
+        </div>
+      </div>
 
-      <Accordion defaultValue={["1", "2", "3", "4", "5", "6"]} type="multiple">
-        <AccordionItem value="6">
-          <AccordionTrigger>Want to customize?</AccordionTrigger>
-          <AccordionContent>
-            <p className="text-sm text-muted-foreground">
-              We'd love to help you create something unique. Please email us at{" "}
-              <a
-                href="mailto:queries.hausofprivae@gmail.com"
-                className="text-primary underline hover:text-primary/80"
-              >
-                queries.hausofprivae@gmail.com
-              </a>{" "}
-              or call us at{" "}
-              <a
-                href="tel:+917023117408"
-                className="text-primary underline hover:text-primary/80"
-              >
-                +91&nbsp;70231&nbsp;17408
-              </a>
-              .
-              <TailoredFitFormModal />
-            </p>
+      {/* Size Selection */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Select Size</p>
+          <div className="flex  gap-3 text-xs text-primary">
+            <TailoredFitFormModal />
+            {/* <span className="text-neutral-300">·</span> */}
+            <SizeGuideSheet />
+          </div>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {productData.sizes.map((size: string) => (
+            <button
+              key={size}
+              onClick={() => setSelectedSize(size)}
+              className={`w-fit px-4 h-10 border text-xs font-medium uppercase transition ${selectedSize === size
+                ? "border-primary text-primary"
+                : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                }`}
+            >
+              {size}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Complimentary Fit Adjustment */}
+      <div className="bg-[#fdfbf7] border border-[#eaddce] text-[#a68a61] text-xs py-3 px-4 flex items-center gap-2 uppercase tracking-wide">
+        <span>✂</span> Complimentary fit adjustment · 14 days
+      </div>
+
+      {/* Add to Bag and Wishlist */}
+      <div className="flex gap-2">
+        <Button
+          onClick={() => handleAddToCart()}
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-none tracking-widest uppercase text-xs font-medium"
+        >
+          Add to Bag
+        </Button>
+        <Button
+          onClick={() => {
+            if (productWishlist.filter((item) => item.id === productData.id)[0]) {
+              removeWishlistHandler(productData.id);
+            } else {
+              addWishlistHandler(productData.id);
+            }
+          }}
+          variant="outline"
+          className="h-12 w-12 rounded-none border-neutral-300"
+        >
+          <Heart className={productWishlist.filter((item) => item.id === productData.id)[0] ? "fill-primary text-primary" : "text-neutral-500"} size={18} />
+        </Button>
+      </div>
+
+      <Button variant="outline" className="w-full h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium">
+        🔔 Notify me when back in stock
+      </Button>
+
+      <div className="flex gap-2">
+        <Button variant="outline" className="flex-1 h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium">
+          Share
+        </Button>
+        <Button variant="outline" className="flex-1 h-12 rounded-none border-[#eaddce] bg-[#fdfbf7] text-[#a68a61] tracking-widest uppercase text-xs font-medium">
+          Privae Concierge
+        </Button>
+      </div>
+
+      {/* Delivery Check */}
+      <div className="bg-[#f9f9f9] p-4 space-y-3">
+        <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase flex items-center gap-2">
+          📍 Check Delivery (Pincode)
+        </p>
+        <div className="flex gap-0">
+          <Input type="text" placeholder="Enter pincode" className=" rounded-none flex-1 border border-neutral-300 px-3 text-sm focus:outline-none" />
+          <button className="bg-primary text-primary-foreground px-6 text-xs uppercase tracking-widest font-medium">Check</button>
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className="grid grid-cols-3 gap-2 text-center text-[10px] text-neutral-500 uppercase tracking-wide">
+        <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
+          <span className="text-primary mb-1">🚚</span>
+          <span className="font-semibold text-neutral-700">Free Shipping</span>
+          <span className="text-[9px] capitalize text-neutral-400">Across India</span>
+        </div>
+        <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
+          <span className="text-primary mb-1">↺</span>
+          <span className="font-semibold text-neutral-700">7-Day Returns</span>
+          <span className="text-[9px] capitalize text-neutral-400">From Delivery</span>
+        </div>
+        <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
+          <span className="text-primary mb-1">🛡️</span>
+          <span className="font-semibold text-neutral-700">Authentic</span>
+          <span className="text-[9px] capitalize text-neutral-400">100% Genuine</span>
+        </div>
+      </div>
+
+      {/* Care for this piece */}
+      <div className="border border-[#eaddce] p-4 text-xs">
+        <p className="text-[#a68a61] uppercase tracking-widest font-semibold mb-2">Care for this piece</p>
+        <p className="text-neutral-600 mb-2">
+          {productData.care || "Dry clean only — entrust to a couture specialist · Store flat in muslin, away from light and moisture"}
+        </p>
+        <a href="#" className="text-primary hover:underline font-medium">Read all care notes →</a>
+      </div>
+
+      {/* Accordions */}
+      <Accordion type="single" collapsible className="w-full border-t border-neutral-200">
+        <AccordionItem value="story">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            <span className="flex items-center gap-2">✨ The Story Behind</span>
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-4">
+            <p>Hand-rendered in hand embroidery, mirror work on pure chanderi silk — finished in our Jaipur atelier by karigars whose families have practised these crafts for generations.</p>
+            <p>Conceived for festive, pooja, wedding guest — a piece meant to be remembered, not merely worn.</p>
+            <p>Slow couture · Made in small batches · Numbered to its maker.</p>
+            <a href="#" className="text-primary font-medium hover:underline">Learn the language of craft →</a>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="4">
-          <AccordionTrigger>Delivery Info</AccordionTrigger>
-          <AccordionContent>
-            <p className="text-sm text-muted-foreground">
-              Your order will be delivered within{" "}
-              <span className="font-medium text-foreground">
-                7-10 business days
-              </span>
-              .
-            </p>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="5">
-          <AccordionTrigger>Product Description</AccordionTrigger>
-          <AccordionContent>
-            <p className="roboto   mb-3">{productData.description}</p>
-          </AccordionContent>
-        </AccordionItem>
 
-        <AccordionItem value="2">
-          <AccordionTrigger>Additional Information</AccordionTrigger>
-          <AccordionContent>
-            <div className=" space-y-3">
-              {productExtraDetails.map((extraDetailItem, idx) => {
-                return (
-                  <div key={idx}>
-                    <span className=" font-semibold">
-                      {extraDetailItem.label} -{" "}
-                    </span>
-                    <span>{extraDetailItem.value}</span>
-                  </div>
-                );
-              })}
+        <AccordionItem value="included">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            What's Included — Piece Details
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-4">
+            <p>Kurta<br />Palazzo Pants<br />Dupatta</p>
+            <div className="space-y-2 mt-4">
+              <div><strong className="font-semibold text-neutral-800">Fabric:</strong> {productData.fabric || "Pure Chanderi Silk"}</div>
+              <div><strong className="font-semibold text-neutral-800">Work:</strong> Hand embroidery with mirror work on yoke, sleeves and hemline</div>
+              <div><strong className="font-semibold text-neutral-800">Lining:</strong> Cotton lining</div>
+              <div><strong className="font-semibold text-neutral-800">Length:</strong> Knee length</div>
+              <div><strong className="font-semibold text-neutral-800">Details:</strong> Round neckline, three-quarter sleeves, side slits</div>
             </div>
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="1">
-          <AccordionTrigger>Return & Refund</AccordionTrigger>
-          <AccordionContent>
-            Hassle-free 7-day return and exchange available.
+        <AccordionItem value="care">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            Garment Care
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-2">
+            <p>• Dry clean only — entrust to a couture specialist</p>
+            <p>• Store flat in muslin, away from light and moisture</p>
+            <p>• Iron on reverse over a soft cloth; avoid embroidery</p>
+            <p>• Keep away from perfumes, deodorants and direct sunlight</p>
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="3">
-          <AccordionTrigger>Model Info</AccordionTrigger>
-          <AccordionContent>
-            <div className="text-sm text-gray-600 border rounded px-3 py-2  flex items-center gap-3">
-              <TInfoCircle />
-              Model height: {productData.model_height} · Size - S
-            </div>
+        <AccordionItem value="style">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            Style Tips
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-2">
+            <p>✦ Pair with gold jhumkas and a potli bag for a festive look</p>
+            <p>✦ Add a statement maang tikka for wedding guest styling</p>
+            <p>✦ Wear with nude heels to elongate the silhouette</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="model">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            Model Specifications
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-2">
+            <p>Height: {productData.model_height || "5'7\" / 170 cm"}</p>
+            <p>Wearing: Size S</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="shipping">
+          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+            Shipping & Returns
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-neutral-600 space-y-4">
+            <p><strong>Standard Dispatch (India):</strong> 5–7 business days post payment confirmation</p>
+            <p><strong>Standard Dispatch (International):</strong> 7–10 business days post payment confirmation</p>
+            <p><strong>Returns & Exchange (India):</strong> Within 7 days of delivery for unworn ready-to-ship pieces in original condition</p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      {/* <div>
-        <p className=" roboto text-xl   mb-3 font-semibold">Return & Refund</p>
-
-        <p className=" mb-4">
-          Hassle-free 7-day return and exchange available.
+      {/* Need Help footer */}
+      <div className="bg-[#eae1d8] p-5 text-sm text-neutral-700">
+        <p className="uppercase text-[10px] tracking-widest text-neutral-500 font-semibold mb-2">Need help with this piece?</p>
+        <p>
+          For sizing, custom requests or any query, reach our atelier on <a href="tel:+917023117408" className="text-primary hover:underline font-medium">+91 7023117408</a> or write to <a href="mailto:queries.hausofprivae@gmail.com" className="text-primary hover:underline font-medium">queries.hausofprivae@gmail.com</a>.
         </p>
-      </div> */}
-      {/* Model Info */}
+      </div>
+
     </div>
   );
 };

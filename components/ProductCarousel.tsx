@@ -8,52 +8,53 @@ import {
 } from "./ui/carousel";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { ProductCard } from "./ProductCard";
 import { useGetAllProducts } from "@/src/hepler";
 import Link from "next/link";
+import ProductCard from "./ProductCard";
 
 const ProductCarousel = async () => {
-  const productsData: any = await useGetAllProducts(1, 8);
-  return (
-    <div className=" px-4 ">
-      <div className=" gap-3 lg:px-6 pt-3 pb-6 flex-col lg:flex-row flex items-center justify-between">
-        <div className=" flex flex-col sm:flex-row lg:items-center gap-2">
-          <div className=" flex gap-3 items-center">
-            <ArrowRight
-              stroke="#000"
-              className=" hidden sm:block"
-              strokeWidth={2.5}
-              size={32}
-            />
-            <p
-              style={{ wordSpacing: "6px" }}
-              className=" text-2xl md:text-4xl font-semibold md:pr-6 font2 capitalize tracking-tight"
-            >
-              It may interest you
-            </p>
-          </div>
-        </div>
-        <Link href={`/product`} className=" w-full md:w-fit ml-auto">
-          <div className=" w-full md:w-fit text-center duration-300 hover:bg-neutral-800 hover:text-white py-2 md:py-3 px-4 border border-black rounded-full text-lg roboto font-medium cursor-pointer">
-            See all styles
-          </div>
-        </Link>
-      </div>
+  const productsData: any = await useGetAllProducts(1, 4);
 
-      <div className="">
-        <Carousel className="w-full max-w-[calc(100vw)] ">
-          <CarouselContent className="-ml-1  overflow-visible">
-            {productsData?.products?.map((item: any, index: number) => (
-              <CarouselItem key={index} className="pl-1 basis-auto ">
-                <ProductCard itemData={item} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className={cn("left-6   z-20 ", buttonStyle)} />
-          <CarouselNext className={cn("right-6", buttonStyle)} />
-        </Carousel>
+  return (
+    <section className="py-16 md:py-24 px-4">
+      <div className="container mx-auto">
+        <div className="text-center mb-12">
+          <p className="eyebrow mb-3">The latest from our atelier</p>
+          <h2 className="font-heading text-3xl md:text-5xl text-foreground heading-rule">
+            New Arrivals
+          </h2>
+        </div>
+
+        <div
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-stretch transition-opacity duration-300 ${"opacity-100"
+            }`}
+        >
+          {productsData?.products.map((item: any) => (
+            <ProductCard
+              key={item._id}
+              product={item}
+              imageOverride={item.bannerImage}
+              nameOverride={item.name}
+              priceOverride={item.price}
+              badge={item.badge}
+              to={`/product/${item._id}`}
+              wishlistKey={item._id}
+            />
+          ))}
+        </div>
+
+
+        <div className="text-center mt-12">
+          <Link href={"/product"}
+            className="group inline-flex items-center gap-2 border border-primary text-primary px-10 py-3 text-xs tracking-[0.2em] uppercase font-body hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+          >
+            See all styles
+            <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </Link>
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 };
 
