@@ -33,6 +33,53 @@ import { ShowProductPrice } from "@/lib/productHealper";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
+const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [showMagnifier, setShowMagnifier] = useState(false);
+
+  return (
+    <div
+      className="w-full bg-neutral-50 relative overflow-hidden cursor-crosshair"
+      onMouseEnter={() => setShowMagnifier(true)}
+      onMouseLeave={() => setShowMagnifier(false)}
+      onMouseMove={(e) => {
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
+        setPosition({ x, y });
+      }}
+    >
+      <Image
+        className="w-full h-auto object-cover block"
+        src={convertS3ToImageKit(mainImage)}
+        alt="Main Product Image"
+        width={800}
+        height={1000}
+        priority
+      />
+      {showMagnifier && (
+        <div className="absolute inset-0 z-10 pointer-events-none bg-white overflow-hidden">
+          <div
+            className="w-full h-full relative"
+            style={{
+              transformOrigin: `${position.x}% ${position.y}%`,
+              transform: "scale(2.5)",
+            }}
+          >
+            <Image
+              className="object-cover"
+              src={convertS3ToImageKit(mainImage)}
+              alt="Zoomed Product Image"
+              fill
+              priority
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
   const imagesLength = images.length;
@@ -63,18 +110,7 @@ export default function ProductInformation({ productData }: any) {
           !isMobile ? (
             <div className=" col-span-12 w-full md:col-span-5 flex flex-col gap-4">
               {/* Main Image */}
-              <div className="w-full bg-neutral-50 relative">
-                {mainImage && (
-                  <Image
-                    className="w-full h-auto object-cover"
-                    src={convertS3ToImageKit(mainImage)}
-                    alt="Main Product Image"
-                    width={800}
-                    height={1000}
-                    priority
-                  />
-                )}
-              </div>
+              {mainImage && <ZoomableImage mainImage={mainImage} />}
 
               {/* Thumbnail Images */}
               <div className="flex w-full flex-wrap gap-3">
