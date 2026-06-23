@@ -20,7 +20,7 @@ export function Categories() {
                         return (
                             <Link
                                 key={cat.slug}
-                                href={cat.slug}
+                                href={`/category/${cat.slug}`}
                                 className="group relative overflow-hidden aspect-[3/4] bg-secondary"
                             >
                                 <ImageWithSkeleton

@@ -1,22 +1,53 @@
 // lib/s3-upload.ts
-import AWS from "aws-sdk";
-
-const s3 = new AWS.S3({
-  accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
-  secretAccessKey: process.env.NEXT_S3_SECRET_KEY,
-  region: process.env.NEXT_PUBLIC_S3_REGION,
-});
+import imageCompression from "browser-image-compression";
 
 export async function uploadFileToS3(file: File, folder = "products") {
-  const fileName = `haus-of-privae/v1/${folder}/${Date.now()}-${file.name}`;
-  const params = {
-    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
-    Key: fileName,
-    Body: file,
-    ContentType: file.type,
-    // ACL: "public-read",
-  };
+  let fileToUpload = file;
 
-  const upload = await s3.upload(params).promise();
-  return upload?.Location;
+  // 1. Compress the image if needed
+  if (file.type.startsWith("image/")) {
+    const options = {
+      maxSizeMB: 0.4,
+      useWebWorker: true,
+    };
+    try {
+      fileToUpload = await imageCompression(file, options);
+    } catch (error) {
+      console.error("Error compressing image:", error);
+    }
+  }
+
+  const fileName = `haus-of-privae/v1/${folder}/${Date.now()}-${fileToUpload.name}`;
+  const fileType = fileToUpload.type;
+
+  // 2. Fetch the pre-signed URL from the API route
+  const res = await fetch("/api/s3-upload", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ fileName, fileType }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to get pre-signed URL");
+  }
+
+  const { uploadUrl, fileUrl } = await res.json();
+
+  // 3. Upload the file directly to S3 using the pre-signed URL
+  const uploadRes = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": fileType,
+    },
+    body: fileToUpload,
+  });
+
+  if (!uploadRes.ok) {
+    throw new Error("Failed to upload file to S3");
+  }
+
+  // 4. Return the public file URL
+  return fileUrl;
 }

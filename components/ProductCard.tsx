@@ -46,13 +46,13 @@ const ProductCard = ({
   wishlistKey,
 }: any) => {
   const { format } = useCurrency();
-  const wishlistId = wishlistKey ?? product.id;
+  // const wishlistId = wishlistKey ?? product.id;
 
   const showNew = false;
   const showBestseller = false;
 
   // Primary + optional secondary (hover-reveal). Falls back gracefully.
-  const primaryImage = imageOverride ?? product.image;
+  const primaryImage = imageOverride ?? product.bannerImage;
   const secondaryImage = product.images[1]
   const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const target = e.currentTarget;

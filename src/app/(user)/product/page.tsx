@@ -1,4 +1,4 @@
-// import { ProductCard } from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard";
 import { useGetAllProducts } from "@/src/hepler";
 import React from "react";
 
@@ -9,16 +9,16 @@ const page = async () => {
     : productsData?.products || [];
 
   return (
-    <div className=" flex gap-5 flex-wrap w-full mx-auto items-center justify-center p-6">
-      {/* {products?.map((prodcutItem: any, idx: number) => {
+    <div className="  container gap-y-16 w-full mx-auto py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {products?.map((prodcutItem: any, idx: number) => {
         return (
           <ProductCard
             className=" w-full lg:w-full max-w-80"
-            itemData={prodcutItem}
+            product={prodcutItem}
             key={idx}
           />
         );
-      })} */}
+      })}
     </div>
   );
 };
