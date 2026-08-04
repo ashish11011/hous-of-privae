@@ -12,7 +12,7 @@ export const POST = async (req: Request) => {
       msg: "successfully created product",
     });
   } catch (error) {
-    NextResponse.json({ success: false, msg: error });
+    return NextResponse.json({ success: false, msg: String(error) }, { status: 500 });
   }
 };
 

@@ -31,14 +31,14 @@ const ProductCarousel = async () => {
         >
           {productsData?.products.map((item: any) => (
             <ProductCard
-              key={item._id}
+              key={item.id ?? item.slug}
               product={item}
               imageOverride={item.bannerImage}
               nameOverride={item.name}
               priceOverride={item.price}
               badge={item.badge}
-              to={`/product/${item._id}`}
-              wishlistKey={item._id}
+              to={`/product/${item.slug}`}
+              wishlistKey={item.id}
             />
           ))}
         </div>

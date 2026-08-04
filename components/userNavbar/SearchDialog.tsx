@@ -42,19 +42,19 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-foreground/40 backdrop-blur-sm flex items-start justify-center pt-20 px-4 animate-fade-in-up" onClick={onClose}>
-            <div className="bg-background w-full max-w-2xl shadow-xl" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-                    <Search size={18} className="text-primary" />
+        <div className="fixed inset-0 z-[100] bg-white/95 flex items-start justify-center pt-20 px-4 animate-fade-in-up" onClick={onClose}>
+            <div className="bg-white text-neutral-950 w-full max-w-2xl border border-neutral-900 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-neutral-900 bg-white">
+                    <Search size={18} className="text-neutral-950" />
                     <input
                         autoFocus
                         type="text"
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
                         placeholder="Search by name, fabric, colour, occasion…"
-                        className="flex-1 bg-transparent outline-none text-sm font-body text-foreground placeholder:text-muted-foreground"
+                        className="flex-1 bg-white outline-none text-sm font-body text-neutral-950 placeholder:text-neutral-500"
                     />
-                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground" aria-label="Close search">
+                    <button onClick={onClose} className="text-neutral-500 hover:text-neutral-950" aria-label="Close search">
                         <X size={18} />
                     </button>
                 </div>

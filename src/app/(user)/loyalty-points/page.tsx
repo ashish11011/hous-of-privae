@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth/auth";
 import LoyalityCard from "./card";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 const Page = async () => {
   const session = await getServerSession(authOptions);
   let userData;

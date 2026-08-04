@@ -7,4 +7,5 @@ export type CartProduct = {
   bannerImage: string;
   size: string;
   color: string;
+  variant: "stitched" | "unstitched";
 };

@@ -2,7 +2,9 @@
 
 // Demo: https://static.imgix.net/daisy.png?format=auto&fit=max&w=300
 export default function imgixLoader({ src, width, quality }: any) {
-  const url = new URL(`https://ik.imagekit.io/hop${src}`);
+  const url = new URL(
+    src.startsWith("http") ? src : `https://ik.imagekit.io/hop${src}`
+  );
   const params = url.searchParams;
   params.set("auto", params.getAll("auto").join(",") || "format");
   params.set("fit", params.get("fit") || "max");

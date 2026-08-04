@@ -13,12 +13,23 @@ const paths = [
   "/hire-us",
   "/services",
   "/blog",
+  "/magazine",
+  "/lookbook",
+  "/bespoke",
+  "/privae-fit",
+  "/gifting",
+  "/track",
+  "/atelier/glossary",
+  "/product",
+  "/collections",
   "/privacy-policy",
   "/terms-and-conditions",
+  "/order-and-shipping",
+  "/returns-and-refunds",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.hausofprivae.com";
 
   const pathEntries = paths.map((path) => ({
     url: `${baseUrl}${path}/`,
@@ -29,7 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select({
       slug: productTable.slug,
     })
-    .from(productTable);
+    .from(productTable)
+    .catch(() => []);
 
   const productDataEnteries = productData.map((product) => ({
     url: `${baseUrl}/product/${product.slug}/`,

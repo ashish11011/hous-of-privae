@@ -8,17 +8,22 @@ export const useGetContactsPaginated = async (
 ) => {
   const offset = (page - 1) * pageSize;
 
-  // Fetch paginated contacts
-  const contacts = await db
-    .select()
-    .from(contactTable)
-    .limit(pageSize)
-    .offset(offset);
+  try {
+    // Fetch paginated contacts
+    const contacts = await db
+      .select()
+      .from(contactTable)
+      .limit(pageSize)
+      .offset(offset);
 
-  // Get total count for pagination
-  const totalResult = await db.$count(contactTable);
+    // Get total count for pagination
+    const totalResult = await db.$count(contactTable);
 
-  const total = Number(totalResult);
+    const total = Number(totalResult);
 
-  return { contacts, total };
+    return { contacts, total };
+  } catch (error) {
+    console.error("Failed to fetch contacts", error);
+    return { contacts: [], total: 0 };
+  }
 };

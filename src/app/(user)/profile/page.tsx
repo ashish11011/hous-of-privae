@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import ContactForm from "./contactForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
   let userData;

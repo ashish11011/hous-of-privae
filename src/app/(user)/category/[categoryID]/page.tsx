@@ -4,6 +4,8 @@ import { CATEGORY_1 } from "@/const";
 import { getProductByCategory } from "@/lib";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   const categories = CATEGORY_1; // should return list of category IDs like [{ categoryID: 'shoes' }, { categoryID: 'bags' }]
   return categories.map((cat) => ({
@@ -14,17 +16,39 @@ export async function generateStaticParams() {
 export const revalidate = 86400;
 
 const Page = async ({ params }: { params: any }) => {
-  const categoryID = (await params).categoryID;
+  const categoryParam = (await params).categoryID;
+  const category = CATEGORY_1.find(
+    (item) => item.slug === categoryParam || item.id === categoryParam
+  );
+  const categoryID = category?.id ?? categoryParam;
   const productsData = await getProductByCategory(categoryID);
 
   if (!productsData || productsData.length === 0)
-    return <div>no products found</div>;
+    return (
+      <div className="container mx-auto px-4 py-24 text-center">
+        <p className="eyebrow mb-3">Collections</p>
+        <h1 className="font-heading text-4xl md:text-5xl text-foreground mb-4">
+          No Products Found
+        </h1>
+        <p className="font-body text-sm text-muted-foreground">
+          This edit is being prepared by the atelier.
+        </p>
+      </div>
+    );
   return (
-    <div className="py-12 px-6 flex flex-col gap-12">
-      <h3 className=" text-3xl font-medium text-center w-full">
-        Category - {categoryID}
-      </h3>
-      <div className="  container gap-y-16 w-full mx-auto py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="py-14 md:py-20 px-4">
+      <div className="text-center mb-12">
+        <p className="eyebrow mb-3">Curated Edit</p>
+        <h1 className="font-heading text-4xl md:text-6xl text-foreground heading-rule">
+          {category?.name ?? "Collection"}
+        </h1>
+        {category?.tagline && (
+          <p className="font-body text-sm text-muted-foreground tracking-[0.12em] uppercase mt-6">
+            {category.tagline}
+          </p>
+        )}
+      </div>
+      <div className="container gap-y-16 w-full mx-auto py-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {productsData.map((item, idx) => {
           return (
             <ProductCard

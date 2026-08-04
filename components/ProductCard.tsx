@@ -33,6 +33,7 @@ import { Heart } from "lucide-react";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import { useCurrency } from "@/contextCurrencyContext";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 
 const ProductCard = ({
@@ -44,6 +45,7 @@ const ProductCard = ({
   badge,
   to,
   wishlistKey,
+  className,
 }: any) => {
   const { format } = useCurrency();
   // const wishlistId = wishlistKey ?? product.id;
@@ -53,7 +55,8 @@ const ProductCard = ({
 
   // Primary + optional secondary (hover-reveal). Falls back gracefully.
   const primaryImage = imageOverride ?? product.bannerImage;
-  const secondaryImage = product.images[1]
+  const secondaryImage = secondaryImageOverride ?? product.images?.[1];
+  const productHref = to ?? `/product/${product.slug}`;
   const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const target = e.currentTarget;
     const rect = target.getBoundingClientRect();
@@ -62,9 +65,9 @@ const ProductCard = ({
   };
 
   return (
-    <div className="group flex flex-col h-full">
+    <div className={cn("group flex flex-col h-full", className)}>
       <Link
-        href={`/product/${product.slug}`}
+        href={productHref}
         onMouseMove={handleMove}
         className="product-cursor-area block relative overflow-hidden"
       >
@@ -113,7 +116,7 @@ const ProductCard = ({
       <div className="mt-3 text-center">
         <h3 className="font-heading text-sm md:text-base text-foreground leading-snug">{nameOverride ?? product.name}</h3>
         <p className="text-xs md:text-sm text-muted-foreground font-body mt-1 tracking-wide">
-          {format(priceOverride ?? product.basePrice)}
+          {format(priceOverride ?? product.basePrice ?? product.price ?? 0)}
         </p>
       </div>
     </div>

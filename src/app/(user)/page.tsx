@@ -16,6 +16,7 @@ import NotesFromJaipur from "./NoteFromJaipur";
 import WatchTheMaisonSection from "./WatchTheMaisonSection";
 
 export const revalidate = 86400;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   return (

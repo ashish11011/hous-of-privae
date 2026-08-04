@@ -3,6 +3,8 @@ import { getUserOrderData } from "@/src/hepler";
 import Link from "next/link";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
   const orderData = await getUserOrderData();
   if (!orderData || orderData.length === 0)

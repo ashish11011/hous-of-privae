@@ -9,11 +9,16 @@ export const insertContactDetails = async ({
   location,
   message,
 }: any) => {
-  await db.insert(contactTable).values({
-    name,
-    email,
-    phone,
-    location,
-    message,
-  });
+  try {
+    await db.insert(contactTable).values({
+      name,
+      email,
+      phone,
+      location,
+      message,
+    });
+  } catch (error) {
+    console.error("Failed to insert contact details", error);
+    throw error;
+  }
 };

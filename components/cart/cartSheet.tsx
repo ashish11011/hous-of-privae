@@ -85,6 +85,7 @@ export function CartSheet() {
                               id: item.id,
                               color: item.color,
                               size: item.size,
+                              variant: item.variant,
                             })
                           }
                         >
@@ -102,6 +103,9 @@ export function CartSheet() {
                           className=" size-7 rounded-full shrink-0"
                         ></div>
                         <p className=" whitespace-nowrap">Size: {item.size}</p>
+                        <p className=" whitespace-nowrap capitalize">
+                          Variant: {item.variant ?? "stitched"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -120,6 +124,7 @@ export function CartSheet() {
                             id: item.id,
                             color: item.color,
                             size: item.size,
+                            variant: item.variant,
                           })
                         }
                       >
@@ -133,6 +138,7 @@ export function CartSheet() {
                             id: item.id,
                             color: item.color,
                             size: item.size,
+                            variant: item.variant,
                           })
                         }
                       >

@@ -43,6 +43,7 @@ export const orderItem = pgTable("order_item", {
   quantity: integer("quantity").notNull(),
   size: varchar("size"), // Optional
   color: varchar("color"), // Optional
+  variant: varchar("variant").notNull().default("stitched"),
 });
 
 // ----------------------

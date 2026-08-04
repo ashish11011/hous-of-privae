@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "@/lib/auth/authProvider";
 import Script from "next/script";
@@ -7,11 +6,6 @@ import { TWhatsApp } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CurrencyProvider } from "@/contextCurrencyContext";
-
-const inter = Inter({
-  weight: ["400"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -97,7 +91,7 @@ export default function RootLayout({
       </head>
       <body
         cz-shortcut-listen="true"
-        className={`   ${inter.className} bg-[#fff]  text-shadow-neutral-800 text-[#3d1700] antialiased`}
+        className="bg-background text-foreground antialiased"
       >
         <CurrencyProvider>
           <SessionWrapper>{children}</SessionWrapper>

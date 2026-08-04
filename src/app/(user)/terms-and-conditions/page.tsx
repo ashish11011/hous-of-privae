@@ -40,13 +40,16 @@ export const metadata: Metadata = {
 
 export default function TermsAndConditionsPage() {
   return (
-    <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">
-      <section className="max-w-4xl mx-auto space-y-10">
-        <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">
+    <main className="bg-background px-4 py-16 md:py-24 text-foreground">
+      <section className="max-w-4xl mx-auto space-y-10 font-body text-sm leading-relaxed text-muted-foreground">
+        <div className="text-center mb-12">
+          <p className="eyebrow mb-3">Client Care</p>
+          <h1 className="font-heading text-4xl md:text-6xl text-foreground heading-rule">
           Terms & Conditions
-        </h1>
+          </h1>
+        </div>
 
-        <p className="text-lg leading-relaxed">
+        <p className="text-base leading-relaxed text-foreground/80">
           Welcome to hausofprivae.com. These Terms & Conditions ("Terms") govern
           your use of our website and services. By browsing, purchasing, or
           interacting with our platform, you agree to abide by these Terms in

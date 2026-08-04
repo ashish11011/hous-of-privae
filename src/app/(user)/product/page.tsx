@@ -2,6 +2,8 @@ import ProductCard from "@/components/ProductCard";
 import { useGetAllProducts } from "@/src/hepler";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
   const productsData = await useGetAllProducts(null, null);
   const products = Array.isArray(productsData)

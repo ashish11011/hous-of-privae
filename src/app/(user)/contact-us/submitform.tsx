@@ -64,7 +64,7 @@ const Submitform = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-gray-600">
+            <label htmlFor="name" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Name
             </label>
             <Input
@@ -73,12 +73,12 @@ const Submitform = () => {
               value={form.name}
               onChange={handleChange}
               required
-              className="rounded-none text-lg border-neutral-700"
+              className="rounded-none bg-background"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-gray-600">
+            <label htmlFor="email" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               E-mail
             </label>
             <Input
@@ -88,12 +88,12 @@ const Submitform = () => {
               value={form.email}
               onChange={handleChange}
               required
-              className="rounded-none border-neutral-700"
+              className="rounded-none bg-background"
             />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label htmlFor="phone" className="text-gray-600">
+            <label htmlFor="phone" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Phone No
             </label>
             <Input
@@ -102,12 +102,12 @@ const Submitform = () => {
               value={form.phone}
               onChange={handleChange}
               required
-              className="rounded-none border-neutral-700"
+              className="rounded-none bg-background"
             />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label htmlFor="message" className="text-gray-600">
+            <label htmlFor="message" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Message
             </label>
             <Textarea
@@ -117,12 +117,12 @@ const Submitform = () => {
               value={form.message}
               onChange={handleChange}
               required
-              className="rounded-none min-h-24 border-neutral-700"
+              className="rounded-none min-h-24 bg-background"
             />
           </div>
         </div>
 
-        <div className="flex items-start gap-2 text-gray-600">
+        <div className="flex items-start gap-2 text-sm text-muted-foreground">
           <input
             type="checkbox"
             name="consent"
@@ -142,7 +142,7 @@ const Submitform = () => {
             type="submit"
             disabled={loading}
             size={"lg"}
-            className="w-full bg-black text-white hover:bg-neutral-800 text-lg rounded-none"
+            className="w-full rounded-none h-12 tracking-[0.2em] uppercase text-xs"
           >
             {loading ? "Sending..." : "Send message"}
           </Button>

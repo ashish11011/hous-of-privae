@@ -68,11 +68,15 @@ export default function SizeGuideSheet() {
           View Size Guide
         </Button>
       </SheetTrigger>
-      {/* <SheetContent side="right" className="w-[90vw] sm:w-[700px]"> */}
-      <SheetContent side="right" className="  !w-full !md:w-xl !max-w-xl ">
+      <SheetContent
+        side="right"
+        className="w-[90vw] sm:w-[700px] bg-white text-neutral-900"
+      >
         <SheetHeader>
-          <SheetTitle>Women’s Clothing Size Guide</SheetTitle>
-          <p className="text-sm text-muted-foreground">
+          <SheetTitle className="text-neutral-900">
+            Women’s Clothing Size Guide
+          </SheetTitle>
+          <p className="text-sm text-neutral-500">
             Blouse • Suit • Lehenga
           </p>
         </SheetHeader>
@@ -148,8 +152,8 @@ export default function SizeGuideSheet() {
           </div>
 
           {/* Notes Section */}
-          <div className="text-sm text-muted-foreground space-y-2">
-            <h4 className="font-semibold text-foreground">
+          <div className="text-sm text-neutral-600 space-y-2">
+            <h4 className="font-semibold text-neutral-900">
               Category Guidance & Notes:
             </h4>
             <ul className="list-disc pl-5 space-y-1">

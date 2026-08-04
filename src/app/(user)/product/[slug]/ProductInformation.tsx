@@ -33,13 +33,22 @@ import { ShowProductPrice } from "@/lib/productHealper";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
+const isLocalPublicImage = (src: string) =>
+  src.startsWith("/") &&
+  !src.startsWith("/haus-of-privae/") &&
+  !src.startsWith("/tr:");
+
+const productImageSrc = (src?: string | null) => convertS3ToImageKit(src);
+
 const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const [showMagnifier, setShowMagnifier] = useState(false);
+  const imageSrc = productImageSrc(mainImage);
+  const unoptimized = isLocalPublicImage(imageSrc);
 
   return (
     <div
-      className="w-full bg-neutral-50 relative overflow-hidden cursor-crosshair"
+      className="w-full aspect-[3/4] bg-neutral-50 relative overflow-hidden cursor-crosshair"
       onMouseEnter={() => setShowMagnifier(true)}
       onMouseLeave={() => setShowMagnifier(false)}
       onMouseMove={(e) => {
@@ -50,12 +59,13 @@ const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
       }}
     >
       <Image
-        className="w-full h-auto object-cover block"
-        src={convertS3ToImageKit(mainImage)}
+        className="object-contain block"
+        src={imageSrc}
         alt="Main Product Image"
-        width={800}
-        height={1000}
+        fill
+        sizes="(min-width: 768px) 42vw, 100vw"
         priority
+        unoptimized={unoptimized}
       />
       {showMagnifier && (
         <div className="absolute inset-0 z-10 pointer-events-none bg-white overflow-hidden">
@@ -68,10 +78,11 @@ const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
           >
             <Image
               className="object-cover"
-              src={convertS3ToImageKit(mainImage)}
+              src={imageSrc}
               alt="Zoomed Product Image"
               fill
               priority
+              unoptimized={unoptimized}
             />
           </div>
         </div>
@@ -82,22 +93,22 @@ const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
-  const imagesLength = images.length;
+  const galleryImages = images.length > 0 ? images : [bannerImage].filter(Boolean);
 
   const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const [mainImage, setMainImage] = useState<string>(images[0] || bannerImage);
+  const [mainImage, setMainImage] = useState<string>(galleryImages[0]);
 
   useEffect(() => {
     setIsPageLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (images.length > 0) {
-      setMainImage(images[0]);
+    if (galleryImages.length > 0) {
+      setMainImage(galleryImages[0]);
     } else if (bannerImage) {
       setMainImage(bannerImage);
     }
-  }, [images, bannerImage]);
+  }, [galleryImages, bannerImage]);
 
   const isMobile = useIsMobile();
 
@@ -114,7 +125,9 @@ export default function ProductInformation({ productData }: any) {
 
               {/* Thumbnail Images */}
               <div className="flex w-full flex-wrap gap-3">
-                {images.map((image: string, idx: number) => (
+                {galleryImages.map((image: string, idx: number) => {
+                  const thumbSrc = productImageSrc(image);
+                  return (
                   <button
                     key={idx}
                     onClick={() => setMainImage(image)}
@@ -124,15 +137,17 @@ export default function ProductInformation({ productData }: any) {
                       }`}
                   >
                     <Image
-                      className="w-20 md:w-24 lg:w-28 h-auto object-cover"
-                      src={convertS3ToImageKit(image)}
+                      className="w-20 md:w-24 lg:w-28 aspect-[3/4] object-cover"
+                      src={thumbSrc}
                       alt={`Thumbnail ${idx + 1}`}
                       width={100}
-                      height={100}
+                      height={134}
                       priority
+                      unoptimized={isLocalPublicImage(thumbSrc)}
                     />
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -145,32 +160,38 @@ export default function ProductInformation({ productData }: any) {
                 ]}
               >
                 <CarouselContent>
-                  {images.map((image: string, idx: number) => (
+                  {galleryImages.map((image: string, idx: number) => {
+                    const slideSrc = productImageSrc(image);
+                    return (
                     <CarouselItem key={idx}>
                       <Image
-                        className="w-full h-auto object-cover "
-                        src={convertS3ToImageKit(image)}
+                        className="w-full aspect-[3/4] object-contain bg-neutral-50"
+                        src={slideSrc}
                         alt={`Image ${idx + 1}`}
-                        width={100}
-                        height={100}
+                        width={800}
+                        height={1067}
                         priority
+                        unoptimized={isLocalPublicImage(slideSrc)}
                       />
                     </CarouselItem>
-                  ))}
+                    );
+                  })}
                 </CarouselContent>
                 <CarouselNext className=" right-5 " />
                 <CarouselPrevious className=" left-6" />
               </Carousel>
               <div className=" flex overflow-x-auto gap-3 p-3">
-                {images.map((image: string, idx: number) => {
+                {galleryImages.map((image: string, idx: number) => {
+                  const thumbSrc = productImageSrc(image);
                   return (
                     <Image
-                      className=" w-16 h-auto"
-                      src={convertS3ToImageKit(image)}
+                      className="w-16 aspect-[3/4] object-cover"
+                      src={thumbSrc}
                       alt={`Image ${idx + 1}`}
                       width={100}
-                      height={100}
+                      height={134}
                       priority
+                      unoptimized={isLocalPublicImage(thumbSrc)}
                     />
                   );
                 })}
@@ -221,6 +242,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(
     productData.sizes?.[0]
   );
+  const [selectedVariant, setSelectedVariant] = useState<"stitched" | "unstitched">("stitched");
 
   const router = useRouter();
 
@@ -237,6 +259,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         bannerImage: productData.bannerImage,
         size: selectedSize,
         color: selectedColor,
+        variant: selectedVariant,
       };
       addItemToStore(product);
     }
@@ -306,8 +329,28 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Choose Variant</p>
         <div className="grid grid-cols-2 gap-0 border border-neutral-300">
-          <button className="bg-primary text-primary-foreground py-3 text-xs tracking-widest uppercase font-medium">Stitched</button>
-          <button className="bg-transparent text-neutral-500 py-3 text-xs tracking-widest uppercase font-medium">Unstitched</button>
+          <button
+            type="button"
+            onClick={() => setSelectedVariant("stitched")}
+            aria-pressed={selectedVariant === "stitched"}
+            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${selectedVariant === "stitched"
+              ? "bg-primary text-primary-foreground"
+              : "bg-transparent text-neutral-500 hover:bg-primary/5"
+              }`}
+          >
+            Stitched
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedVariant("unstitched")}
+            aria-pressed={selectedVariant === "unstitched"}
+            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${selectedVariant === "unstitched"
+              ? "bg-primary text-primary-foreground"
+              : "bg-transparent text-neutral-500 hover:bg-primary/5"
+              }`}
+          >
+            Unstitched
+          </button>
         </div>
       </div>
 

@@ -21,6 +21,7 @@ export const createProductOrder = async (order: any) => {
       quantity: item.quantity,
       size: item.size,
       color: item.color,
+      variant: item.variant ?? "stitched",
     };
   });
   try {

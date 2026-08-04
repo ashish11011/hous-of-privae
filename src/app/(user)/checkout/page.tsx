@@ -99,15 +99,19 @@ const Page = () => {
   };
 
   return (
-    <div className=" mx-auto max-w-4xl p-4">
-      <h1 className=" text-2xl mb-4">Checkout</h1>
-      <div className=" grid grid-cols-1 md:grid-cols-2  gap-3 md:divide-x-2 ">
-        <div className=" pr-4 order-2 md:order-none">
+    <main className="bg-background px-4 py-12 md:py-20">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-10 text-center">
+          <p className="eyebrow mb-3">Secure Checkout</p>
+          <h1 className="font-heading text-4xl md:text-5xl heading-rule">Complete Your Order</h1>
+        </div>
+      <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-6">
+        <div className="order-2 md:order-none border border-border bg-card p-5 md:p-7">
           <Formik
             initialValues={userDetailInitialValues}
             onSubmit={handlePlaceOrder}
           >
-            <Form className=" space-y-4">
+            <Form className="space-y-4">
               <LabelInput labelName="Name" name="name" />
               <LabelInput labelName="Email" name="email" type="email" />
               <LabelInput
@@ -126,15 +130,16 @@ const Page = () => {
               </div>
               <LabelInput labelName="Pincode" name="pincode" type="number" />
               <DiscountInput />
-              <Button type="submit" className=" w-full" size={"lg"}>
+              <Button type="submit" className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs" size={"lg"}>
                 Place Order
               </Button>
             </Form>
           </Formik>
         </div>
-        <div className=" order-1 md:order-none space-y-4">
+        <div className="order-1 md:order-none space-y-4 border border-border bg-card p-5 md:p-7 h-fit">
+          <h2 className="font-heading text-2xl mb-4">Order Summary</h2>
           {productStore.map((item, idx) => (
-            <div className="  flex gap-4" key={idx}>
+            <div className="flex gap-4 border-b border-border pb-4" key={idx}>
               <div className="relative w-16 h-auto shrink-0 rounded-lg md:w-20">
                 {/* image of product */}
                 <Image
@@ -152,20 +157,21 @@ const Page = () => {
               </div>
 
               {/* product details */}
-              <div className=" text-sm space-y-2">
-                <p className=" font-medium text-lg leading-6">{item.name}</p>
+              <div className="text-sm space-y-2">
+                <p className="font-heading text-lg leading-6">{item.name}</p>
                 <div>
                   <p>color: {getColorNameByHex(item.color)}</p>
                   <p>size: {item.size}</p>
+                  <p>variant: {item.variant ?? "stitched"}</p>
                 </div>
               </div>
-              <p className=" text-right ml-auto whitespace-nowrap">
+              <p className="text-right ml-auto whitespace-nowrap text-primary">
                 Rs: {item.basePrice}
               </p>
             </div>
           ))}
 
-          <div className=" sticky top-40">
+          <div className="sticky top-40">
             <Table>
               <TableBody>
                 <TableRow className=" ">
@@ -214,7 +220,8 @@ const Page = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </main>
   );
 };
 

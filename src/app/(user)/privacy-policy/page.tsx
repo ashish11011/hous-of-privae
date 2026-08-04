@@ -38,13 +38,16 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="bg-white px-6 py-20 md:px-12 lg:px-32 text-neutral-800">
-      <section className="max-w-4xl mx-auto space-y-10">
-        <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">
+    <main className="bg-background px-4 py-16 md:py-24 text-foreground">
+      <section className="max-w-4xl mx-auto space-y-10 font-body text-sm leading-relaxed text-muted-foreground">
+        <div className="text-center mb-12">
+          <p className="eyebrow mb-3">Client Care</p>
+          <h1 className="font-heading text-4xl md:text-6xl text-foreground heading-rule">
           Privacy Policy
-        </h1>
+          </h1>
+        </div>
 
-        <p className="text-lg leading-relaxed">
+        <p className="text-base leading-relaxed text-foreground/80">
           At Haus of Privae, your privacy is important to us. This policy
           outlines how we collect, use, and protect your personal data when you
           browse our website or interact with our services. By using

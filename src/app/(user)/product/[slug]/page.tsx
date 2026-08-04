@@ -10,17 +10,31 @@ import { useGetAllProducts } from "@/src/hepler";
 //   }));
 // }
 
-export const revalidate = 86400;
+export const dynamic = "force-dynamic";
 
 const Page = async ({ params }: { params: any }) => {
   const productSlug = (await params).slug;
   if (!productSlug) return <div>no product found</div>;
   const productData = await getProdcutInfoBySlug(productSlug);
+  const currentProduct = productData?.[0];
+  if (!currentProduct) {
+    return (
+      <div className="container mx-auto px-4 py-24 text-center">
+        <p className="eyebrow mb-3">Product</p>
+        <h1 className="font-heading text-4xl md:text-5xl text-foreground mb-4">
+          Product Not Found
+        </h1>
+        <p className="font-body text-sm text-muted-foreground">
+          This piece may no longer be available.
+        </p>
+      </div>
+    );
+  }
   const simillarProducts = await getSimillarProducts(
-    productData ? (productData[0]?.categoryId1 as string) : "",
+    currentProduct.categoryId1 ?? "",
     productSlug
   );
-  const { isDeleted, ...safeProductData } = productData ? productData[0] : {};
+  const { isDeleted, ...safeProductData } = currentProduct;
 
   return (
     <>

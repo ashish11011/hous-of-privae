@@ -42,10 +42,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center py-32  bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-3">
-        <h1 className="text-2xl font-bold text-center">Welcome Back</h1>
-        <p className="text-center text-gray-500">
+    <main className="flex items-center justify-center px-4 py-20 md:py-32 bg-background">
+      <div className="w-full max-w-md border border-border bg-card p-6 md:p-8 space-y-4">
+        <div className="text-center">
+          <p className="eyebrow mb-3">Account</p>
+          <h1 className="font-heading text-4xl heading-rule">Welcome Back</h1>
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
           Sign in to access your account
         </p>
 
@@ -66,7 +69,7 @@ export default function LoginPage() {
         {/* Credentials login form */}
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
               Username
             </label>
             <Input
@@ -79,7 +82,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
               Password
             </label>
             <Input
@@ -94,7 +97,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full"
+            className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
             size={"lg"}
           >
             {loading ? "Logging in..." : "Login"}
@@ -107,7 +110,7 @@ export default function LoginPage() {
             <span className="w-full border-t border-gray-300" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-3 text-gray-500">or</span>
+            <span className="bg-card px-3 text-muted-foreground">or</span>
           </div>
         </div>
 
@@ -115,7 +118,7 @@ export default function LoginPage() {
         <Button
           variant="outline"
           size="lg"
-          className="w-full flex items-center justify-center"
+          className="w-full flex items-center justify-center rounded-none h-12"
           onClick={() => signIn("google", { callbackUrl: "/" })}
         >
           <Tgoogle className="text-2xl mr-2" />
@@ -130,6 +133,6 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }

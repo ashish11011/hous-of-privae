@@ -180,8 +180,28 @@ const Footer = () => {
       href: "/terms-and-conditions",
     },
     {
-      label: "Trend Talks",
-      href: "/blog",
+      label: "Magazine",
+      href: "/magazine",
+    },
+    {
+      label: "The Edit",
+      href: "/lookbook",
+    },
+    {
+      label: "Atelier Glossary",
+      href: "/atelier/glossary",
+    },
+    {
+      label: "Privae Bespoke",
+      href: "/bespoke",
+    },
+    {
+      label: "Privae Fit",
+      href: "/privae-fit",
+    },
+    {
+      label: "Track Order",
+      href: "/track",
     },
   ];
   const copyrightSuffix = "";
@@ -193,30 +213,30 @@ const Footer = () => {
     { Icon: Youtube, href: "https://www.youtube.com/@hausofprivae", label: "YouTube" },
     { Icon: Twitter, href: "https://x.com/hausofprivae", label: "X (Twitter)" },
     // { Icon: Linkedin, href: "", label: "LinkedIn" },
-    { Icon: Mail, href: "queries.hausofprivae@gmail.com", label: "Email" },
+    { Icon: Mail, href: "mailto:queries.hausofprivae@gmail.com", label: "Email" },
   ].filter((s) => !!s.href);
 
   return (
-    <footer className="bg-[#282121] text-primary-foreground">
+    <footer className="bg-[#282121] text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand */}
           <div className="md:col-span-1">
             <h3 className="font-heading text-2xl mb-4">{brandName}</h3>
-            <p className="text-primary-foreground/60 text-sm font-body leading-relaxed">
+            <p className="text-white/70 text-sm font-body leading-relaxed">
               {brandDescription}
             </p>
           </div>
 
           {/* Info */}
           <div>
-            <h4 className="text-xs tracking-[0.2em] uppercase font-body mb-4 text-primary-foreground/80">
+            <h4 className="text-xs tracking-[0.2em] uppercase font-body mb-4 text-white">
               Information
             </h4>
-            <ul className="space-y-2 text-sm font-body text-primary-foreground/60">
+            <ul className="space-y-2 text-sm font-body text-white/75">
               {infoLinks.map((l: any) => (
                 <li key={`${l.label}-${l.href}`}>
-                  <Link href={l.href} className="hover:text-primary-foreground transition-colors">
+                  <Link href={l.href} className="hover:text-white transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -226,7 +246,7 @@ const Footer = () => {
 
           {/* Connect */}
           <div>
-            <h4 className="text-xs tracking-[0.2em] uppercase font-body mb-4 text-primary-foreground/80">
+            <h4 className="text-xs tracking-[0.2em] uppercase font-body mb-4 text-white">
               Connect
             </h4>
             <div className="flex flex-wrap gap-4">
@@ -238,7 +258,7 @@ const Footer = () => {
                     href={href}
                     aria-label={label}
                     {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+                    className="text-white/75 hover:text-white transition-colors"
                   >
                     <Icon size={20} strokeWidth={1.5} />
                   </a>
@@ -249,13 +269,13 @@ const Footer = () => {
         </div>
 
         {/* Inline editorial newsletter signup */}
-        <div className="mt-14 pt-10 border-t border-primary-foreground/10">
+        <div className="mt-14 pt-10 border-t border-white/15">
           <FooterNewsletter />
         </div>
 
         {/* Copyright */}
-        <div className="mt-12 pt-8 border-t border-primary-foreground/10 text-center">
-          <p className="text-[10px] tracking-[0.35em] uppercase font-body text-primary-foreground/60">
+        <div className="mt-12 pt-8 border-t border-white/15 text-center">
+          <p className="text-[10px] tracking-[0.35em] uppercase font-body text-white/70">
             © {new Date().getFullYear()} {brandName} · {copyrightSuffix}
           </p>
         </div>
@@ -296,36 +316,36 @@ const FooterNewsletter = () => {
       <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3 font-body">
         The Privae Edit
       </p>
-      <p className="font-heading text-xl md:text-2xl text-primary-foreground leading-snug mb-2">
+      <p className="font-heading text-xl md:text-2xl text-white leading-snug mb-2">
         Once a month. Never noisy.
       </p>
-      <p className="text-xs font-body text-primary-foreground/60 leading-relaxed mb-5 max-w-md">
+      <p className="text-xs font-body text-white/70 leading-relaxed mb-5 max-w-md">
         Atelier stories, early access to new edits, and a 10% welcome offer for
         first-time subscribers.
       </p>
 
       {done ? (
-        <p className="inline-flex items-center gap-2 text-xs font-body text-primary-foreground/80 border-b border-gold pb-1">
+        <p className="inline-flex items-center gap-2 text-xs font-body text-white border-b border-gold pb-1">
           <Check size={14} className="text-gold" /> You're on the list. Check your
           inbox.
         </p>
       ) : (
         <form
           onSubmit={subscribe}
-          className="flex items-center gap-0 max-w-md border-b border-primary-foreground/30 focus-within:border-gold transition-colors"
+          className="flex items-center gap-0 max-w-md border-b border-white/35 focus-within:border-gold transition-colors"
         >
           <input
             type="email"
             placeholder="Your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 bg-transparent py-2.5 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 outline-none"
+            className="flex-1 bg-transparent py-2.5 text-sm font-body text-white placeholder:text-white/50 outline-none"
             aria-label="Email address"
           />
           <button
             type="submit"
             disabled={submitting}
-            className="text-[10px] tracking-[0.25em] uppercase font-body text-primary-foreground hover:text-gold transition-colors py-2.5 pl-3 disabled:opacity-50 inline-flex items-center gap-1.5"
+            className="text-[10px] tracking-[0.25em] uppercase font-body text-white hover:text-gold transition-colors py-2.5 pl-3 disabled:opacity-50 inline-flex items-center gap-1.5"
           >
             {submitting && <Loader2 size={12} className="animate-spin" />}
             Subscribe
@@ -335,4 +355,3 @@ const FooterNewsletter = () => {
     </div>
   );
 };
-

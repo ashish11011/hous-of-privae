@@ -7,14 +7,25 @@ import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 
 export const useGetAllOrderList = async () => {
-  return await db.select().from(orderTable);
+  try {
+    return await db.select().from(orderTable);
+  } catch (error) {
+    console.error("Failed to fetch orders", error);
+    return [];
+  }
 };
 
 export async function getUserOrderData() {
   const session = await getServerSession(authOptions);
   const userId = session?.id;
-  return await db
-    .select()
-    .from(orderTable)
-    .where(eq(orderTable.userId, userId));
+  if (!userId) return [];
+  try {
+    return await db
+      .select()
+      .from(orderTable)
+      .where(eq(orderTable.userId, userId));
+  } catch (error) {
+    console.error("Failed to fetch user orders", error);
+    return [];
+  }
 }

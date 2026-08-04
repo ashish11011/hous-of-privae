@@ -81,12 +81,14 @@ export default function TailoredFitFormModal() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg max-h-[80vh] md:max-h-[96vh] overflow-auto pt-10 sm:max-w-xl">
+      <DialogContent className="max-w-lg max-h-[80vh] md:max-h-[96vh] overflow-auto pt-10 sm:max-w-xl bg-white text-neutral-900">
         <DialogHeader>
-          <DialogTitle>Tailored Fit / Alterations Measurement Form</DialogTitle>
+          <DialogTitle className="text-neutral-900">
+            Tailored Fit / Alterations Measurement Form
+          </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-neutral-900">
           <div>
             <Label className="mb-2 block">Select Unit of Measurement</Label>
             <div className="flex gap-4 items-center">
@@ -198,7 +200,7 @@ export default function TailoredFitFormModal() {
             />
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-neutral-600">
             Note: An additional charge of <strong>₹1000</strong> applies for all
             tailored fit requests.
             <br />

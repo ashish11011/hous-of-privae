@@ -6,6 +6,7 @@ type functionParams = {
   id: string;
   size: string;
   color: string;
+  variant?: string;
 };
 
 interface StoreState {
@@ -33,7 +34,10 @@ export const useStore = create<StoreState>()(
       addItemToStore: (item) => {
         const existingIndex = get().productStore.findIndex(
           (p) =>
-            p.id === item.id && p.size === item.size && p.color === item.color
+            p.id === item.id &&
+            p.size === item.size &&
+            p.color === item.color &&
+            (p.variant ?? "stitched") === (item.variant ?? "stitched")
         );
 
         if (existingIndex !== -1) {
@@ -45,30 +49,39 @@ export const useStore = create<StoreState>()(
         }
       },
 
-      removeItemFromStore: ({ id, size, color }: functionParams) =>
+      removeItemFromStore: ({ id, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore.filter(
             (item) =>
-              item.id !== id || item.size !== size || item.color !== color
+              item.id !== id ||
+              item.size !== size ||
+              item.color !== color ||
+              (item.variant ?? "stitched") !== (variant ?? "stitched")
           );
           return { productStore: updated };
         }),
 
-      increaseQuantity: ({ id, size, color }: functionParams) =>
+      increaseQuantity: ({ id, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore.map((item) =>
-            item.id === id && item.size === size && item.color === color
+            item.id === id &&
+            item.size === size &&
+            item.color === color &&
+            (item.variant ?? "stitched") === (variant ?? "stitched")
               ? { ...item, quantity: item.quantity + 1 }
               : item
           );
           return { productStore: updated };
         }),
 
-      decreaseQuantity: ({ id, size, color }: functionParams) =>
+      decreaseQuantity: ({ id, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore
             .map((item) =>
-              item.id === id && item.size === size && item.color === color
+              item.id === id &&
+              item.size === size &&
+              item.color === color &&
+              (item.variant ?? "stitched") === (variant ?? "stitched")
                 ? item.quantity > 1
                   ? { ...item, quantity: item.quantity - 1 }
                   : null // mark for removal

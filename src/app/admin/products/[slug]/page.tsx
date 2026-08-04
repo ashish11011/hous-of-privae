@@ -1,6 +1,8 @@
 import ProductEdit from "./productEdit";
 import { getProdcutInfoBySlug } from "@/lib";
 
+export const dynamic = "force-dynamic";
+
 const Page = async ({ params }: any) => {
   const { slug } = await params;
 

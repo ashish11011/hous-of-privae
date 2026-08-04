@@ -2,6 +2,8 @@ import { useGetContactsPaginated } from "@/src/hepler";
 import ContactsTable from "./contactsTable";
 import { PAGINATION_LIMIT } from "@/const";
 
+export const dynamic = "force-dynamic";
+
 const Page = async ({ searchParams }: any) => {
   const currentPage = (await searchParams).page || 1;
   const contactFormData = await useGetContactsPaginated(
