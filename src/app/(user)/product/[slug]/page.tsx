@@ -1,16 +1,8 @@
 import { getProdcutInfoBySlug, getSimillarProducts } from "@/lib";
 import ProductInformation from "./ProductInformation";
-import ShowMoreProducts from "./ShowMoreProducts";
-import { useGetAllProducts } from "@/src/hepler";
 
-// export async function generateStaticParams() {
-//   const products: any = await useGetAllProducts(null, null);
-//   return products.map((cat: any) => ({
-//     productID: cat.id,
-//   }));
-// }
-
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
+export const dynamic = "force-static";
 
 const Page = async ({ params }: { params: any }) => {
   const productSlug = (await params).slug;
@@ -32,7 +24,7 @@ const Page = async ({ params }: { params: any }) => {
   }
   const simillarProducts = await getSimillarProducts(
     currentProduct.categoryId1 ?? "",
-    productSlug
+    productSlug,
   );
   const { isDeleted, ...safeProductData } = currentProduct;
 

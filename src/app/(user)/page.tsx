@@ -1,22 +1,17 @@
 import ProductCarousel from "@/components/ProductCarousel";
 import Carousel from "@/components/HomeCrousel";
 import Image from "next/image";
-import BrandValues from "./BrandValue";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import FaqSection from "@/components/Faq";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
-import ImageWithSkeleton from "@/components/ImageWithSkeleton";
 import { Categories } from "./Categories";
 import BrandStorySection from "./BrandStory";
 import AppointmentSection from "./AppointmentSection";
 import NotesFromJaipur from "./NoteFromJaipur";
-import WatchTheMaisonSection from "./WatchTheMaisonSection";
 import { getAllCategories } from "@/lib";
 
 export const revalidate = 86400;
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export default async function Home() {
   const landingBanners = {

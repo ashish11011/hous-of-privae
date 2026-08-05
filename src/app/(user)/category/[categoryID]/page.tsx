@@ -5,9 +5,9 @@ import {
   getCategoryBySlugOrId,
   getProductByCategory,
 } from "@/lib";
-import React from "react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
   return (await fallbackCategories())
@@ -16,8 +16,6 @@ export async function generateStaticParams() {
       categoryID: cat.slug,
     }));
 }
-
-export const revalidate = 86400;
 
 const Page = async ({ params }: { params: any }) => {
   const categoryParam = (await params).categoryID;

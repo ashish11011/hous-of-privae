@@ -1,8 +1,8 @@
 import ProductCard from "@/components/ProductCard";
 import { useGetAllProducts } from "@/src/hepler";
-import React from "react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
+export const dynamic = "force-static";
 
 const page = async () => {
   const productsData = await useGetAllProducts(null, null);
