@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
 import { useRouter } from "next/navigation";
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { Plus, Minus, Trash2, CheckCircle2 } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -24,6 +24,15 @@ import {
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { checkCoupon } from "@/src/hepler/coupons/coupon.helper";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 const getColorNameByHex = (hex: string) => {
   return COLORS.find((item) => item.hex === hex)?.label;
@@ -31,9 +40,13 @@ const getColorNameByHex = (hex: string) => {
 
 const Page = () => {
   const router = useRouter();
-  const { productStore, increaseQuantity, decreaseQuantity, removeItemFromStore } = useStore();
+  const { productStore, increaseQuantity, decreaseQuantity, removeItemFromStore, clearCart } = useStore();
 
-  if (productStore.length === 0) {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (productStore.length === 0 && !showSuccess) {
     return (
       <main className="bg-background px-4 py-12 md:py-20 text-center min-h-[60vh] flex flex-col items-center justify-center">
         <h1 className="font-heading text-3xl md:text-4xl mb-4">Your Bag is Empty</h1>
@@ -63,56 +76,46 @@ const Page = () => {
     pincode: "",
   };
 
-  // const [appliedCoupon, setAppliedCoupon] = useState("");
-  // const [couponError, setCouponError] = useState("");
-
-  // const applyCoupon = (code: string) => {
-  //   const coupon = coupons.find((c) => c.code === code.toUpperCase());
-  //   if (!coupon) {
-  //     setCouponError("Invalid coupon code.");
-  //     setAppliedCoupon("");
-  //     return;
-  //   }
-
-  //   if (cartTotal < coupon.minAmount) {
-  //     setCouponError(
-  //       `Minimum cart amount of ₹${coupon.minAmount} required for ${code}`
-  //     );
-  //     setAppliedCoupon("");
-  //     return;
-  //   }
-
-  //   setCouponError("");
-  //   setAppliedCoupon(code.toUpperCase());
-  // };
-
-  // const getDiscountedTotal = () => {
-  //   const coupon = coupons.find((c) => c.code === appliedCoupon);
-  //   const discount = coupon ? (cartTotal * coupon.discountPercent) / 100 : 0;
-  //   return cartTotal - discount;
-  // };
-
-  // const discountedTotal = getDiscountedTotal();
-
   const deliveryCharge = cartTotal >= 1199 ? 0 : 60;
   const finalTotal = cartTotal + deliveryCharge;
 
   const handlePlaceOrder = async (values: any, action: any) => {
-    const userData = {
-      name: values.name,
-      email: values.email,
-      number: values.number,
-    };
-    const response = await fetch("/api/order/create", {
-      method: "POST",
-      body: JSON.stringify({
-        ...values,
-        totalAmountPaid: finalTotal,
-        productDetails: productStore,
-        user: userData,
-      }),
-      headers: { "Content-Type": "application/json" },
-    });
+    setIsSubmitting(true);
+    try {
+      const userData = {
+        name: values.name,
+        email: values.email,
+        number: values.number,
+      };
+      const response = await fetch("/api/order/create", {
+        method: "POST",
+        body: JSON.stringify({
+          ...values,
+          totalAmountPaid: finalTotal,
+          productDetails: productStore,
+          user: userData,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setOrderId(data.orderId || "");
+        setShowSuccess(true);
+        clearCart();
+      } else {
+        toast.error(data.msg || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      toast.error("Failed to place order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,8 +150,13 @@ const Page = () => {
               </div>
               <LabelInput labelName="Pincode" name="pincode" type="number" />
               <DiscountInput />
-              <Button type="submit" className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs" size={"lg"}>
-                Place Order
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
+                size={"lg"}
+              >
+                {isSubmitting ? "Placing Order..." : "Place Order"}
               </Button>
             </Form>
           </Formik>
@@ -292,6 +300,52 @@ const Page = () => {
         </div>
       </div>
       </div>
+      <Dialog open={showSuccess} onOpenChange={() => {}}>
+        <DialogContent className="max-w-md bg-white border border-border p-8 text-center flex flex-col items-center justify-center rounded-none shadow-2xl" showCloseButton={false}>
+          <DialogHeader className="flex flex-col items-center justify-center space-y-4">
+            <div className="size-20 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center mb-2 shadow-inner">
+              <CheckCircle2 size={40} className="text-neutral-800 animate-in zoom-in-50 duration-500" strokeWidth={1} />
+            </div>
+            <p className="eyebrow text-xs tracking-[0.2em] text-neutral-400">Thank You</p>
+            <DialogTitle className="font-heading text-3xl text-neutral-900 tracking-tight">
+              Order Confirmed
+            </DialogTitle>
+            <DialogDescription className="text-neutral-500 font-body text-sm max-w-xs leading-relaxed">
+              Your order has been successfully placed. Our Jaipuri artisans are beginning to craft your selected garments.
+            </DialogDescription>
+          </DialogHeader>
+
+          {orderId && (
+            <div className="my-6 bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
+              <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">Order Reference</span>
+              <span className="font-mono font-medium text-neutral-800 select-all">{orderId}</span>
+            </div>
+          )}
+
+          <div className="w-full space-y-3 mt-4">
+            <Button
+              onClick={() => {
+                setShowSuccess(false);
+                router.push("/track");
+              }}
+              className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
+            >
+              Track Order
+            </Button>
+            <Button
+              onClick={() => {
+                setShowSuccess(false);
+                router.push("/");
+              }}
+              variant="outline"
+              className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs border-neutral-300 hover:bg-neutral-50 text-neutral-800"
+            >
+              Continue Shopping
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Toaster position="top-right" />
     </main>
   );
 };

@@ -49,6 +49,6 @@ export async function POST(request: Request) {
   console.log(orderDetails)
 
   return new Response(
-    JSON.stringify({ msg: "order created successfully", success: true })
+    JSON.stringify({ msg: "order created successfully", success: true, orderId: orderMasterId })
   );
 }

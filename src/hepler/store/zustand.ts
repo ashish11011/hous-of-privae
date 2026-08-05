@@ -15,6 +15,7 @@ interface StoreState {
   removeItemFromStore: (index: functionParams) => void;
   increaseQuantity: (index: functionParams) => void;
   decreaseQuantity: (index: functionParams) => void;
+  clearCart: () => void;
 }
 type wishlistType = {
   id: string;
@@ -91,6 +92,8 @@ export const useStore = create<StoreState>()(
 
           return { productStore: updated };
         }),
+
+      clearCart: () => set({ productStore: [] }),
     }),
     {
       name: "cart-storage",
