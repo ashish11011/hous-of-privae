@@ -1,19 +1,21 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tgoogle } from "@/lib/icons";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ export default function LoginPage() {
       if (res?.status === 401) {
         setMessage("Invalid username or password");
       } else if (res?.status === 200) {
-        router.push("/");
+        router.push(callbackUrl);
       } else if (res?.error) {
         setMessage(res.error);
       }
@@ -119,7 +121,7 @@ export default function LoginPage() {
           variant="outline"
           size="lg"
           className="w-full flex items-center justify-center rounded-none h-12"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl })}
         >
           <Tgoogle className="text-2xl mr-2" />
           Continue with Google
@@ -134,5 +136,21 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex items-center justify-center px-4 py-20 md:py-32 bg-background">
+          <div className="w-full max-w-md border border-border bg-card p-6 md:p-8 text-center text-sm text-muted-foreground">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

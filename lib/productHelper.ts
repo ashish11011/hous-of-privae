@@ -62,22 +62,33 @@ export async function getSimillarProducts(
   }
 }
 
-export async function getProductByCategory(categoryID: string) {
+export async function getProductByCategory(categoryID: string, categorySlug?: string) {
   try {
+    const categoryFilters = categorySlug
+      ? or(
+          eq(product.categoryId1, categoryID),
+          eq(product.categoryId2, categoryID),
+          eq(product.categoryId1, categorySlug),
+          eq(product.categoryId2, categorySlug)
+        )
+      : or(
+          eq(product.categoryId1, categoryID),
+          eq(product.categoryId2, categoryID)
+        );
+
     const data = await db
       .select()
       .from(product)
-      .where(
-        or(
-          eq(product.categoryId1, categoryID),
-          eq(product.categoryId2, categoryID)
-        )
-      );
+      .where(categoryFilters);
     return data.map(compactProduct);
   } catch {
     console.warn("Category products database unavailable; using fallback product data.");
     return fallbackProducts.filter(
-      (item) => item.categoryId1 === categoryID || item.categoryId2 === categoryID
+      (item) =>
+        item.categoryId1 === categoryID ||
+        item.categoryId2 === categoryID ||
+        item.categoryId1 === categorySlug ||
+        item.categoryId2 === categorySlug
     );
   }
 }

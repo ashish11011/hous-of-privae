@@ -23,6 +23,10 @@ export const order = pgTable("order", {
   city: varchar("city"),
   state: varchar("state"),
   pincode: varchar("pincode"),
+  subtotalAmount: integer("subtotal_amount").notNull().default(0),
+  deliveryCharge: integer("delivery_charge").notNull().default(0),
+  discountAmount: integer("discount_amount").notNull().default(0),
+  couponCode: varchar("coupon_code"),
   totalAmountPaid: integer("total_amount_paid"),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),

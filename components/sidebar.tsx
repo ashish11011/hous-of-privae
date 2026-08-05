@@ -5,6 +5,7 @@ import {
   BoxesIcon,
   ChartNoAxesGanttIcon,
   ContactIcon,
+  FolderTree,
   Home,
   MailCheckIcon,
   MessageSquareCodeIcon,
@@ -40,6 +41,11 @@ const items = [
     title: "Orders",
     url: "/admin/orders",
     icon: BoxesIcon,
+  },
+  {
+    title: "Categories",
+    url: "/admin/categories",
+    icon: FolderTree,
   },
   // {
   //   title: "Users",

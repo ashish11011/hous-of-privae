@@ -10,16 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-  CATEGORY_1,
-  CATEGORY_2,
   COLORS,
   MATERIALS,
-  moreSidebarCategories,
   SIZES,
 } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
 import {
-  useConvertArrayToSelectOptions,
   useConvertColorToSelectOptions,
   useConvertSizeToSelectOptions,
 } from "@/src/hooks/convertHooks";
@@ -30,7 +26,32 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const ProductEdit = ({ productData, slug }: any) => {
+type CategoryOption = {
+  id: string;
+  name: string;
+  slug: string;
+  level: number;
+  isActive?: boolean;
+};
+
+function normalizeCategoryValue(value: string, categories: CategoryOption[], level: number) {
+  const category = categories.find(
+    (item) => item.level === level && (item.id === value || item.slug === value)
+  );
+
+  return category?.id ?? value ?? "";
+}
+
+function categorySelectOptions(categories: CategoryOption[], level: number) {
+  return categories
+    .filter((category) => category.level === level && category.isActive !== false)
+    .map((category) => ({
+      value: category.id,
+      label: category.name,
+    }));
+}
+
+const ProductEdit = ({ productData, slug, categories = [] }: any) => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -40,8 +61,8 @@ const ProductEdit = ({ productData, slug }: any) => {
 
     description: productData?.description || "",
     basePrice: productData?.basePrice || 0,
-    categoryId1: productData?.categoryId1 || "",
-    categoryId2: productData?.categoryId2 || "",
+    categoryId1: normalizeCategoryValue(productData?.categoryId1 || "", categories, 1),
+    categoryId2: normalizeCategoryValue(productData?.categoryId2 || "", categories, 2),
     slug: productData?.slug || "",
     model_height: productData?.model_height || "",
 
@@ -161,16 +182,13 @@ const ProductEdit = ({ productData, slug }: any) => {
             labelName="Category Level 1"
             placeholder="Category Level 1"
             name="categoryId1"
-            options={useConvertArrayToSelectOptions([
-              ...CATEGORY_1,
-              ...moreSidebarCategories,
-            ])}
+            options={categorySelectOptions(categories, 1)}
           />
           <Select
             labelName="Category Level 2"
             placeholder="Category Level 2"
             name="categoryId2"
-            options={useConvertArrayToSelectOptions(CATEGORY_2)}
+            options={categorySelectOptions(categories, 2)}
           />
           <div className=" space-y-2 w-md">
             <MultiSelect

@@ -72,3 +72,68 @@ export const checkCoupon = async (couponCode: string) => {
     throw new Error("Failed to check coupon");
   }
 };
+
+export const validateCouponForOrder = async ({
+  couponCode,
+  subtotal,
+  userId,
+}: {
+  couponCode?: string;
+  subtotal: number;
+  userId: string;
+}) => {
+  const normalizedCode = couponCode?.trim().toUpperCase();
+  if (!normalizedCode) {
+    return { coupon: null, discountAmount: 0 };
+  }
+
+  const [couponDetail] = await db
+    .select()
+    .from(userCoupons)
+    .where(eq(userCoupons.code, normalizedCode));
+
+  if (!couponDetail) {
+    throw new Error("Coupon not found");
+  }
+
+  if (couponDetail.useOnce) {
+    const [couponUserHistory] = await db
+      .select()
+      .from(couponTransaction)
+      .where(
+        and(
+          eq(couponTransaction.couponId, couponDetail.id),
+          eq(couponTransaction.userId, userId)
+        )
+      );
+
+    if (couponUserHistory) {
+      throw new Error("Coupon already used");
+    }
+  }
+
+  const percentageDiscount = Math.floor(
+    (subtotal * (couponDetail.discountPercentage ?? 0)) / 100
+  );
+  const fixedDiscount = couponDetail.discountFixedAmount ?? 0;
+  const discountAmount = Math.min(subtotal, Math.max(0, percentageDiscount + fixedDiscount));
+
+  return { coupon: couponDetail, discountAmount };
+};
+
+export const recordCouponUsage = async ({
+  couponId,
+  userId,
+}: {
+  couponId?: string;
+  userId: string;
+}) => {
+  if (!couponId) return null;
+
+  const [transaction] = await db
+    .insert(couponTransaction)
+    .values({ couponId, userId })
+    .returning();
+
+  return transaction;
+};

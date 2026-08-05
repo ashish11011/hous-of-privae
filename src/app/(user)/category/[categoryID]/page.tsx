@@ -1,27 +1,29 @@
 // import { ProductCard } from "@/components/ProductCard";
 import ProductCard from "@/components/ProductCard";
-import { CATEGORY_1 } from "@/const";
-import { getProductByCategory } from "@/lib";
+import {
+  fallbackCategories,
+  getCategoryBySlugOrId,
+  getProductByCategory,
+} from "@/lib";
 import React from "react";
 
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  const categories = CATEGORY_1; // should return list of category IDs like [{ categoryID: 'shoes' }, { categoryID: 'bags' }]
-  return categories.map((cat) => ({
-    categoryID: cat.id,
-  }));
+  return (await fallbackCategories())
+    .filter((cat) => cat.level === 1)
+    .map((cat) => ({
+      categoryID: cat.slug,
+    }));
 }
 
 export const revalidate = 86400;
 
 const Page = async ({ params }: { params: any }) => {
   const categoryParam = (await params).categoryID;
-  const category = CATEGORY_1.find(
-    (item) => item.slug === categoryParam || item.id === categoryParam
-  );
+  const category = await getCategoryBySlugOrId(categoryParam);
   const categoryID = category?.id ?? categoryParam;
-  const productsData = await getProductByCategory(categoryID);
+  const productsData = await getProductByCategory(categoryID, category?.slug);
 
   if (!productsData || productsData.length === 0)
     return (

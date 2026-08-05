@@ -1,5 +1,5 @@
 import ProductEdit from "./productEdit";
-import { getProdcutInfoBySlug } from "@/lib";
+import { getAllCategories, getProdcutInfoBySlug } from "@/lib";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +12,14 @@ const Page = async ({ params }: any) => {
     productData = await getProdcutInfoBySlug(slug);
   }
 
+  const categories = await getAllCategories();
+
   return (
     <>
       <ProductEdit
         productData={productData ? productData[0] : null}
         slug={slug}
+        categories={categories}
       />
     </>
   );

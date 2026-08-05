@@ -2,12 +2,14 @@ import { orderItemsTable, orderTable } from "@/db/schema";
 import { db } from "./db";
 
 export const createNewMasterOrder = async (order: any) => {
+  console.log("order data: ",order)
   try {
     const result = await db
       .insert(orderTable)
       .values({ totalAmountPaid: 0, ...order })
       .returning();
-    return result ? result[0]?.id : null;
+      console.log("order insert data: ",result);
+      return result ? result[0]?.id : null;
   } catch (error) {
     return { msg: "error: ", error };
   }

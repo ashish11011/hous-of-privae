@@ -8,6 +8,26 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
+export const category = pgTable(
+  "categories",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 120 }).notNull(),
+    slug: varchar("slug", { length: 140 }).unique().notNull(),
+    image: varchar("image"),
+    tagline: varchar("tagline"),
+    level: integer("level").notNull().default(1),
+    parentId: varchar("parent_id"),
+    isActive: boolean("is_active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("category_slug_idx").on(table.slug),
+    index("category_level_idx").on(table.level),
+  ]
+);
+
 export const product = pgTable(
   "products",
   {
