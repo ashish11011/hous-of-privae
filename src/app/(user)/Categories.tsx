@@ -1,10 +1,21 @@
 "use client"
 
 import ImageWithSkeleton from "@/components/ImageWithSkeleton";
-import { CATEGORY_1 } from "@/const";
 import Link from "next/link";
 
-export function Categories() {
+interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    image: string | null;
+    tagline: string | null;
+}
+
+interface CategoriesProps {
+    categories: Category[];
+}
+
+export function Categories({ categories }: CategoriesProps) {
     return (
         <section className="py-16 md:py-24 px-4">
             <div className="container mx-auto">
@@ -16,7 +27,7 @@ export function Categories() {
                     <div className="section-rule my-2" />
                 </div>
                 <div className=" grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                    {CATEGORY_1.map((cat, idx) => {
+                    {categories.map((cat) => {
                         return (
                             <Link
                                 key={cat.slug}
@@ -25,7 +36,7 @@ export function Categories() {
                             >
                                 <ImageWithSkeleton
                                     wrapperClassName="absolute inset-0 w-full h-full"
-                                    src={cat.image}
+                                    src={cat.image || "/categoryimage.png"}
                                     alt={cat.name}
                                     width={640}
                                     height={800}

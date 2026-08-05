@@ -3,7 +3,6 @@ import Carousel from "@/components/HomeCrousel";
 import Image from "next/image";
 import BrandValues from "./BrandValue";
 import Link from "next/link";
-import { CATEGORY_1 } from "@/const";
 import { Button } from "@/components/ui/button";
 import FaqSection from "@/components/Faq";
 import { getServerSession } from "next-auth";
@@ -14,16 +13,51 @@ import BrandStorySection from "./BrandStory";
 import AppointmentSection from "./AppointmentSection";
 import NotesFromJaipur from "./NoteFromJaipur";
 import WatchTheMaisonSection from "./WatchTheMaisonSection";
+import { getAllCategories } from "@/lib";
 
 export const revalidate = 86400;
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const landingBanners = {
+    mobile: [
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+1+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+2+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner3+(1).png",
+    ],
+    desktop: [
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner1+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner+2+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/desktop+banner3+(1).png",
+    ],
+  };
+  const restricedCategory = [
+    "new-aravials",
+    "clearance",
+    "best-seller",
+    "aarambh",
+  ];
+  const allCategories = await getAllCategories();
+  const categories = allCategories
+    .filter(
+      (cat) =>
+        cat.level === 1 &&
+        cat.isActive &&
+        !restricedCategory.includes(cat.slug),
+    )
+    .map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      image: cat.image,
+      tagline: cat.tagline,
+    }));
+
   return (
     <div className=" w-full">
-      <Carousel />
+      <Carousel landingBanners={landingBanners} />
 
-      <Categories />
+      <Categories categories={categories} />
       <div className="section-rule my-2" />
       {/* <VideoPlay /> */}
       {/* <Categories2 /> */}
@@ -36,19 +70,21 @@ export default async function Home() {
       {/* <div className="section-rule my-2" /> */}
       {/* <div className="reveal"><WatchTheMaisonSection /></div> */}
       {/* <div className="section-rule my-2" /> */}
-      <div className="reveal"><NotesFromJaipur /></div>
+      <div className="reveal">
+        <NotesFromJaipur />
+      </div>
       <div className="section-rule my-2" />
       <div id="privae-studio" className="reveal">
         <AppointmentSection />
       </div>
-      <div className="reveal"><BrandStorySection /></div>
+      <div className="reveal">
+        <BrandStorySection />
+      </div>
       <FaqSection />
       <div className="h-16"></div>
     </div>
   );
 }
-
-
 
 // function Categories2() {
 //   return (

@@ -24,7 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowLeft, Heart, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Heart, Minus, Plus, Trash2 } from "lucide-react";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import TailoredFitFormModal from "@/components/productCustomization";
@@ -409,27 +409,81 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       </div>
 
       {/* Add to Bag and Wishlist */}
-      <div className="flex gap-2">
-        <Button
-          onClick={() => handleAddToCart()}
-          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-none tracking-widest uppercase text-xs font-medium"
-        >
-          Add to Bag
-        </Button>
-        <Button
-          onClick={() => {
-            if (productWishlist.filter((item) => item.id === productData.id)[0]) {
-              removeWishlistHandler(productData.id);
-            } else {
-              addWishlistHandler(productData.id);
-            }
-          }}
-          variant="outline"
-          className="h-12 w-12 rounded-none border-neutral-300"
-        >
-          <Heart className={productWishlist.filter((item) => item.id === productData.id)[0] ? "fill-primary text-primary" : "text-neutral-500"} size={18} />
-        </Button>
-      </div>
+      {(() => {
+        const cartItem = selectedSize && selectedColor ? productStore.find(
+          (item) =>
+            item.id === productData.id &&
+            item.size === selectedSize &&
+            item.color === selectedColor &&
+            (item.variant ?? "stitched") === (selectedVariant ?? "stitched")
+        ) : undefined;
+
+        return (
+          <div className="flex gap-2">
+            {cartItem ? (
+              <div className="flex-1 flex items-center justify-between border border-neutral-300 h-12 px-4 select-none">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedSize && selectedColor) {
+                      decreaseQuantity({
+                        id: productData.id,
+                        size: selectedSize,
+                        color: selectedColor,
+                        variant: selectedVariant,
+                      });
+                    }
+                  }}
+                  className="p-1 hover:bg-neutral-100 transition-colors text-neutral-600 flex items-center justify-center rounded"
+                  aria-label="Decrease quantity"
+                >
+                  {cartItem.quantity === 1 ? <Trash2 size={16} className="text-red-500 hover:text-red-600" /> : <Minus size={16} />}
+                </button>
+                <span className="font-semibold text-xs tracking-widest uppercase text-neutral-800">
+                  {cartItem.quantity} In Bag
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedSize && selectedColor) {
+                      increaseQuantity({
+                        id: productData.id,
+                        size: selectedSize,
+                        color: selectedColor,
+                        variant: selectedVariant,
+                      });
+                    }
+                  }}
+                  className="p-1 hover:bg-neutral-100 transition-colors text-neutral-600 flex items-center justify-center rounded"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => handleAddToCart()}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-none tracking-widest uppercase text-xs font-medium"
+              >
+                Add to Bag
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                if (productWishlist.filter((item) => item.id === productData.id)[0]) {
+                  removeWishlistHandler(productData.id);
+                } else {
+                  addWishlistHandler(productData.id);
+                }
+              }}
+              variant="outline"
+              className="h-12 w-12 rounded-none border-neutral-300"
+            >
+              <Heart className={productWishlist.filter((item) => item.id === productData.id)[0] ? "fill-primary text-primary" : "text-neutral-500"} size={18} />
+            </Button>
+          </div>
+        );
+      })()}
 
       <Button variant="outline" className="w-full h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium">
         🔔 Notify me when back in stock

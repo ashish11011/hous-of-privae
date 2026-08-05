@@ -14,6 +14,8 @@ import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
+import { useRouter } from "next/navigation";
+import { Plus, Minus, Trash2 } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -28,7 +30,22 @@ const getColorNameByHex = (hex: string) => {
 };
 
 const Page = () => {
-  const { productStore } = useStore();
+  const router = useRouter();
+  const { productStore, increaseQuantity, decreaseQuantity, removeItemFromStore } = useStore();
+
+  if (productStore.length === 0) {
+    return (
+      <main className="bg-background px-4 py-12 md:py-20 text-center min-h-[60vh] flex flex-col items-center justify-center">
+        <h1 className="font-heading text-3xl md:text-4xl mb-4">Your Bag is Empty</h1>
+        <p className="text-neutral-500 mb-8 max-w-md">
+          You haven't added any products to your bag yet. Browse our collections to find something you love.
+        </p>
+        <Button onClick={() => router.push("/")} className="rounded-none tracking-widest uppercase text-xs px-8 py-3">
+          Continue Shopping
+        </Button>
+      </main>
+    );
+  }
 
   const cartTotal = productStore.reduce(
     (total, item) => total + item.basePrice * item.quantity,
@@ -150,7 +167,7 @@ const Page = () => {
                   className="rounded object-cover"
                 />
                 <div className=" flex flex-col justify-between gap-2">
-                  <p className=" p-1.5 size-7 flex items-center justify-center rounded-full bg-neutral-100 border absolute -top-2 -right-2 cursor-pointer">
+                  <p className=" p-1.5 size-7 flex items-center justify-center rounded-full bg-neutral-100 border absolute -top-2 -right-2 select-none">
                     {item.quantity}
                   </p>
                 </div>
@@ -163,6 +180,60 @@ const Page = () => {
                   <p>color: {getColorNameByHex(item.color)}</p>
                   <p>size: {item.size}</p>
                   <p>variant: {item.variant ?? "stitched"}</p>
+                </div>
+                {/* Quantity Controls and Remove button */}
+                <div className="flex items-center gap-2 mt-2 pt-1">
+                  <div className="flex items-center border border-neutral-300 bg-background h-8 px-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        decreaseQuantity({
+                          id: item.id,
+                          size: item.size,
+                          color: item.color,
+                          variant: item.variant,
+                        })
+                      }
+                      className="p-1 hover:bg-neutral-100 text-neutral-600 transition-colors flex items-center justify-center"
+                      aria-label="Decrease quantity"
+                    >
+                      {item.quantity === 1 ? <Trash2 size={12} className="text-red-500" /> : <Minus size={12} />}
+                    </button>
+                    <span className="text-xs font-semibold px-2 min-w-[20px] text-center select-none">
+                      {item.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        increaseQuantity({
+                          id: item.id,
+                          size: item.size,
+                          color: item.color,
+                          variant: item.variant,
+                        })
+                      }
+                      className="p-1 hover:bg-neutral-100 text-neutral-600 transition-colors flex items-center justify-center"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus size={12} />
+                    </button>
+                  </div>
+                  {item.quantity > 1 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeItemFromStore({
+                          id: item.id,
+                          size: item.size,
+                          color: item.color,
+                          variant: item.variant,
+                        })
+                      }
+                      className="text-xs text-neutral-400 hover:text-red-500 font-medium transition-colors ml-2 uppercase tracking-wider text-[10px]"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               </div>
               <p className="text-right ml-auto whitespace-nowrap text-primary">
