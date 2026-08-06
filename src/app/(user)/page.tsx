@@ -9,23 +9,12 @@ import BrandStorySection from "./BrandStory";
 import AppointmentSection from "./AppointmentSection";
 import NotesFromJaipur from "./NoteFromJaipur";
 import { getAllCategories } from "@/lib";
+import { getLandingSettings } from "@/lib/siteSettings";
 
-export const revalidate = 86400;
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const landingBanners = {
-    mobile: [
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+(1).png",
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+2+(1).png",
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner3+(1).png",
-    ],
-    desktop: [
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner+(1).png",
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner+2+(1).png",
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/desktop+banner3+(1).png",
-    ],
-  };
+  const { landingBanners } = await getLandingSettings();
   const restricedCategory = [
     "new-aravials",
     "clearance",
@@ -51,7 +40,6 @@ export default async function Home() {
   return (
     <div className=" w-full">
       <Carousel landingBanners={landingBanners} />
-
       <Categories categories={categories} />
       <div className="section-rule my-2" />
       {/* <VideoPlay /> */}

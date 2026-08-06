@@ -3,6 +3,7 @@ import { category, product } from "./productSchema";
 import { review } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
 import { blog, blogForm } from "./blogSchema";
+import { siteSettings } from "./siteSettingsSchema";
 import {
   order,
   orderItem,
@@ -30,6 +31,7 @@ export const blogTable = blog;
 export const blogFormTable = blogForm;
 
 export const subscriptionTable = subscription;
+export const siteSettingsTable = siteSettings;
 
 export const orderRelationsTable = orderRelations;
 

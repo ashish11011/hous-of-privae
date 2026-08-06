@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 
-const FROM_EMAIL = "hop@ashishbishnoi.com";
+const FROM_EMAIL = "privaecare@hausofprivae.com";
 const ADMIN_EMAIL = "hausofprivae@gmail.com";
 
 type OrderEmailItem = {
@@ -34,12 +34,48 @@ type OrderEmailInput = {
   couponCode?: string | null;
 };
 
+type FormEmailInput = {
+  type: string;
+  title: string;
+  fields: Record<string, string | number | null | undefined>;
+  userEmail?: string | null;
+  userSubject?: string;
+  adminSubject?: string;
+};
+
 function sesClient() {
   return new AWS.SES({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
     secretAccessKey: process.env.NEXT_S3_SECRET_KEY,
     region: process.env.NEXT_PUBLIC_S3_REGION,
   });
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function htmlFieldRows(fields: FormEmailInput["fields"]) {
+  return Object.entries(fields)
+    .map(
+      ([label, value]) => `
+        <tr>
+          <td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold;">${escapeHtml(label)}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(String(value ?? "-"))}</td>
+        </tr>`
+    )
+    .join("");
+}
+
+function textFields(fields: FormEmailInput["fields"]) {
+  return Object.entries(fields)
+    .map(([label, value]) => `${label}: ${value ?? "-"}`)
+    .join("\n");
 }
 
 function orderLines(items: OrderEmailItem[]) {
@@ -163,4 +199,55 @@ export async function sendOrderNotificationEmails(input: OrderEmailInput) {
       input
     ),
   ]);
+}
+
+export async function sendFormNotificationEmails(input: FormEmailInput) {
+  if (!process.env.NEXT_PUBLIC_S3_ACCESS_KEY || !process.env.NEXT_S3_SECRET_KEY) {
+    console.warn("SES credentials are missing. Skipping form email.");
+    return;
+  }
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;color:#241719;line-height:1.6;">
+      <h2>${escapeHtml(input.title)}</h2>
+      <p><strong>Form:</strong> ${escapeHtml(input.type)}</p>
+      <table style="border-collapse:collapse;width:100%;margin-top:16px;">
+        <tbody>${htmlFieldRows(input.fields)}</tbody>
+      </table>
+    </div>
+  `;
+  const text = `${input.title}\n\nForm: ${input.type}\n${textFields(input.fields)}`;
+
+  const sendEmail = (to: string, subject: string) =>
+    sesClient()
+      .sendEmail({
+        Source: FROM_EMAIL,
+        Destination: { ToAddresses: [to] },
+        Message: {
+          Subject: { Data: subject },
+          Body: {
+            Text: { Data: text },
+            Html: { Data: html },
+          },
+        },
+      })
+      .promise();
+
+  const deliveries = [
+    sendEmail(
+      ADMIN_EMAIL,
+      input.adminSubject || `New ${input.type} submission - Haus of Privae`
+    ),
+  ];
+
+  if (input.userEmail) {
+    deliveries.push(
+      sendEmail(
+        input.userEmail,
+        input.userSubject || `We received your ${input.type} request`
+      )
+    );
+  }
+
+  await Promise.all(deliveries);
 }

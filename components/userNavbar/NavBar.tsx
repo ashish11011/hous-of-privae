@@ -30,7 +30,7 @@ const discoverLinks = [
   { label: "Atelier Glossary", href: "/atelier/glossary" },
 ];
 
-export default function NavBar() {
+export default function NavBar({ navbarMessages }: { navbarMessages?: string[] }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -53,7 +53,7 @@ export default function NavBar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white text-neutral-950">
-      <NotificationBar />
+      <NotificationBar messages={navbarMessages} />
 
       <div className="border-b border-neutral-900 bg-white">
         <div className="container mx-auto px-4 flex flex-col items-center justify-center py-2 md:py-3">

@@ -25,6 +25,8 @@ export default function TailoredFitFormModal() {
     contact: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -39,26 +41,32 @@ export default function TailoredFitFormModal() {
       alert("Please provide a contact number.");
       return;
     }
+    setSubmitting(true);
+    setError("");
     const payload = { unit, ...form };
-    const res = await fetch("/api/tailored-fit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    const resMsg = await res.json();
-    // if (resMsg.status !== 200) {
-    //   //   const resMsg = await res.json();
-    //   alert(resMsg.message);
-    //   throw new Error(resMsg.message);
-    // }
-    setSubmitted(true);
-    handleReset();
-    setTimeout(() => setOpen(false), 2000);
+    try {
+      const res = await fetch("/api/tailored-fit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const resMsg = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(resMsg.error || "Could not submit tailored fit request.");
+      }
+      setSubmitted(true);
+      resetFields();
+      setTimeout(() => setOpen(false), 2000);
+    } catch (err: any) {
+      setError(err.message || "Could not submit tailored fit request.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  function handleReset() {
+  function resetFields() {
     setForm({
       chest: "",
       underbust: "",
@@ -70,7 +78,12 @@ export default function TailoredFitFormModal() {
       contact: "",
     });
     setUnit("inches");
+  }
+
+  function handleReset() {
+    resetFields();
     setSubmitted(false);
+    setError("");
   }
 
   return (
@@ -236,12 +249,19 @@ export default function TailoredFitFormModal() {
               contact you shortly.{" "}
             </div>
           )}
+          {error && (
+            <div className="p-3 bg-red-50 border rounded-md text-red-800 text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-3">
             <Button type="button" variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit"}
+            </Button>
           </div>
         </form>
       </DialogContent>

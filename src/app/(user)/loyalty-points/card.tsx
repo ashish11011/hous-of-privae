@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Info, SendHorizonal } from "lucide-react";
 import React, { useState } from "react";
 import { transferLoyaltyPoints } from "@/src/hepler/loyalty/transfer";
+import { loyaltyPointsToRupees } from "@/lib/loyaltyRewards";
 
 const LoyalityCard = ({ logedinUserData }: any) => {
   const [userData, setUserData] = useState({
@@ -87,7 +88,7 @@ const LoyalityCard = ({ logedinUserData }: any) => {
 export default LoyalityCard;
 
 function InfoCardPoints({ points }: { points: number }) {
-  const valueInINR = (points / 10).toFixed(2);
+  const valueInINR = loyaltyPointsToRupees(points).toFixed(2);
 
   return (
     <Dialog>

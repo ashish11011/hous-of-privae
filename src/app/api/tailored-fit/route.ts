@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // your Drizzle DB connection
 import { taileredFits } from "@/db/schema";
+import { sendFormNotificationEmails } from "@/lib/email/ses";
 
 export async function POST(req: Request) {
   try {
@@ -39,7 +40,27 @@ export async function POST(req: Request) {
       })
       .returning();
 
-    return NextResponse.json({ success: true, data: inserted });
+    await sendFormNotificationEmails({
+      type: "tailored fit",
+      title: "Tailored fit request received",
+      fields: {
+        Contact: contact,
+        Unit: unit,
+        Chest: chest,
+        Underbust: underbust,
+        Waist: waist,
+        Hips: hips,
+        "Shoulder Length": shoulderLength,
+        "Bottom Length": bottomLength,
+        Notes: additional,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Tailored fit request submitted successfully.",
+      data: inserted,
+    });
   } catch (error) {
     console.error("Error inserting tailored fit data:", error);
     return NextResponse.json(

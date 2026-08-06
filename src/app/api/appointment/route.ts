@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { contactTable } from "@/db/schema";
 import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
+import { sendFormNotificationEmails } from "@/lib/email/ses";
 
 const APPOINTMENT_LOCATION = "appointment";
 
@@ -97,7 +98,27 @@ export async function POST(req: Request) {
       })
       .returning();
 
-    return NextResponse.json({ success: true, data: inserted });
+    await sendFormNotificationEmails({
+      type: "appointment",
+      title: "Appointment request received",
+      userEmail: email,
+      fields: {
+        Name: name,
+        Email: email,
+        Phone: phone,
+        Service: appointmentLabel ?? appointmentType,
+        Type: appointmentType,
+        Scheduled: `${date} ${time}`,
+        Duration: `${duration ?? 60} min`,
+        Notes: notes || "-",
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Appointment request submitted successfully.",
+      data: inserted,
+    });
   } catch (error) {
     console.error("Error creating appointment:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

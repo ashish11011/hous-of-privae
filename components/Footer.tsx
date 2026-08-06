@@ -303,12 +303,25 @@ const FooterNewsletter = () => {
       return;
     }
     setSubmitting(true);
-    const code = `WELCOME10-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const payload = await response.json().catch(() => ({}));
 
-    setSubmitting(false);
+      if (!response.ok) {
+        throw new Error(payload.message || "Could not subscribe. Please try again.");
+      }
 
-    setDone(true);
-    setEmail("");
+      setDone(true);
+      setEmail("");
+    } catch (error: any) {
+      toast(error.message || "Could not subscribe. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

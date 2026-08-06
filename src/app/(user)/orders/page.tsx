@@ -2,10 +2,18 @@ import { Button } from "@/components/ui/button";
 import { getUserOrderData } from "@/src/hepler";
 import Link from "next/link";
 import React from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 const page = async () => {
+  const session = await getServerSession(authOptions);
+  if (!session?.email) {
+    redirect("/auth/login?callbackUrl=/orders");
+  }
+
   const orderData = await getUserOrderData();
   if (!orderData || orderData.length === 0)
     return (

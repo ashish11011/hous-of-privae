@@ -6,19 +6,22 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { Signout } from "@/src/hepler/auth";
+import { CirclePoundSterling, Heart, LogOut, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const ContactForm = ({ userData }: any) => {
   const [formData, setFormData] = useState({
-    name: userData.name || "",
-    email: userData.email || "",
-    number: userData.number || "",
-    addressLine1: userData.addressLine1 || "",
-    addressLine2: userData.addressLine2 || "",
-    city: userData.city || "",
-    state: userData.state || "",
-    pincode: userData.pincode || "",
+    name: userData?.name || "",
+    email: userData?.email || "",
+    number: userData?.number || "",
+    addressLine1: userData?.addressLine1 || "",
+    addressLine2: userData?.addressLine2 || "",
+    city: userData?.city || "",
+    state: userData?.state || "",
+    pincode: userData?.pincode || "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,18 +49,21 @@ const ContactForm = ({ userData }: any) => {
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error(error);
-      alert("Error updating profile.");
+      toast.error("Error updating profile.");
     } finally {
       setLoading(false);
     }
   };
   return (
     <div className="max-w-2xl mx-auto my-16">
-      <CurrencyConverter />
+      <AccountOptions />
+      {/* <CurrencyConverter /> */}
 
       <div className=" border rounded-lg shadow p-8 space-y-6">
         <Toaster position="top-right" />
-        <h2 className="text-2xl font-semibold text-center">Update Profile</h2>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-2xl font-semibold">Update Profile</h2>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Info Section */}
@@ -183,6 +189,48 @@ const ContactForm = ({ userData }: any) => {
 };
 
 export default ContactForm;
+
+function AccountOptions() {
+  const options = [
+    {
+      label: "Orders",
+      href: "/orders",
+      Icon: ShoppingCart,
+    },
+    {
+      label: "My Wishlist",
+      href: "/my-wishlist",
+      Icon: Heart,
+    },
+    {
+      label: "Loyalty Points",
+      href: "/loyalty-points",
+      Icon: CirclePoundSterling,
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+      {options.map(({ label, href, Icon }) => (
+        <Link key={href} href={href} className="w-full">
+          <Button variant="outline" className="w-full">
+            <Icon size={20} />
+            <span className="text-sm font-medium">{label}</span>
+          </Button>
+        </Link>
+      ))}
+      <Button
+        type="button"
+        variant="destructive"
+        onClick={Signout}
+        className="gap-2"
+      >
+        <LogOut size={16} />
+        Logout
+      </Button>
+    </div>
+  );
+}
 
 function CurrencyConverter() {
   const [defaultType, setDefaultType] = useState("INR");

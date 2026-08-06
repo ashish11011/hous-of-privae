@@ -22,6 +22,13 @@
       "when": 1785903817974,
       "tag": "0004_outgoing_baron_strucker",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786013809893,
+      "tag": "0005_legal_franklin_storm",
+      "breakpoints": true
     }
   ]
 }

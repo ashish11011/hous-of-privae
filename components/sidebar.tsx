@@ -11,6 +11,7 @@ import {
   MessageSquareCodeIcon,
   Shirt,
   TicketPercent,
+  Settings,
   UserRoundIcon,
 } from "lucide-react";
 
@@ -71,6 +72,11 @@ const items = [
     title: "Manage Coupons",
     url: "/admin/coupons",
     icon: TicketPercent,
+  },
+  {
+    title: "Site Settings",
+    url: "/admin/site-settings",
+    icon: Settings,
   },
   // {
   //   title: "Blog",

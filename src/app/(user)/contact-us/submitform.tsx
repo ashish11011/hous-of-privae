@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { insertContactDetails } from "@/lib";
 import React, { useState } from "react";
 
 const Submitform = () => {
@@ -34,13 +33,21 @@ const Submitform = () => {
     setStatus(null);
 
     try {
-      await insertContactDetails({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        location: "", // optional field if needed
-        message: form.message,
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          location: "contact",
+          message: form.message,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error("Contact submission failed");
+      }
 
       setStatus("success");
       setForm({

@@ -2,63 +2,54 @@ import { cognitoClient } from "@/lib/auth/cognitoClient";
 import {
   CLIENT_ID,
   generateSecretHash,
-  USER_POOL_ID,
 } from "@/lib/auth/generateHash";
-import { insertUser } from "@/lib/auth/getUserTypeFromEmail";
-import { db } from "@/lib/db";
-import {
-  AdminGetUserCommand,
-  AdminUpdateUserAttributesCommand,
-  ConfirmSignUpCommand,
-} from "@aws-sdk/client-cognito-identity-provider";
+import { getUserByEmail, insertUser } from "@/lib/auth/getUserTypeFromEmail";
+import { ConfirmSignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { name, email, code } = await request.json();
-  const secretHash = generateSecretHash(email);
-  const params = {
-    ClientId: CLIENT_ID,
-    Username: email,
-    ConfirmationCode: code,
-    SecretHash: secretHash,
-  };
-
   try {
-    const command = new ConfirmSignUpCommand(params);
-    const awsResponse = await cognitoClient.send(command);
-    const userCommand = new AdminGetUserCommand({
-      UserPoolId: USER_POOL_ID,
-      Username: email,
-    });
-    const awsUserData = await cognitoClient.send(userCommand);
+    const { name, email, code } = await request.json();
 
-    if (awsResponse) {
-      const user = {
-        email,
-        name,
-      };
-      const userData = await insertUser(user);
-      const userId = userData[0].id;
-
-      return new Response(JSON.stringify(awsResponse), {
-        status: 200,
-      });
+    if (!name || !email || !code) {
+      return NextResponse.json(
+        { message: "Name, email, and verification code are required." },
+        { status: 400 }
+      );
     }
+
+    await cognitoClient.send(
+      new ConfirmSignUpCommand({
+        ClientId: CLIENT_ID,
+        Username: email,
+        ConfirmationCode: code,
+        SecretHash: generateSecretHash(email),
+      })
+    );
+
+    const existingUser = await getUserByEmail(email);
+    if (!existingUser) {
+      await insertUser({ email, name });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Account verified successfully. You can now log in.",
+    });
   } catch (error: any) {
-    // Check if it's a Postgres unique constraint violation
     if (error.code === "23505") {
-      // Optional: check which field caused it
       if (error.constraint === "users_email_unique") {
-        return new Response(
-          JSON.stringify({ message: "Email already exists", status: 400 })
+        return NextResponse.json(
+          { message: "Email already exists" },
+          { status: 400 }
         );
       }
     }
 
-    // Catch-all for other errors
     console.error("Unexpected error:", error);
-    return new Response(
-      JSON.stringify({ message: "Something went wrong", status: 500 })
+    return NextResponse.json(
+      { message: error?.message || "Something went wrong" },
+      { status: 400 }
     );
   }
 }

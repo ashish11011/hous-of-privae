@@ -5,7 +5,6 @@ import { Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { insertContactDetails } from "@/lib";
 
 const garmentTypes = ["Saree", "Lehenga", "Suit Set", "Co-ord Set", "Blouse", "Bridal Ensemble"];
 const budgets = ["Below Rs 50,000", "Rs 50,000 - Rs 1,00,000", "Rs 1,00,000 - Rs 2,50,000", "Rs 2,50,000+"];
@@ -13,6 +12,7 @@ const budgets = ["Below Rs 50,000", "Rs 50,000 - Rs 1,00,000", "Rs 1,00,000 - Rs
 export default function BespokeRequestForm() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -29,20 +29,36 @@ export default function BespokeRequestForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await insertContactDetails({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      location: "Bespoke request",
-      message: [
-        `Garment: ${form.garment}`,
-        `Occasion: ${form.occasion || "Not specified"}`,
-        `Budget: ${form.budget}`,
-        form.message,
-      ].join("\n"),
-    });
-    setLoading(false);
-    setDone(true);
+    setError("");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          location: "Bespoke request",
+          message: [
+            `Garment: ${form.garment}`,
+            `Occasion: ${form.occasion || "Not specified"}`,
+            `Budget: ${form.budget}`,
+            form.message,
+          ].join("\n"),
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.message || "Could not submit bespoke request.");
+      }
+
+      setDone(true);
+    } catch (err: any) {
+      setError(err.message || "Could not submit bespoke request.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (done) {
@@ -90,6 +106,7 @@ export default function BespokeRequestForm() {
         {loading && <Loader2 size={14} className="mr-2 animate-spin" />}
         Send Bespoke Request
       </Button>
+      {error && <p className="text-center text-sm text-red-600">{error}</p>}
     </form>
   );
 }

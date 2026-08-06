@@ -1,10 +1,9 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { cognitoClient } from "./cognitoClient";
-import crypto from "crypto";
 import {
   InitiateAuthCommand,
-  AuthFlowType, // ✅ import the enum
+  AuthFlowType,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import { getUserByEmail, insertUser } from "./getUserTypeFromEmail";
@@ -27,7 +26,7 @@ export const authOptions = {
         const secretHash = generateSecretHash(credentials.username);
 
         const params = {
-          AuthFlow: AuthFlowType.USER_PASSWORD_AUTH, // ✅ use the enum
+          AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
           ClientId: CLIENT_ID,
           AuthParameters: {
             USERNAME: credentials.username,
@@ -47,13 +46,12 @@ export const authOptions = {
           const decoded: any = jwt.decode(idToken as string);
           return {
             username: credentials.username,
-            id: decoded.sub,
-            email: decoded.email,
+            id: decoded?.sub,
+            email: decoded?.email || credentials.username,
           };
         } catch (err) {
           console.error("Cognito auth error:", err);
-          throw new Error("Cognito auth error");
-          return null;
+          throw new Error("Invalid email or password");
         }
       },
     }),
@@ -64,7 +62,7 @@ export const authOptions = {
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/auth/login",
   },
   session: {
     strategy: "jwt" as const,
@@ -78,16 +76,17 @@ export const authOptions = {
       if (user) {
         if (account?.provider === "credentials") {
           token.username = user.username;
-          token.id = user["custom:id"];
+          token.id = user.id;
           token.email = user.email;
 
           const userData = await getUserByEmail(user.email);
 
-          if (!userData) {
-            throw new Error("USER_NOT_FOUND");
-          }
+          const localUser =
+            userData ??
+            (await insertUser({ email: user.email, name: user.name ?? "" }))[0];
 
-          token.user_type = userData.user_type;
+          token.id = localUser.id;
+          token.user_type = localUser.user_type;
         }
 
         if (account?.provider === "google") {

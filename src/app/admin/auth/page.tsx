@@ -9,7 +9,7 @@ const page = async () => {
   if (!session) {
     return (
       <div className="text-red-500">
-        You must be logged in <Link href="/login">Login</Link>
+        You must be logged in <Link href="/auth/login">Login</Link>
       </div>
     );
   }

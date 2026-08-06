@@ -10,6 +10,7 @@ export default function PrivaeFitForm() {
   const [mode, setMode] = useState<"measure" | "studio">("measure");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     unit: "in",
     contact: "",
@@ -28,13 +29,25 @@ export default function PrivaeFitForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await fetch("/api/tailored-fit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setLoading(false);
-    setDone(true);
+    setError("");
+    try {
+      const response = await fetch("/api/tailored-fit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error || "Could not submit measurements.");
+      }
+
+      setDone(true);
+    } catch (err: any) {
+      setError(err.message || "Could not submit measurements.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (done) {
@@ -99,6 +112,7 @@ export default function PrivaeFitForm() {
             {loading && <Loader2 size={14} className="mr-2 animate-spin" />}
             Submit Measurements
           </Button>
+          {error && <p className="text-center text-sm text-red-600">{error}</p>}
         </form>
       )}
     </div>

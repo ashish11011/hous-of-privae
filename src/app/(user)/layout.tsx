@@ -1,10 +1,12 @@
 import Footer from "@/components/Footer";
 import NavBar from "@/components/userNavbar/NavBar";
+import { getLandingSettings } from "@/lib/siteSettings";
 import React from "react";
-const layout = ({ children }: { children: React.ReactNode }) => {
+const layout = async ({ children }: { children: React.ReactNode }) => {
+  const { navbarMessages } = await getLandingSettings();
   return (
     <div>
-      <NavBar />
+      <NavBar navbarMessages={navbarMessages} />
       {children}
       <Footer />
     </div>

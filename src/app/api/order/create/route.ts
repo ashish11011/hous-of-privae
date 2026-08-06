@@ -4,51 +4,80 @@ import {
   createProductOrder,
 } from "../../../../../lib/orderHelper";
 import { getUserId } from "../../../../../lib/userHelper";
+import { awardOrderRewardPoints } from "@/lib/loyalty";
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const user = body.user;
+  try {
+    const body = await request.json();
+    const user = body.user;
 
-  const userId = await getUserId(user);
-  console.log(userId)
+    if (!body.email || !body.name || !body.number || !body.productDetails?.length) {
+      return new Response(
+        JSON.stringify({ success: false, msg: "Order details are required." }),
+        { status: 400 }
+      );
+    }
 
-  const orderMasterId = await createNewMasterOrder({
-    userId: userId,
-    ...body,
-  });
-  console.log(orderMasterId)
+    const userId = await getUserId(user);
 
-  const orderDetails = await createProductOrder({
-    productDetails: body.productDetails,
-    orderId: orderMasterId,
-  });
+    if (!userId || typeof userId !== "string") {
+      throw new Error("Could not resolve user for order.");
+    }
 
-  await sendOrderNotificationEmails({
-    orderId: orderMasterId,
-    user:{
-      name: body.name,
-      email: body.email,
-      number: body.number,
-    },
-    address:{
-      addressLine1: body.addressLine1,
-      addressLine2: body.addressLine2,
-      city: body.city,
-      state: body.state,
-      pincode: body.pincode,
-    },
-    items: body.productDetails,
-    subtotalAmount: body.totalAmountPaid,
-    deliveryCharge: body.deliveryCharge,
-    discountAmount: body.discountAmount,
-    totalAmountPaid: body.totalAmountPaid,
-    couponCode: body.couponCode,
-    ...body,
-  })
+    const orderMasterId = await createNewMasterOrder({
+      userId: userId,
+      ...body,
+    });
 
-  console.log(orderDetails)
+    if (!orderMasterId || typeof orderMasterId !== "string") {
+      throw new Error("Could not create order.");
+    }
 
-  return new Response(
-    JSON.stringify({ msg: "order created successfully", success: true, orderId: orderMasterId })
-  );
+    await createProductOrder({
+      productDetails: body.productDetails,
+      orderId: orderMasterId,
+    });
+
+    const loyaltyReward = await awardOrderRewardPoints({
+      totalAmountPaid: body.totalAmountPaid,
+      userId,
+    });
+
+    await sendOrderNotificationEmails({
+      orderId: orderMasterId,
+      user: {
+        name: body.name,
+        email: body.email,
+        number: body.number,
+      },
+      address: {
+        addressLine1: body.addressLine1,
+        addressLine2: body.addressLine2,
+        city: body.city,
+        state: body.state,
+        pincode: body.pincode,
+      },
+      items: body.productDetails,
+      subtotalAmount: body.totalAmountPaid,
+      deliveryCharge: body.deliveryCharge,
+      discountAmount: body.discountAmount,
+      totalAmountPaid: body.totalAmountPaid,
+      couponCode: body.couponCode,
+    });
+
+    return new Response(
+      JSON.stringify({
+        msg: "Order created successfully.",
+        success: true,
+        orderId: orderMasterId,
+        loyaltyPointsEarned: loyaltyReward.points,
+      })
+    );
+  } catch (error) {
+    console.error("Order create error:", error);
+    return new Response(
+      JSON.stringify({ success: false, msg: "Failed to place order. Please try again." }),
+      { status: 500 }
+    );
+  }
 }

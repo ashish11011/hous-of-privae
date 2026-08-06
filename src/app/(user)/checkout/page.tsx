@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { calculateOrderRewardPoints } from "@/lib/loyaltyRewards";
 
 const getColorNameByHex = (hex: string) => {
   return COLORS.find((item) => item.hex === hex)?.label;
@@ -44,6 +45,7 @@ const Page = () => {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (productStore.length === 0 && !showSuccess) {
@@ -78,6 +80,7 @@ const Page = () => {
 
   const deliveryCharge = cartTotal >= 1199 ? 0 : 60;
   const finalTotal = cartTotal + deliveryCharge;
+  const estimatedLoyaltyPoints = calculateOrderRewardPoints(finalTotal);
 
   const handlePlaceOrder = async (values: any, action: any) => {
     setIsSubmitting(true);
@@ -105,6 +108,7 @@ const Page = () => {
       const data = await response.json();
       if (data.success) {
         setOrderId(data.orderId || "");
+        setLoyaltyPointsEarned(data.loyaltyPointsEarned || 0);
         setShowSuccess(true);
         clearCart();
       } else {
@@ -294,6 +298,12 @@ const Page = () => {
                     ₹ {finalTotal}
                   </TableCell>
                 </TableRow>
+                <TableRow className=" ">
+                  <TableHead>Loyalty Reward</TableHead>
+                  <TableCell className="text-right w-52 text-base">
+                    {estimatedLoyaltyPoints} pts
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>
@@ -319,6 +329,13 @@ const Page = () => {
             <div className="my-6 bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
               <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">Order Reference</span>
               <span className="font-mono font-medium text-neutral-800 select-all">{orderId}</span>
+            </div>
+          )}
+
+          {loyaltyPointsEarned > 0 && (
+            <div className="bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
+              <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">Loyalty Earned</span>
+              <span className="font-medium text-neutral-800">{loyaltyPointsEarned} pts</span>
             </div>
           )}
 

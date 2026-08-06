@@ -42,12 +42,12 @@ export default function StackedCarousel({
     return null;
   }
   return (
-    <Carousel className="w-full">
-      <CarouselContent>
+    <Carousel className="w-full ">
+      <CarouselContent className="h-fit">
         {landingBanners.desktop.map((desktopImage, idx) => {
           const mobileImage = landingBanners.mobile[idx] || desktopImage;
           return (
-            <CarouselItem className="w-full h-auto" key={idx}>
+            <CarouselItem className="w-full  " key={idx}>
               <Image
                 src={isMobile ? mobileImage : desktopImage}
                 alt={`Banner ${idx + 1}`}

@@ -1,15 +1,12 @@
 "use client";
 
-import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { useState } from "react";
-import { cognitoClient } from "@/lib/auth/cognitoClient";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CLIENT_ID, generateSecretHash } from "@/lib/auth/generateHash";
-
-// Generate Cognito Secret Hash
 
 export default function SignupPage() {
+  const router = useRouter();
   const [step, setStep] = useState<"signup" | "confirm">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,22 +21,23 @@ export default function SignupPage() {
     setLoading(true);
     setMessage("");
 
-    const secretHash = generateSecretHash(email);
-    const params = {
-      ClientId: CLIENT_ID,
-      Username: email,
-      Password: password,
-      UserAttributes: [{ Name: "email", Value: email }],
-      SecretHash: secretHash,
-    };
-
     try {
       if (password.trim() !== confirmPassword.trim()) {
-        throw new Error("Passwords matching failed");
+        throw new Error("Passwords do not match.");
       }
-      const command = new SignUpCommand(params);
-      await cognitoClient.send(command);
-      setMessage("Verification code sent to your email.");
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.message || "Signup failed.");
+      }
+
+      setMessage(payload.message || "Verification code sent to your email.");
       setStep("confirm");
     } catch (err: any) {
       setMessage(err.message || "Signup failed");
@@ -51,18 +49,22 @@ export default function SignupPage() {
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
     try {
       const res = await fetch("/api/auth/confirm", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, code }),
       });
-      const resMsg = await res.json();
-      if (resMsg.status !== 200) {
-        const msg = await res.json();
-        throw new Error(msg.message);
+
+      const payload = await res.json();
+      if (!res.ok) {
+        throw new Error(payload.message || "Confirmation failed");
       }
+
+      setMessage(payload.message || "Account verified successfully.");
+      router.push("/auth/login");
     } catch (error: any) {
-      console.log(error);
       setMessage(error.message || "Confirmation failed");
     } finally {
       setLoading(false);
