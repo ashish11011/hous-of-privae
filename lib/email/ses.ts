@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 
 const FROM_EMAIL = "hop@ashishbishnoi.com";
-const ADMIN_EMAIL = "Vaishnavidhamija95@gmail.com";
+const ADMIN_EMAIL = "hausofprivae@gmail.com";
 
 type OrderEmailItem = {
   name: string;

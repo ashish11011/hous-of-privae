@@ -16,12 +16,12 @@ export const dynamic = "force-static";
 export default async function Home() {
   const landingBanners = {
     mobile: [
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+1+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+(1).png",
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner+2+(1).png",
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Mobile+banner3+(1).png",
     ],
     desktop: [
-      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner1+(1).png",
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner+(1).png",
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Desktop+banner+2+(1).png",
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/desktop+banner3+(1).png",
     ],
