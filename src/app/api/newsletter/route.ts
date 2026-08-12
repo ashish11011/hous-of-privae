@@ -1,31 +1,56 @@
 import { subscriptionTable } from "@/db/schema";
-import { sendFormNotificationEmails } from "@/lib/email/ses";
+import {
+  sendFormNotificationEmails,
+  sendNewsletterWelcomeEmail,
+} from "@/lib/email/ses";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
+    const normalizedEmail =
+      typeof email === "string" ? email.trim().toLowerCase() : "";
 
-    if (!email || !/.+@.+\..+/.test(email)) {
+    if (!normalizedEmail || !/.+@.+\..+/.test(normalizedEmail)) {
       return NextResponse.json(
         { success: false, message: "Please enter a valid email." },
         { status: 400 }
       );
     }
 
-    const [inserted] = await db.insert(subscriptionTable).values({ email }).returning();
-
-    await sendFormNotificationEmails({
-      type: "newsletter",
-      title: "Newsletter signup received",
-      userEmail: email,
-      fields: { Email: email },
+    const existing = await db.query.subscriptionTable.findFirst({
+      where: eq(subscriptionTable.email, normalizedEmail),
     });
+
+    const [inserted] = existing
+      ? [existing]
+      : await db
+          .insert(subscriptionTable)
+          .values({ email: normalizedEmail })
+          .returning();
+
+    try {
+      await sendFormNotificationEmails({
+        type: "newsletter",
+        title: "Newsletter signup received",
+        fields: { Email: normalizedEmail },
+        adminSubject: "New newsletter subscriber - Haus of Privae",
+      });
+
+      if (!existing) {
+        await sendNewsletterWelcomeEmail(normalizedEmail);
+      }
+    } catch (emailError) {
+      console.error("Newsletter email delivery error:", emailError);
+    }
 
     return NextResponse.json({
       success: true,
-      message: "You're on the list. Check your inbox.",
+      message: existing
+        ? "You're already on the list."
+        : "You're on the list. Check your inbox.",
       data: inserted,
     });
   } catch (error) {

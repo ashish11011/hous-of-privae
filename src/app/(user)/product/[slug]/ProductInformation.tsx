@@ -243,13 +243,15 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     productData.sizes?.[0]
   );
   const [selectedVariant, setSelectedVariant] = useState<"stitched" | "unstitched">("stitched");
+  const isUnstitchedVariant = selectedVariant === "unstitched";
+  const selectedCartSize = isUnstitchedVariant ? "unstitched" : selectedSize;
 
   const router = useRouter();
 
   const handleAddToCart = () => {
     toast.success("Item added to cart", {});
 
-    if (selectedColor && selectedSize) {
+    if (selectedColor && selectedCartSize) {
       const product: CartProduct = {
         id: productData.id,
         name: productData.name,
@@ -257,7 +259,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         slug: productData.slug,
         quantity: 1,
         bannerImage: productData.bannerImage,
-        size: selectedSize,
+        size: selectedCartSize,
         color: selectedColor,
         variant: selectedVariant,
       };
@@ -302,7 +304,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     router.push("/");
   }
   function getProdcutPrice() {
-    if (selectedSize === "semi-stitched" && productData.semiStitchedPrice) {
+    if (!isUnstitchedVariant && selectedSize === "semi-stitched" && productData.semiStitchedPrice) {
       return productData.semiStitchedPrice;
     }
     return productData.basePrice;
@@ -377,43 +379,47 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </div>
       </div>
 
-      {/* Size Selection */}
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Select Size</p>
-          <div className="flex  gap-3 text-xs text-primary">
-            <TailoredFitFormModal />
-            {/* <span className="text-neutral-300">·</span> */}
-            <SizeGuideSheet />
+      {!isUnstitchedVariant && (
+        <>
+          {/* Size Selection */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Select Size</p>
+              <div className="flex  gap-3 text-xs text-primary">
+                <TailoredFitFormModal />
+                {/* <span className="text-neutral-300">·</span> */}
+                <SizeGuideSheet />
+              </div>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {productData.sizes.map((size: string) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`w-fit px-4 h-10 border text-xs font-medium uppercase transition ${selectedSize === size
+                    ? "border-primary text-primary"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                    }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {productData.sizes.map((size: string) => (
-            <button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={`w-fit px-4 h-10 border text-xs font-medium uppercase transition ${selectedSize === size
-                ? "border-primary text-primary"
-                : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
-                }`}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Complimentary Fit Adjustment */}
-      <div className="bg-[#fdfbf7] border border-[#eaddce] text-[#a68a61] text-xs py-3 px-4 flex items-center gap-2 uppercase tracking-wide">
-        <span>✂</span> Complimentary fit adjustment · 14 days
-      </div>
+          {/* Complimentary Fit Adjustment */}
+          <div className="bg-[#fdfbf7] border border-[#eaddce] text-[#a68a61] text-xs py-3 px-4 flex items-center gap-2 uppercase tracking-wide">
+            <span>✂</span> Complimentary fit adjustment · 14 days
+          </div>
+        </>
+      )}
 
       {/* Add to Bag and Wishlist */}
       {(() => {
-        const cartItem = selectedSize && selectedColor ? productStore.find(
+        const cartItem = selectedCartSize && selectedColor ? productStore.find(
           (item) =>
             item.id === productData.id &&
-            item.size === selectedSize &&
+            item.size === selectedCartSize &&
             item.color === selectedColor &&
             (item.variant ?? "stitched") === (selectedVariant ?? "stitched")
         ) : undefined;
@@ -425,10 +431,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if (selectedSize && selectedColor) {
+                    if (selectedCartSize && selectedColor) {
                       decreaseQuantity({
                         id: productData.id,
-                        size: selectedSize,
+                        size: selectedCartSize,
                         color: selectedColor,
                         variant: selectedVariant,
                       });
@@ -445,10 +451,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if (selectedSize && selectedColor) {
+                    if (selectedCartSize && selectedColor) {
                       increaseQuantity({
                         id: productData.id,
-                        size: selectedSize,
+                        size: selectedCartSize,
                         color: selectedColor,
                         variant: selectedVariant,
                       });

@@ -41,7 +41,7 @@ export default async function Home() {
     <div className=" w-full">
       <Carousel landingBanners={landingBanners} />
       <Categories categories={categories} />
-      <div className="section-rule my-2" />
+      {/* <div className="section-rule my-2" /> */}
       {/* <VideoPlay /> */}
       {/* <Categories2 /> */}
 

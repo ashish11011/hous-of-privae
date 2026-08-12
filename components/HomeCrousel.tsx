@@ -11,11 +11,17 @@ import { navBarHeight } from "@/const";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/src/hooks/use-mobile";
 import Image from "next/image";
+import Link from "next/link";
+
+type BannerItem = {
+  image: string;
+  href?: string;
+};
 
 interface StackedCarouselProps {
   landingBanners: {
-    mobile: string[];
-    desktop: string[];
+    mobile: BannerItem[];
+    desktop: BannerItem[];
   };
 }
 
@@ -44,18 +50,30 @@ export default function StackedCarousel({
   return (
     <Carousel className="w-full ">
       <CarouselContent className="h-fit">
-        {landingBanners.desktop.map((desktopImage, idx) => {
-          const mobileImage = landingBanners.mobile[idx] || desktopImage;
+        {landingBanners.desktop.map((desktopBanner, idx) => {
+          const mobileBanner = landingBanners.mobile[idx] || desktopBanner;
+          const image = isMobile ? mobileBanner.image : desktopBanner.image;
+          const href = desktopBanner.href || mobileBanner.href;
+          const bannerImage = (
+            <Image
+              src={image}
+              alt={`Banner ${idx + 1}`}
+              width={1831}
+              height={1448}
+              className="w-full h-auto object-contain"
+              priority={idx === 0}
+            />
+          );
+
           return (
             <CarouselItem className="w-full  " key={idx}>
-              <Image
-                src={isMobile ? mobileImage : desktopImage}
-                alt={`Banner ${idx + 1}`}
-                width={1831}
-                height={1448}
-                className="w-full h-auto object-contain"
-                priority={idx === 0}
-              />
+              {href ? (
+                <Link href={href} className="block" aria-label={`Open banner ${idx + 1}`}>
+                  {bannerImage}
+                </Link>
+              ) : (
+                bannerImage
+              )}
             </CarouselItem>
           );
         })}

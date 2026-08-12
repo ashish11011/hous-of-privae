@@ -26,8 +26,7 @@ const ProductCarousel = async () => {
         </div>
 
         <div
-          className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-stretch transition-opacity duration-300 ${"opacity-100"
-            }`}
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-stretch transition-opacity duration-300 ${"opacity-100"}`}
         >
           {productsData?.products.map((item: any) => (
             <ProductCard
@@ -43,16 +42,20 @@ const ProductCarousel = async () => {
           ))}
         </div>
 
-
         <div className="text-center mt-12">
-          <Link href={"/product"}
+          <Link
+            href={"/product"}
             className="group inline-flex items-center gap-2 border border-primary text-primary px-10 py-3 text-xs tracking-[0.2em] uppercase font-body hover:bg-primary hover:text-primary-foreground transition-all duration-300"
           >
-            See all styles
-            <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            THE FULL COLLECTION
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            >
+              →
+            </span>
           </Link>
         </div>
-
       </div>
     </section>
   );

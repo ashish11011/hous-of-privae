@@ -9,16 +9,21 @@ import { Label } from "@/components/ui/label";
 type LandingSettings = {
   navbarMessages: string[];
   landingBanners: {
-    mobile: string[];
-    desktop: string[];
+    mobile: BannerItem[];
+    desktop: BannerItem[];
   };
+};
+
+type BannerItem = {
+  image: string;
+  href?: string;
 };
 
 const emptySettings: LandingSettings = {
   navbarMessages: [""],
   landingBanners: {
-    mobile: [""],
-    desktop: [""],
+    mobile: [{ image: "" }],
+    desktop: [{ image: "" }],
   },
 };
 
@@ -51,13 +56,18 @@ export default function SiteSettingsAdminPage() {
     }));
   }
 
-  function updateBanner(type: "desktop" | "mobile", index: number, value: string) {
+  function updateBanner(
+    type: "desktop" | "mobile",
+    index: number,
+    field: keyof BannerItem,
+    value: string,
+  ) {
     setSettings((current) => ({
       ...current,
       landingBanners: {
         ...current.landingBanners,
         [type]: current.landingBanners[type].map((item, idx) =>
-          idx === index ? value : item
+          idx === index ? { ...item, [field]: value } : item
         ),
       },
     }));
@@ -73,7 +83,7 @@ export default function SiteSettingsAdminPage() {
         ...current,
         landingBanners: {
           ...current.landingBanners,
-          [type]: [...current.landingBanners[type], ""],
+          [type]: [...current.landingBanners[type], { image: "" }],
         },
       };
     });
@@ -150,20 +160,18 @@ export default function SiteSettingsAdminPage() {
           onRemove={(index) => removeItem("navbar", index)}
         />
 
-        <SettingsList
+        <BannerSettingsList
           title="Desktop Banner Images"
-          label="Image URL"
           values={settings.landingBanners.desktop}
-          onChange={(index, value) => updateBanner("desktop", index, value)}
+          onChange={(index, field, value) => updateBanner("desktop", index, field, value)}
           onAdd={() => addItem("desktop")}
           onRemove={(index) => removeItem("desktop", index)}
         />
 
-        <SettingsList
+        <BannerSettingsList
           title="Mobile Banner Images"
-          label="Image URL"
           values={settings.landingBanners.mobile}
-          onChange={(index, value) => updateBanner("mobile", index, value)}
+          onChange={(index, field, value) => updateBanner("mobile", index, field, value)}
           onAdd={() => addItem("mobile")}
           onRemove={(index) => removeItem("mobile", index)}
         />
@@ -222,6 +230,69 @@ function SettingsList({
               onClick={() => onRemove(index)}
               disabled={values.length === 1}
               aria-label={`Remove ${label.toLowerCase()} ${index + 1}`}
+            >
+              <Trash2 size={14} />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BannerSettingsList({
+  title,
+  values,
+  onChange,
+  onAdd,
+  onRemove,
+}: {
+  title: string;
+  values: BannerItem[];
+  onChange: (index: number, field: keyof BannerItem, value: string) => void;
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+}) {
+  return (
+    <section className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-medium">{title}</h2>
+        <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+          <Plus size={14} />
+          Add
+        </Button>
+      </div>
+
+      <div className="space-y-4">
+        {values.map((value, index) => (
+          <div className="grid grid-cols-[1fr_auto] gap-2" key={`${title}-${index}`}>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor={`${title}-image-${index}`}>Image URL {index + 1}</Label>
+                <Input
+                  id={`${title}-image-${index}`}
+                  value={value.image}
+                  onChange={(e) => onChange(index, "image", e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`${title}-href-${index}`}>Redirect Link {index + 1}</Label>
+                <Input
+                  id={`${title}-href-${index}`}
+                  value={value.href ?? ""}
+                  placeholder="/category/loungewear"
+                  onChange={(e) => onChange(index, "href", e.target.value)}
+                />
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              className="self-end"
+              onClick={() => onRemove(index)}
+              disabled={values.length === 1}
+              aria-label={`Remove banner ${index + 1}`}
             >
               <Trash2 size={14} />
             </Button>

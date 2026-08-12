@@ -34,7 +34,7 @@ export function EditorialPage({
             </Link>
           )}
         </div>
-        <div className="section-rule my-12" />
+        {/* <div className="section-rule my-12" /> */}
         {children}
       </section>
     </main>

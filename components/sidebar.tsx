@@ -83,11 +83,11 @@ const items = [
   //   url: "/admin/blog",
   //   icon: ChartNoAxesGanttIcon,
   // },
-  // {
-  //   title: "Subscriptions",
-  //   url: "/admin/subscriptions",
-  //   icon: MailCheckIcon,
-  // },
+  {
+    title: "Subscriptions",
+    url: "/admin/subscriptions",
+    icon: MailCheckIcon,
+  },
 ];
 
 const SidebarAdmin = () => {

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Form, Formik } from "formik";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
@@ -39,6 +39,17 @@ const getColorNameByHex = (hex: string) => {
   return COLORS.find((item) => item.hex === hex)?.label;
 };
 
+const userDetailInitialValues = {
+  name: "",
+  number: "",
+  email: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  pincode: "",
+};
+
 const Page = () => {
   const router = useRouter();
   const { productStore, increaseQuantity, decreaseQuantity, removeItemFromStore, clearCart } = useStore();
@@ -47,6 +58,44 @@ const Page = () => {
   const [orderId, setOrderId] = useState("");
   const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutInitialValues, setCheckoutInitialValues] = useState(userDetailInitialValues);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProfile() {
+      try {
+        const response = await fetch("/api/profile", { cache: "no-store" });
+
+        if (response.status === 401 || response.status === 404) return;
+        if (!response.ok) throw new Error("Failed to load profile");
+
+        const payload = await response.json();
+        const user = payload.user;
+
+        if (!user || !isMounted) return;
+
+        setCheckoutInitialValues({
+          name: user.name || "",
+          number: user.number || "",
+          email: user.email || "",
+          addressLine1: user.addressLine1 || "",
+          addressLine2: user.addressLine2 || "",
+          city: user.city || "",
+          state: user.state || "",
+          pincode: user.pincode || "",
+        });
+      } catch (error) {
+        console.error("Failed to prefill checkout details:", error);
+      }
+    }
+
+    loadProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (productStore.length === 0 && !showSuccess) {
     return (
@@ -66,17 +115,6 @@ const Page = () => {
     (total, item) => total + item.basePrice * item.quantity,
     0
   );
-
-  const userDetailInitialValues = {
-    name: "",
-    number: "",
-    email: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    pincode: "",
-  };
 
   const deliveryCharge = cartTotal >= 1199 ? 0 : 60;
   const finalTotal = cartTotal + deliveryCharge;
@@ -132,7 +170,8 @@ const Page = () => {
       <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-6">
         <div className="order-2 md:order-none border border-border bg-card p-5 md:p-7">
           <Formik
-            initialValues={userDetailInitialValues}
+            initialValues={checkoutInitialValues}
+            enableReinitialize
             onSubmit={handlePlaceOrder}
           >
             <Form className="space-y-4">

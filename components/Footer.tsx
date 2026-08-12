@@ -156,21 +156,28 @@
 //   },
 // ];
 
-
-
-import { Instagram, Mail, Facebook, Youtube, Linkedin, Twitter } from "lucide-react";
+import {
+  Instagram,
+  Mail,
+  Facebook,
+  Youtube,
+  Linkedin,
+  Twitter,
+} from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
   // const { get } = useSiteSettings();
 
   const brandName = "Haus Of Privae";
-  const brandDescription = "Where heritage meets modern elegance. Luxury occasionwear crafted with intention and worn with pride.";
+  const brandDescription =
+    "Where heritage meets modern elegance. Luxury occasionwear crafted with intention and worn with pride.";
   const infoLinks: any = [
     {
       label: "About Us",
       href: "/about-us",
     },
+    { label: "Trend Talks", href: "/blog" },
     {
       label: "Privacy Policy",
       href: "/privacy-policy",
@@ -208,12 +215,28 @@ const Footer = () => {
   const email = "";
 
   const socials = [
-    { Icon: Instagram, href: "https://www.instagram.com/hausofprivae", label: "Instagram" },
-    { Icon: Facebook, href: "https://www.facebook.com/hausofprivae", label: "Facebook" },
-    { Icon: Youtube, href: "https://www.youtube.com/@hausofprivae", label: "YouTube" },
+    {
+      Icon: Instagram,
+      href: "https://www.instagram.com/hausofprivae",
+      label: "Instagram",
+    },
+    {
+      Icon: Facebook,
+      href: "https://www.facebook.com/hausofprivae",
+      label: "Facebook",
+    },
+    {
+      Icon: Youtube,
+      href: "https://www.youtube.com/@hausofprivae",
+      label: "YouTube",
+    },
     { Icon: Twitter, href: "https://x.com/hausofprivae", label: "X (Twitter)" },
     // { Icon: Linkedin, href: "", label: "LinkedIn" },
-    { Icon: Mail, href: "mailto:queries.hausofprivae@gmail.com", label: "Email" },
+    {
+      Icon: Mail,
+      href: "mailto:queries.hausofprivae@gmail.com",
+      label: "Email",
+    },
   ].filter((s) => !!s.href);
 
   return (
@@ -236,7 +259,10 @@ const Footer = () => {
             <ul className="space-y-2 text-sm font-body text-white/75">
               {infoLinks.map((l: any) => (
                 <li key={`${l.label}-${l.href}`}>
-                  <Link href={l.href} className="hover:text-white transition-colors">
+                  <Link
+                    href={l.href}
+                    className="hover:text-white transition-colors"
+                  >
                     {l.label}
                   </Link>
                 </li>
@@ -257,7 +283,9 @@ const Footer = () => {
                     key={label}
                     href={href}
                     aria-label={label}
-                    {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    {...(isExternal
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
                     className="text-white/75 hover:text-white transition-colors"
                   >
                     <Icon size={20} strokeWidth={1.5} />
@@ -286,7 +314,6 @@ const Footer = () => {
 
 export default Footer;
 
-
 import { useState } from "react";
 import { Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -312,7 +339,9 @@ const FooterNewsletter = () => {
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(payload.message || "Could not subscribe. Please try again.");
+        throw new Error(
+          payload.message || "Could not subscribe. Please try again.",
+        );
       }
 
       setDone(true);
@@ -339,8 +368,8 @@ const FooterNewsletter = () => {
 
       {done ? (
         <p className="inline-flex items-center gap-2 text-xs font-body text-white border-b border-gold pb-1">
-          <Check size={14} className="text-gold" /> You're on the list. Check your
-          inbox.
+          <Check size={14} className="text-gold" /> You're on the list. Check
+          your inbox.
         </p>
       ) : (
         <form

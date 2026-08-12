@@ -5,6 +5,44 @@ import { user } from "@/db/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userData = await db.query.userTable.findFirst({
+      where: eq(user.id, userId),
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+        number: true,
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        state: true,
+        pincode: true,
+      },
+    });
+
+    if (!userData) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, user: userData });
+  } catch (error) {
+    console.error("Profile fetch error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch profile" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(req: Request) {
   try {
     const body = await req.json();

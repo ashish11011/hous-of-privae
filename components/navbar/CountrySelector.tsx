@@ -1,4 +1,5 @@
 import { Globe, Check } from "lucide-react";
+import { toast } from "sonner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,6 +12,14 @@ import { COUNTRIES, useCurrency } from "@/contextCurrencyContext";
 
 const CountrySelector = () => {
     const { country, setCountry } = useCurrency();
+
+    const handleCountryChange = (code: string) => {
+        const selectedCountry = COUNTRIES.find((c) => c.code === code);
+        if (!selectedCountry || selectedCountry.code === country.code) return;
+
+        setCountry(code);
+        toast.success(`Currency updated to ${selectedCountry.currency}`);
+    };
 
     return (
         <DropdownMenu>
@@ -34,7 +43,7 @@ const CountrySelector = () => {
                     return (
                         <DropdownMenuItem
                             key={c.code}
-                            onClick={() => setCountry(c.code)}
+                            onClick={() => handleCountryChange(c.code)}
                             className="flex items-center justify-between gap-2 cursor-pointer font-body text-sm"
                         >
                             <span className="flex items-center gap-2">
