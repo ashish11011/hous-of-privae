@@ -71,7 +71,7 @@ export function ProductTableAdmin({
                 {product.description || "-"}
               </TableCell>
               <TableCell>
-                {product.basePrice != null ? `₹${product.basePrice}` : "-"}
+                {product.basePrice != null ? `Rs. ${product.basePrice}` : "-"}
               </TableCell>
               <TableCell>{product.categoryId1 || "-"}</TableCell>
               <TableCell>{product.categoryId2 || "-"}</TableCell>

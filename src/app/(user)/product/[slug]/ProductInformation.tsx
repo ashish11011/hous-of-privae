@@ -15,7 +15,7 @@ import { useIsMobile } from "@/src/hooks/use-mobile";
 import { CartProduct } from "@/types";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
 import {
@@ -24,7 +24,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ArrowLeft, Heart, Minus, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  Mail,
+  Heart,
+  MessageCircle,
+  Minus,
+  Plus,
+  Share2Icon,
+  Trash2,
+} from "lucide-react";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import TailoredFitFormModal from "@/components/productCustomization";
@@ -32,6 +42,13 @@ import SizeGuideSheet from "@/components/sizeChartSheet";
 import { ShowProductPrice } from "@/lib/productHealper";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const isLocalPublicImage = (src: string) =>
   src.startsWith("/") &&
@@ -52,7 +69,8 @@ const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
       onMouseEnter={() => setShowMagnifier(true)}
       onMouseLeave={() => setShowMagnifier(false)}
       onMouseMove={(e) => {
-        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const { left, top, width, height } =
+          e.currentTarget.getBoundingClientRect();
         const x = ((e.clientX - left) / width) * 100;
         const y = ((e.clientY - top) / height) * 100;
         setPosition({ x, y });
@@ -93,7 +111,8 @@ const ZoomableImage = ({ mainImage }: { mainImage: string }) => {
 
 export default function ProductInformation({ productData }: any) {
   const { images = [], bannerImage, ...productDetails } = productData;
-  const galleryImages = images.length > 0 ? images : [bannerImage].filter(Boolean);
+  const galleryImages =
+    images.length > 0 ? images : [bannerImage].filter(Boolean);
 
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   const [mainImage, setMainImage] = useState<string>(galleryImages[0]);
@@ -128,24 +147,25 @@ export default function ProductInformation({ productData }: any) {
                 {galleryImages.map((image: string, idx: number) => {
                   const thumbSrc = productImageSrc(image);
                   return (
-                  <button
-                    key={idx}
-                    onClick={() => setMainImage(image)}
-                    className={`shrink-0 border-2 transition-all ${mainImage === image
-                      ? "border-neutral-800"
-                      : "border-transparent hover:border-gray-300"
+                    <button
+                      key={idx}
+                      onClick={() => setMainImage(image)}
+                      className={`shrink-0 border-2 transition-all ${
+                        mainImage === image
+                          ? "border-neutral-800"
+                          : "border-transparent hover:border-gray-300"
                       }`}
-                  >
-                    <Image
-                      className="w-20 md:w-24 lg:w-28 aspect-[3/4] object-cover"
-                      src={thumbSrc}
-                      alt={`Thumbnail ${idx + 1}`}
-                      width={100}
-                      height={134}
-                      priority
-                      unoptimized={isLocalPublicImage(thumbSrc)}
-                    />
-                  </button>
+                    >
+                      <Image
+                        className="w-20 md:w-24 lg:w-28 aspect-[3/4] object-cover"
+                        src={thumbSrc}
+                        alt={`Thumbnail ${idx + 1}`}
+                        width={100}
+                        height={134}
+                        priority
+                        unoptimized={isLocalPublicImage(thumbSrc)}
+                      />
+                    </button>
                   );
                 })}
               </div>
@@ -163,17 +183,17 @@ export default function ProductInformation({ productData }: any) {
                   {galleryImages.map((image: string, idx: number) => {
                     const slideSrc = productImageSrc(image);
                     return (
-                    <CarouselItem key={idx}>
-                      <Image
-                        className="w-full aspect-[3/4] object-contain bg-neutral-50"
-                        src={slideSrc}
-                        alt={`Image ${idx + 1}`}
-                        width={800}
-                        height={1067}
-                        priority
-                        unoptimized={isLocalPublicImage(slideSrc)}
-                      />
-                    </CarouselItem>
+                      <CarouselItem key={idx}>
+                        <Image
+                          className="w-full aspect-[3/4] object-contain bg-neutral-50"
+                          src={slideSrc}
+                          alt={`Image ${idx + 1}`}
+                          width={800}
+                          height={1067}
+                          priority
+                          unoptimized={isLocalPublicImage(slideSrc)}
+                        />
+                      </CarouselItem>
                     );
                   })}
                 </CarouselContent>
@@ -229,6 +249,7 @@ export interface Product {
   sizes: string[];
   colors: string[]; // hex codes
   materials: string[];
+  isInStoke?: boolean | null;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
 }
@@ -238,18 +259,44 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     useStore();
   const { addItemToWishlist, productWishlist, removeItemFromWishlist } =
     userWishlistStore();
-  const [selectedColor, setSelectedColor] = useState(productData.colors?.[0]);
+  const productColors = productData.colors ?? [];
+  const [selectedColor, setSelectedColor] = useState(productColors[0]);
   const [selectedSize, setSelectedSize] = useState<string | null>(
-    productData.sizes?.[0]
+    productData.sizes?.[0],
   );
-  const [selectedVariant, setSelectedVariant] = useState<"stitched" | "unstitched">("stitched");
+  const [selectedVariant, setSelectedVariant] = useState<
+    "stitched" | "unstitched"
+  >("stitched");
+  const [shareOpen, setShareOpen] = useState(false);
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifyForm, setNotifyForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const isInStock = productData.isInStoke !== false;
   const isUnstitchedVariant = selectedVariant === "unstitched";
   const selectedCartSize = isUnstitchedVariant ? "unstitched" : selectedSize;
+  const productUrl =
+    typeof window === "undefined"
+      ? `https://www.hausofprivae.com/product/${productData.slug}`
+      : window.location.href;
+  const shareText = `Have a look at ${productData.name} from Haus of Privae: ${productUrl}`;
+  const encodedShareText = encodeURIComponent(shareText);
+  const encodedProductUrl = encodeURIComponent(productUrl);
+  const conciergeMessage = encodeURIComponent(
+    `Hi, I need help with ${productData.name}. Product link: ${productUrl}`,
+  );
+  const conciergeUrl = `https://wa.me/917023117408?text=${conciergeMessage}`;
 
   const router = useRouter();
 
   const handleAddToCart = () => {
-    toast.success("Item added to cart", {});
+    if (!isInStock) {
+      setNotifyOpen(true);
+      return;
+    }
 
     if (selectedColor && selectedCartSize) {
       const product: CartProduct = {
@@ -264,7 +311,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         variant: selectedVariant,
       };
       addItemToStore(product);
+      toast.success("This product added to cart");
+      return;
     }
+
+    toast.error("Please select color and size");
   };
 
   const productExtraDetails = [
@@ -303,8 +354,61 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   function handleBackClick() {
     router.push("/");
   }
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(productUrl);
+      toast.success("Product link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  }
+
+  async function handleNotifySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setNotifySubmitting(true);
+
+    try {
+      const response = await fetch("/api/stock-notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...notifyForm,
+          productId: productData.id,
+          productName: productData.name,
+          productSku: productData.sku,
+          productSlug: productData.slug,
+          productUrl,
+        }),
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          payload.message || "Could not submit stock alert request.",
+        );
+      }
+
+      toast.success("We'll notify you when this piece is back in stock");
+      setNotifyOpen(false);
+      setNotifyForm({ name: "", email: "", phone: "" });
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Could not submit stock alert request.",
+      );
+    } finally {
+      setNotifySubmitting(false);
+    }
+  }
+
   function getProdcutPrice() {
-    if (!isUnstitchedVariant && selectedSize === "semi-stitched" && productData.semiStitchedPrice) {
+    if (
+      !isUnstitchedVariant &&
+      selectedSize === "semi-stitched" &&
+      productData.semiStitchedPrice
+    ) {
       return productData.semiStitchedPrice;
     }
     return productData.basePrice;
@@ -316,29 +420,45 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       {/* Header section */}
       <div>
-        <div className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 uppercase w-max mb-3">New</div>
-        <h1 className="text-3xl font-serif mb-1 text-neutral-800">{productData.name}</h1>
-        <p className="text-xs text-neutral-400 uppercase tracking-widest mb-4">SKU: {productData.sku}</p>
+        <div
+          className={`text-xs font-semibold px-2 py-1 uppercase w-max mb-3 ${
+            isInStock
+              ? "bg-primary text-primary-foreground"
+              : "bg-neutral-800 text-white"
+          }`}
+        >
+          {isInStock ? "New" : "Out of Stock"}
+        </div>
+        <h1 className="text-3xl font-serif mb-1 text-neutral-800">
+          {productData.name}
+        </h1>
+        <p className="text-xs text-neutral-400 uppercase tracking-widest mb-4">
+          SKU: {productData.sku}
+        </p>
         <p className="text-xl text-primary font-medium mb-4">
           <ShowProductPrice price={getProdcutPrice()} />
         </p>
         <p className="text-sm text-neutral-600 leading-relaxed">
-          {productData.description || "A whisper of lilac, drawn long and lit from within. Made to drift through unhurried evenings."}
+          {productData.description ||
+            "A whisper of lilac, drawn long and lit from within. Made to drift through unhurried evenings."}
         </p>
       </div>
 
       {/* Variant Selection */}
       <div className="space-y-3">
-        <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Choose Variant</p>
+        <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">
+          Choose Variant
+        </p>
         <div className="grid grid-cols-2 gap-0 border border-neutral-300">
           <button
             type="button"
             onClick={() => setSelectedVariant("stitched")}
             aria-pressed={selectedVariant === "stitched"}
-            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${selectedVariant === "stitched"
-              ? "bg-primary text-primary-foreground"
-              : "bg-transparent text-neutral-500 hover:bg-primary/5"
-              }`}
+            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${
+              selectedVariant === "stitched"
+                ? "bg-primary text-primary-foreground"
+                : "bg-transparent text-neutral-500 hover:bg-primary/5"
+            }`}
           >
             Stitched
           </button>
@@ -346,10 +466,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             type="button"
             onClick={() => setSelectedVariant("unstitched")}
             aria-pressed={selectedVariant === "unstitched"}
-            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${selectedVariant === "unstitched"
-              ? "bg-primary text-primary-foreground"
-              : "bg-transparent text-neutral-500 hover:bg-primary/5"
-              }`}
+            className={`py-3 text-xs tracking-widest uppercase font-medium transition-colors ${
+              selectedVariant === "unstitched"
+                ? "bg-primary text-primary-foreground"
+                : "bg-transparent text-neutral-500 hover:bg-primary/5"
+            }`}
           >
             Unstitched
           </button>
@@ -359,22 +480,53 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       {/* Details Grid */}
       <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-xs">
         <div>
-          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Fabric</p>
-          <p className="text-neutral-600">{productData.fabric || "Pure Chanderi Silk"}</p>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">
+            Fabric
+          </p>
+          <p className="text-neutral-600">
+            {productData.fabric || "Pure Chanderi Silk"}
+          </p>
         </div>
         <div>
-          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Color</p>
-          {/* <p className="text-neutral-600">{productData.colors?.[0] || "Lilac"}</p> */}
-          <div style={{
-            backgroundColor: productData.colors?.[0]
-          }} className={` h-8 w-20 `}></div>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">
+            Color
+          </p>
+          {productColors.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {productColors.map((color) => (
+                <button
+                  type="button"
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`flex items-center gap-2 px-2 py-1 transition-colors ${
+                    selectedColor === color
+                      ? " text-primary"
+                      : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                  }`}
+                  aria-label={`Select color ${color}`}
+                >
+                  <span
+                    className="size-6 border border-neutral-200"
+                    style={{ backgroundColor: color }}
+                  />
+                  {/* <span className="font-mono text-[10px] uppercase">{color}</span> */}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-600">As shown</p>
+          )}
         </div>
         <div>
-          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Occasion</p>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">
+            Occasion
+          </p>
           <p className="text-neutral-600">Festive, Pooja, Wedding Guest</p>
         </div>
         <div>
-          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">Work</p>
+          <p className="text-neutral-400 font-semibold tracking-widest uppercase mb-1">
+            Work
+          </p>
           <p className="text-neutral-600">Hand Embroidery, Mirror Work</p>
         </div>
       </div>
@@ -384,7 +536,9 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           {/* Size Selection */}
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">Select Size</p>
+              <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">
+                Select Size
+              </p>
               <div className="flex  gap-3 text-xs text-primary">
                 <TailoredFitFormModal />
                 {/* <span className="text-neutral-300">·</span> */}
@@ -396,10 +550,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`w-fit px-4 h-10 border text-xs font-medium uppercase transition ${selectedSize === size
-                    ? "border-primary text-primary"
-                    : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
-                    }`}
+                  className={`w-fit px-4 h-10 border text-xs font-medium uppercase transition ${
+                    selectedSize === size
+                      ? "border-primary text-primary"
+                      : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
+                  }`}
                 >
                   {size}
                 </button>
@@ -416,17 +571,29 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
       {/* Add to Bag and Wishlist */}
       {(() => {
-        const cartItem = selectedCartSize && selectedColor ? productStore.find(
-          (item) =>
-            item.id === productData.id &&
-            item.size === selectedCartSize &&
-            item.color === selectedColor &&
-            (item.variant ?? "stitched") === (selectedVariant ?? "stitched")
-        ) : undefined;
+        const cartItem =
+          selectedCartSize && selectedColor
+            ? productStore.find(
+                (item) =>
+                  item.id === productData.id &&
+                  item.size === selectedCartSize &&
+                  item.color === selectedColor &&
+                  (item.variant ?? "stitched") ===
+                    (selectedVariant ?? "stitched"),
+              )
+            : undefined;
 
         return (
           <div className="flex gap-2">
-            {cartItem ? (
+            {!isInStock ? (
+              <Button
+                type="button"
+                onClick={() => setNotifyOpen(true)}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-none tracking-widest uppercase text-xs font-medium"
+              >
+                Notify Me
+              </Button>
+            ) : cartItem ? (
               <div className="flex-1 flex items-center justify-between border border-neutral-300 h-12 px-4 select-none">
                 <button
                   type="button"
@@ -443,7 +610,14 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                   className="p-1 hover:bg-neutral-100 transition-colors text-neutral-600 flex items-center justify-center rounded"
                   aria-label="Decrease quantity"
                 >
-                  {cartItem.quantity === 1 ? <Trash2 size={16} className="text-red-500 hover:text-red-600" /> : <Minus size={16} />}
+                  {cartItem.quantity === 1 ? (
+                    <Trash2
+                      size={16}
+                      className="text-red-500 hover:text-red-600"
+                    />
+                  ) : (
+                    <Minus size={16} />
+                  )}
                 </button>
                 <span className="font-semibold text-xs tracking-widest uppercase text-neutral-800">
                   {cartItem.quantity} In Bag
@@ -476,7 +650,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             )}
             <Button
               onClick={() => {
-                if (productWishlist.filter((item) => item.id === productData.id)[0]) {
+                if (
+                  productWishlist.filter(
+                    (item) => item.id === productData.id,
+                  )[0]
+                ) {
                   removeWishlistHandler(productData.id);
                 } else {
                   addWishlistHandler(productData.id);
@@ -485,75 +663,230 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               variant="outline"
               className="h-12 w-12 rounded-none border-neutral-300"
             >
-              <Heart className={productWishlist.filter((item) => item.id === productData.id)[0] ? "fill-primary text-primary" : "text-neutral-500"} size={18} />
+              <Heart
+                className={
+                  productWishlist.filter(
+                    (item) => item.id === productData.id,
+                  )[0]
+                    ? "fill-primary text-primary"
+                    : "text-neutral-500"
+                }
+                size={18}
+              />
             </Button>
           </div>
         );
       })()}
 
-      <Button variant="outline" className="w-full h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium">
-        🔔 Notify me when back in stock
-      </Button>
-
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1 h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium">
-          Share
+        <Button
+          variant="outline"
+          onClick={() => setShareOpen(true)}
+          className="flex-1 h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium"
+        >
+          <Share2Icon /> Share
         </Button>
-        <Button variant="outline" className="flex-1 h-12 rounded-none border-[#eaddce] bg-[#fdfbf7] text-[#a68a61] tracking-widest uppercase text-xs font-medium">
-          Privae Concierge
+        <Button
+          asChild
+          variant="outline"
+          className="flex-1 h-12 rounded-none border-[#eaddce] bg-[#fdfbf7] text-[#a68a61] tracking-widest uppercase text-xs font-medium"
+        >
+          <a href={conciergeUrl} target="_blank" rel="noopener noreferrer">
+            <MessageCircle /> Privae Concierge
+          </a>
         </Button>
       </div>
 
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent className="rounded-none sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Share This Piece
+            </DialogTitle>
+            <DialogDescription>
+              Send the product link or copy it to share anywhere.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2">
+            <a
+              href={`https://wa.me/?text=${encodedShareText}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
+            >
+              <MessageCircle size={16} />
+              WhatsApp
+            </a>
+            <a
+              href={`https://t.me/share/url?url=${encodedProductUrl}&text=${encodeURIComponent(productData.name)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
+            >
+              <Share2Icon size={16} />
+              Telegram
+            </a>
+            <a
+              href={`mailto:?subject=${encodeURIComponent(productData.name)}&body=${encodedShareText}`}
+              className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
+            >
+              <Mail size={16} />
+              Email
+            </a>
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-left text-sm text-neutral-700 hover:border-primary hover:text-primary"
+            >
+              <Copy size={16} />
+              Copy Link
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={notifyOpen} onOpenChange={setNotifyOpen}>
+        <DialogContent className="rounded-none sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl">
+              Stock Alert
+            </DialogTitle>
+            <DialogDescription>
+              Share your details and we will send this product request to the
+              atelier.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleNotifySubmit} className="space-y-3">
+            <Input
+              required
+              placeholder="Full name"
+              value={notifyForm.name}
+              onChange={(event) =>
+                setNotifyForm((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
+            />
+            <Input
+              required
+              type="email"
+              placeholder="Email"
+              value={notifyForm.email}
+              onChange={(event) =>
+                setNotifyForm((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }))
+              }
+            />
+            <Input
+              type="tel"
+              placeholder="Phone / WhatsApp"
+              value={notifyForm.phone}
+              onChange={(event) =>
+                setNotifyForm((current) => ({
+                  ...current,
+                  phone: event.target.value,
+                }))
+              }
+            />
+            <div className="border border-[#eaddce] bg-[#fdfbf7] p-3 text-xs text-neutral-600">
+              <p className="font-medium text-neutral-800">{productData.name}</p>
+              <p>SKU: {productData.sku || "-"}</p>
+              <p className="break-all">{productUrl}</p>
+            </div>
+            <Button
+              type="submit"
+              disabled={notifySubmitting}
+              className="w-full h-11 rounded-none bg-primary text-primary-foreground tracking-widest uppercase text-xs font-medium"
+            >
+              {notifySubmitting ? "Sending..." : "Send Stock Request"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Delivery Check */}
-      <div className="bg-[#f9f9f9] p-4 space-y-3">
+      {/* <div className="bg-[#f9f9f9] p-4 space-y-3">
         <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase flex items-center gap-2">
           📍 Check Delivery (Pincode)
         </p>
         <div className="flex gap-0">
-          <Input type="text" placeholder="Enter pincode" className=" rounded-none flex-1 border border-neutral-300 px-3 text-sm focus:outline-none" />
-          <button className="bg-primary text-primary-foreground px-6 text-xs uppercase tracking-widest font-medium">Check</button>
+          <Input
+            type="text"
+            placeholder="Enter pincode"
+            className=" rounded-none flex-1 border border-neutral-300 px-3 text-sm focus:outline-none"
+          />
+          <button className="bg-primary text-primary-foreground px-6 text-xs uppercase tracking-widest font-medium">
+            Check
+          </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Features */}
       <div className="grid grid-cols-3 gap-2 text-center text-[10px] text-neutral-500 uppercase tracking-wide">
         <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
           <span className="text-primary mb-1">🚚</span>
           <span className="font-semibold text-neutral-700">Free Shipping</span>
-          <span className="text-[9px] capitalize text-neutral-400">Across India</span>
+          <span className="text-[9px] capitalize text-neutral-400">
+            Across India
+          </span>
         </div>
         <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
           <span className="text-primary mb-1">↺</span>
           <span className="font-semibold text-neutral-700">7-Day Returns</span>
-          <span className="text-[9px] capitalize text-neutral-400">From Delivery</span>
+          <span className="text-[9px] capitalize text-neutral-400">
+            From Delivery
+          </span>
         </div>
         <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
           <span className="text-primary mb-1">🛡️</span>
           <span className="font-semibold text-neutral-700">Authentic</span>
-          <span className="text-[9px] capitalize text-neutral-400">100% Genuine</span>
+          <span className="text-[9px] capitalize text-neutral-400">
+            100% Genuine
+          </span>
         </div>
       </div>
 
       {/* Care for this piece */}
       <div className="border border-[#eaddce] p-4 text-xs">
-        <p className="text-[#a68a61] uppercase tracking-widest font-semibold mb-2">Care for this piece</p>
-        <p className="text-neutral-600 mb-2">
-          {productData.care || "Dry clean only — entrust to a couture specialist · Store flat in muslin, away from light and moisture"}
+        <p className="text-[#a68a61] uppercase tracking-widest font-semibold mb-2">
+          Care for this piece
         </p>
-        <a href="#" className="text-primary hover:underline font-medium">Read all care notes →</a>
+        <p className="text-neutral-600 mb-2">
+          {productData.care ||
+            "Dry clean only — entrust to a couture specialist · Store flat in muslin, away from light and moisture"}
+        </p>
+        <a href="#" className="text-primary hover:underline font-medium">
+          Read all care notes →
+        </a>
       </div>
 
       {/* Accordions */}
-      <Accordion type="single" collapsible className="w-full border-t border-neutral-200">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full border-t border-neutral-200"
+      >
         <AccordionItem value="story">
           <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
             <span className="flex items-center gap-2">✨ The Story Behind</span>
           </AccordionTrigger>
           <AccordionContent className="text-sm text-neutral-600 space-y-4">
-            <p>Hand-rendered in hand embroidery, mirror work on pure chanderi silk — finished in our Jaipur atelier by karigars whose families have practised these crafts for generations.</p>
-            <p>Conceived for festive, pooja, wedding guest — a piece meant to be remembered, not merely worn.</p>
+            <p>
+              Hand-rendered in hand embroidery, mirror work on pure chanderi
+              silk — finished in our Jaipur atelier by karigars whose families
+              have practised these crafts for generations.
+            </p>
+            <p>
+              Conceived for festive, pooja, wedding guest — a piece meant to be
+              remembered, not merely worn.
+            </p>
             <p>Slow couture · Made in small batches · Numbered to its maker.</p>
-            <a href="#" className="text-primary font-medium hover:underline">Learn the language of craft →</a>
+            <a href="#" className="text-primary font-medium hover:underline">
+              Learn the language of craft →
+            </a>
           </AccordionContent>
         </AccordionItem>
 
@@ -562,13 +895,44 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             What's Included — Piece Details
           </AccordionTrigger>
           <AccordionContent className="text-sm text-neutral-600 space-y-4">
-            <p>Kurta<br />Palazzo Pants<br />Dupatta</p>
+            <p>
+              Kurta
+              <br />
+              Palazzo Pants
+              <br />
+              Dupatta
+            </p>
             <div className="space-y-2 mt-4">
-              <div><strong className="font-semibold text-neutral-800">Fabric:</strong> {productData.fabric || "Pure Chanderi Silk"}</div>
-              <div><strong className="font-semibold text-neutral-800">Work:</strong> Hand embroidery with mirror work on yoke, sleeves and hemline</div>
-              <div><strong className="font-semibold text-neutral-800">Lining:</strong> Cotton lining</div>
-              <div><strong className="font-semibold text-neutral-800">Length:</strong> Knee length</div>
-              <div><strong className="font-semibold text-neutral-800">Details:</strong> Round neckline, three-quarter sleeves, side slits</div>
+              <div>
+                <strong className="font-semibold text-neutral-800">
+                  Fabric:
+                </strong>{" "}
+                {productData.fabric || "Pure Chanderi Silk"}
+              </div>
+              <div>
+                <strong className="font-semibold text-neutral-800">
+                  Work:
+                </strong>{" "}
+                Hand embroidery with mirror work on yoke, sleeves and hemline
+              </div>
+              <div>
+                <strong className="font-semibold text-neutral-800">
+                  Lining:
+                </strong>{" "}
+                Cotton lining
+              </div>
+              <div>
+                <strong className="font-semibold text-neutral-800">
+                  Length:
+                </strong>{" "}
+                Knee length
+              </div>
+              <div>
+                <strong className="font-semibold text-neutral-800">
+                  Details:
+                </strong>{" "}
+                Round neckline, three-quarter sleeves, side slits
+              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -611,21 +975,45 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             Shipping & Returns
           </AccordionTrigger>
           <AccordionContent className="text-sm text-neutral-600 space-y-4">
-            <p><strong>Standard Dispatch (India):</strong> 5–7 business days post payment confirmation</p>
-            <p><strong>Standard Dispatch (International):</strong> 7–10 business days post payment confirmation</p>
-            <p><strong>Returns & Exchange (India):</strong> Within 7 days of delivery for unworn ready-to-ship pieces in original condition</p>
+            <p>
+              <strong>Standard Dispatch (India):</strong> 5–7 business days post
+              payment confirmation
+            </p>
+            <p>
+              <strong>Standard Dispatch (International):</strong> 7–10 business
+              days post payment confirmation
+            </p>
+            <p>
+              <strong>Returns & Exchange (India):</strong> Within 7 days of
+              delivery for unworn ready-to-ship pieces in original condition
+            </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
       {/* Need Help footer */}
       <div className="bg-[#eae1d8] p-5 text-sm text-neutral-700">
-        <p className="uppercase text-[10px] tracking-widest text-neutral-500 font-semibold mb-2">Need help with this piece?</p>
+        <p className="uppercase text-[10px] tracking-widest text-neutral-500 font-semibold mb-2">
+          Need help with this piece?
+        </p>
         <p>
-          For sizing, custom requests or any query, reach our atelier on <a href="tel:+917023117408" className="text-primary hover:underline font-medium">+91 7023117408</a> or write to <a href="mailto:queries.hausofprivae@gmail.com" className="text-primary hover:underline font-medium">queries.hausofprivae@gmail.com</a>.
+          For sizing, custom requests or any query, reach our atelier on{" "}
+          <a
+            href="tel:+917023117408"
+            className="text-primary hover:underline font-medium"
+          >
+            +91 7023117408
+          </a>{" "}
+          or write to{" "}
+          <a
+            href="mailto:queries.hausofprivae@gmail.com"
+            className="text-primary hover:underline font-medium"
+          >
+            queries.hausofprivae@gmail.com
+          </a>
+          .
         </p>
       </div>
-
     </div>
   );
 };

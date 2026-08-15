@@ -29,7 +29,7 @@ export default function TailoredFitFormModal() {
   const [error, setError] = useState("");
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
@@ -54,7 +54,9 @@ export default function TailoredFitFormModal() {
       });
       const resMsg = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(resMsg.error || "Could not submit tailored fit request.");
+        throw new Error(
+          resMsg.error || "Could not submit tailored fit request.",
+        );
       }
       setSubmitted(true);
       resetFields();
@@ -214,8 +216,8 @@ export default function TailoredFitFormModal() {
           </div>
 
           <p className="text-sm text-neutral-600">
-            Note: An additional charge of <strong>₹1000</strong> applies for all
-            tailored fit requests.
+            Note: An additional charge of <strong>Rs.1000</strong> applies for
+            all tailored fit requests.
             <br />
             For any customization requests or clarifications, you may reach out
             to us at{" "}

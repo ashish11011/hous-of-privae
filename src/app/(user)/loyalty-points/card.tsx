@@ -103,14 +103,14 @@ function InfoCardPoints({ points }: { points: number }) {
             Points Value
           </DialogTitle>
           <DialogDescription className="text-gray-600 text-sm">
-            10 loyalty points = ₹1.00 INR
+            10 loyalty points = Rs. 1.00
           </DialogDescription>
         </DialogHeader>
         <div className="mt-3 text-sm">
           You currently have{" "}
           <span className="font-medium">{points.toLocaleString()}</span> points
           - worth approximately{" "}
-          <span className="font-medium text-amber-600">₹{valueInINR}</span>.
+          <span className="font-medium text-amber-600">Rs. {valueInINR}</span>.
         </div>
       </DialogContent>
     </Dialog>

@@ -430,6 +430,60 @@
   background-color: hsl(var(--gold) / 0.6);
 }
 
+/* Legal pages typography (Shipping, Returns, Privacy, Terms) */
+.legal-prose h2 {
+  font-family: var(--font-heading, "Cormorant Garamond", serif);
+  font-size: 1.5rem;
+  line-height: 1.3;
+  color: hsl(var(--foreground));
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-prose h3 {
+  font-family: var(--font-heading, "Cormorant Garamond", serif);
+  font-size: 1.2rem;
+  color: hsl(var(--foreground));
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-prose p {
+  margin-bottom: 0.75rem;
+}
+
+.legal-prose ul,
+.legal-prose ol {
+  list-style: revert;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-prose ul li,
+.legal-prose ol li {
+  margin-bottom: 0.4rem;
+}
+
+.legal-prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-prose a:hover {
+  opacity: 0.8;
+}
+
+.legal-prose strong {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+
+.legal-prose em {
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
 .nav-link {
   position: relative;
   width: fit-content;

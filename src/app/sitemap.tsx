@@ -22,8 +22,13 @@ const paths = [
   "/atelier/glossary",
   "/product",
   "/collections",
+  "/privacy",
   "/privacy-policy",
+  "/terms",
   "/terms-and-conditions",
+  "/shipping",
+  "/returns",
+  "/faqs",
   "/order-and-shipping",
   "/returns-and-refunds",
 ];

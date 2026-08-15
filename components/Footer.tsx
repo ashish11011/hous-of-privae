@@ -180,12 +180,25 @@ const Footer = () => {
     { label: "Trend Talks", href: "/blog" },
     {
       label: "Privacy Policy",
-      href: "/privacy-policy",
+      href: "/privacy",
     },
     {
       label: "Terms & Conditions",
-      href: "/terms-and-conditions",
+      href: "/terms",
     },
+    {
+      label: "Shipping & Delivery",
+      href: "/shipping",
+    },
+    {
+      label: "Returns & Exchange",
+      href: "/returns",
+    },
+    {
+      label: "FAQs",
+      href: "/faqs",
+    },
+    { label: "Contact Us", href: "/contact-us" },
     {
       label: "Magazine",
       href: "/magazine",

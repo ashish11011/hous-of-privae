@@ -48,7 +48,7 @@ export default function StackedCarousel({
     return null;
   }
   return (
-    <Carousel className="w-full ">
+    <Carousel className="w-full max-h-screen overflow-hidden">
       <CarouselContent className="h-fit">
         {landingBanners.desktop.map((desktopBanner, idx) => {
           const mobileBanner = landingBanners.mobile[idx] || desktopBanner;
@@ -68,7 +68,11 @@ export default function StackedCarousel({
           return (
             <CarouselItem className="w-full  " key={idx}>
               {href ? (
-                <Link href={href} className="block" aria-label={`Open banner ${idx + 1}`}>
+                <Link
+                  href={href}
+                  className="block"
+                  aria-label={`Open banner ${idx + 1}`}
+                >
                   {bannerImage}
                 </Link>
               ) : (

@@ -7,7 +7,13 @@ import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { Signout } from "@/src/hepler/auth";
-import { CirclePoundSterling, Heart, LogOut, ShoppingCart } from "lucide-react";
+import {
+  ArrowLeft,
+  CirclePoundSterling,
+  Heart,
+  LogOut,
+  ShoppingCart,
+} from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -56,6 +62,12 @@ const ContactForm = ({ userData }: any) => {
   };
   return (
     <div className="max-w-2xl mx-auto my-16">
+      <Link href="/" className="mb-6 inline-flex">
+        <Button type="button" variant="outline" className="gap-2">
+          <ArrowLeft size={16} />
+          Back to Home
+        </Button>
+      </Link>
       <AccountOptions />
       {/* <CurrencyConverter /> */}
 

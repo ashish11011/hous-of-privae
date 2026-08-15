@@ -134,7 +134,8 @@ export default function NavBar({
               </TooltipContent>
             </Tooltip>
             <Link
-              href="/blog"
+              href="https://d2t6059p6jfvt4.cloudfront.net/haus-of-privae/v1/website-images/HOP+Magazine.pdf"
+              target="_blank"
               aria-label="Commission a bespoke piece"
               className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors"
             >

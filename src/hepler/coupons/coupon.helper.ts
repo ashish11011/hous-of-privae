@@ -41,18 +41,15 @@ export const updateCoupon = async (coupon: any) => {
 export const checkCoupon = async (couponCode: string) => {
   const userId = "a76d2b82-d4b6-49f5-9c52-2f8643c1b9b4"; //get oreg user id
   try {
-    console.log(1);
-    const [couponDetail] = await db
+     const [couponDetail] = await db
       .select()
       .from(userCoupons)
       .where(eq(userCoupons.code, couponCode));
 
-    console.log(2);
-    if (!couponDetail) {
+     if (!couponDetail) {
       return new Error("Coupon not found");
     }
-    console.log(3);
-    if (couponDetail.useOnce) {
+     if (couponDetail.useOnce) {
       const [couponUserHistory] = await db
         .select()
         .from(couponTransaction)
@@ -62,10 +59,8 @@ export const checkCoupon = async (couponCode: string) => {
             eq(couponTransaction.userId, userId)
           )
         );
-      console.log(4);
-      if (couponUserHistory) throw new Error("Coupon already used");
-      console.log(5);
-    }
+       if (couponUserHistory) throw new Error("Coupon already used");
+     }
     return couponDetail;
   } catch (error) {
     console.error(error);

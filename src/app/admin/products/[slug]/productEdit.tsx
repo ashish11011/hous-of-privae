@@ -21,7 +21,7 @@ import {
 } from "@/src/hooks/convertHooks";
 
 import { Form, Formik, useFormikContext } from "formik";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -75,6 +75,7 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
     sizes: productData?.sizes || [],
     colors: productData?.colors || [],
     materials: productData?.materials || [],
+    isInStoke: productData?.isInStoke ?? true,
   };
 
   const handleFormSubmit = async (values: any) => {
@@ -178,6 +179,7 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
             name="semiStitchedPrice"
             type="number"
           />
+          <StockCheckbox />
           <Select
             labelName="Category Level 1"
             placeholder="Category Level 1"
@@ -197,6 +199,7 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
               placeholder="Choose colors"
               options={useConvertColorToSelectOptions(COLORS)}
             />
+            <CustomColorPicker />
             <SelectedColors />
           </div>
           <div className=" space-y-2 w-full max-w-60">
@@ -246,8 +249,24 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
 
 export default ProductEdit;
 
+const StockCheckbox = () => {
+  const { values, setFieldValue } = useFormikContext<{ isInStoke: boolean }>();
+
+  return (
+    <label className="flex w-fit items-center gap-3 rounded-md border px-4 py-3">
+      <input
+        type="checkbox"
+        checked={values.isInStoke}
+        onChange={(event) => setFieldValue("isInStoke", event.target.checked)}
+        className="h-4 w-4"
+      />
+      <span className="text-sm font-medium">Product is in stock</span>
+    </label>
+  );
+};
+
 const SelectedColors = () => {
-  const { values } = useFormikContext<{ colors: string[] }>();
+  const { values, setFieldValue } = useFormikContext<{ colors: string[] }>();
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -257,14 +276,91 @@ const SelectedColors = () => {
         values.colors.map((color) => (
           <span
             key={color}
-            className="px-2 py-1 rounded-md"
-            style={{
-              backgroundColor: color,
-            }}
+            className="inline-flex items-center gap-2 rounded-md border px-2 py-1 text-xs"
           >
+            <span
+              className="h-4 w-4 rounded-sm border"
+              style={{
+                backgroundColor: color,
+              }}
+            />
             {color}
+            <button
+              type="button"
+              onClick={() =>
+                setFieldValue(
+                  "colors",
+                  values.colors.filter((item) => item !== color)
+                )
+              }
+              className="text-muted-foreground hover:text-destructive"
+              aria-label={`Remove ${color}`}
+            >
+              <X size={12} />
+            </button>
           </span>
         ))
+      )}
+    </div>
+  );
+};
+
+const CustomColorPicker = () => {
+  const { values, setFieldValue } = useFormikContext<{ colors: string[] }>();
+  const [hexValue, setHexValue] = useState("#000000");
+  const normalizedHex = hexValue.trim().toUpperCase();
+  const isValidHex = /^#[0-9A-F]{6}$/i.test(normalizedHex);
+  const alreadySelected = values.colors.includes(normalizedHex);
+
+  const updateHexValue = (value: string) => {
+    const nextValue = value.startsWith("#") ? value : `#${value}`;
+    setHexValue(nextValue.toUpperCase());
+  };
+
+  const addColor = () => {
+    if (!isValidHex || alreadySelected) return;
+    setFieldValue("colors", [...values.colors, normalizedHex]);
+  };
+
+  return (
+    <div className="rounded-md border p-3 space-y-2">
+      <Label>Custom Hex Color</Label>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={isValidHex ? normalizedHex : "#000000"}
+          onChange={(event) => updateHexValue(event.target.value)}
+          className="h-10 w-12 cursor-pointer rounded border bg-transparent p-1"
+          aria-label="Pick custom product color"
+        />
+        <input
+          type="text"
+          value={hexValue}
+          onChange={(event) => updateHexValue(event.target.value)}
+          placeholder="#B89146"
+          className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm"
+          maxLength={7}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={addColor}
+          disabled={!isValidHex || alreadySelected}
+          className="h-10 gap-2"
+        >
+          <Plus size={14} />
+          Add
+        </Button>
+      </div>
+      {!isValidHex && (
+        <p className="text-xs text-destructive">
+          Enter a valid 6-digit hex code, for example #B89146.
+        </p>
+      )}
+      {alreadySelected && (
+        <p className="text-xs text-muted-foreground">
+          This color is already selected.
+        </p>
       )}
     </div>
   );

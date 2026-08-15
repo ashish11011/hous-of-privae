@@ -1,4 +1,5 @@
 import { createProduct } from "@/lib";
+import { revalidateProductCatalogPaths } from "@/lib/revalidateProductPaths";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
@@ -7,6 +8,8 @@ export const POST = async (req: Request) => {
   body.slug = slug;
   try {
     await createProduct(body);
+    await revalidateProductCatalogPaths(body);
+
     return NextResponse.json({
       success: true,
       msg: "successfully created product",

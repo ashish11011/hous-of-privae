@@ -1,7 +1,10 @@
 import AWS from "aws-sdk";
 
-const FROM_EMAIL = "privaecare@hausofprivae.com";
-const ADMIN_EMAIL = "hausofprivae@gmail.com";
+const FROM_EMAIL = "no-reply@hausofprivae.com";
+const ADMIN_EMAIL =
+  process.env.ADMIN_EMAIL_ID ??
+  process.env.ADMIN_EMAIL ??
+  "hausofprivae@gmail.com";
 
 type OrderEmailItem = {
   name: string;

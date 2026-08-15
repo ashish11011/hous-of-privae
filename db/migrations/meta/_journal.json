@@ -29,6 +29,13 @@
       "when": 1786013809893,
       "tag": "0005_legal_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786789108640,
+      "tag": "0006_soft_fabian_cortez",
+      "breakpoints": true
     }
   ]
 }

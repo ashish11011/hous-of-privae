@@ -55,7 +55,9 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               <TableCell>{order.city}</TableCell>
               <TableCell>{order.state}</TableCell>
               <TableCell>{order.pincode}</TableCell>
-              <TableCell>₹{order.totalAmountPaid?.toLocaleString()}</TableCell>
+              <TableCell>
+                Rs. {order.totalAmountPaid?.toLocaleString()}
+              </TableCell>
               <TableCell>
                 {new Date(order.createdAt).toLocaleString()}
               </TableCell>

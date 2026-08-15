@@ -16,7 +16,7 @@ const Submitform = () => {
   });
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked } = target;
@@ -71,7 +71,10 @@ const Submitform = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <label
+              htmlFor="name"
+              className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
               Name
             </label>
             <Input
@@ -85,7 +88,10 @@ const Submitform = () => {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <label
+              htmlFor="email"
+              className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
               E-mail
             </label>
             <Input
@@ -100,7 +106,10 @@ const Submitform = () => {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label htmlFor="phone" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <label
+              htmlFor="phone"
+              className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
               Phone No
             </label>
             <Input
@@ -114,7 +123,10 @@ const Submitform = () => {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label htmlFor="message" className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <label
+              htmlFor="message"
+              className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            >
               Message
             </label>
             <Textarea
@@ -140,7 +152,7 @@ const Submitform = () => {
           />
           <p>
             By submitting this form, you hereby grant us permission to contact
-            you via SMS, WhatsApp, RCS, Email, and any other channel.
+            you via SMS, WhatsApp, Email, and any other channel.
           </p>
         </div>
 
