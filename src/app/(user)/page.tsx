@@ -7,12 +7,10 @@ import NotesFromJaipur from "./NoteFromJaipur";
 import WatchTheMaisonSection from "./WatchTheMaisonSection";
 import LandingFilmSection from "./LandingFilmSection";
 import { getAllCategories } from "@/lib";
-import { getLandingSettings } from "@/lib/siteSettings";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { landingBanners } = await getLandingSettings();
   const restricedCategory = [
     "new-aravials",
     "clearance",
@@ -37,7 +35,7 @@ export default async function Home() {
 
   return (
     <div className=" w-full">
-      <Carousel landingBanners={landingBanners} />
+      <Carousel />
       <Categories categories={categories} />
       <div className="reveal">
         <LandingFilmSection />

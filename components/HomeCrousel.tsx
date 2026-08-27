@@ -13,21 +13,34 @@ import { useIsMobile } from "@/src/hooks/use-mobile";
 import Image from "next/image";
 import Link from "next/link";
 
-type BannerItem = {
-  image: string;
-  href?: string;
-};
+const bannerContent = [
+  {
+    href: "/",
+    mobLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/1-mob.mp4",
+    webLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/1-web.mp4",
+    type: "video",
+  },
+  {
+    href: "/",
+    mobLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/2-mob.png",
+    webLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/2-web.png",
+    type: "img",
+  },
+  {
+    href: "/",
+    mobLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/3-mob.mp4",
+    webLink:
+      "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/3-web.mp4",
+    type: "video",
+  },
+];
 
-interface StackedCarouselProps {
-  landingBanners: {
-    mobile: BannerItem[];
-    desktop: BannerItem[];
-  };
-}
-
-export default function StackedCarousel({
-  landingBanners,
-}: StackedCarouselProps) {
+export default function StackedCarousel() {
   const isMobile = useIsMobile();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
@@ -47,36 +60,46 @@ export default function StackedCarousel({
   if (isMobile === null) {
     return null;
   }
+
   return (
-    <Carousel className="w-full max-h-screen overflow-hidden">
+    <Carousel className="w-full max-h-screen overflow-hidden" setApi={setApi}>
       <CarouselContent className="h-fit">
-        {landingBanners.desktop.map((desktopBanner, idx) => {
-          const mobileBanner = landingBanners.mobile[idx] || desktopBanner;
-          const image = isMobile ? mobileBanner.image : desktopBanner.image;
-          const href = desktopBanner.href || mobileBanner.href;
-          const bannerImage = (
-            <Image
-              src={image}
-              alt={`Banner ${idx + 1}`}
-              width={1831}
-              height={1448}
-              className="w-full h-auto object-contain"
-              priority={idx === 0}
-            />
-          );
+        {bannerContent.map((item, idx) => {
+          const src = isMobile ? item.mobLink : item.webLink;
+
+          const media =
+            item.type === "video" ? (
+              <video
+                src={src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-auto object-contain"
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={`Banner ${idx + 1}`}
+                width={1831}
+                height={1448}
+                className="w-full h-auto object-contain"
+                priority={idx === 0}
+              />
+            );
 
           return (
-            <CarouselItem className="w-full  " key={idx}>
-              {href ? (
+            <CarouselItem className="w-full" key={idx}>
+              {item.href ? (
                 <Link
-                  href={href}
+                  href={item.href}
                   className="block"
                   aria-label={`Open banner ${idx + 1}`}
                 >
-                  {bannerImage}
+                  {media}
                 </Link>
               ) : (
-                bannerImage
+                media
               )}
             </CarouselItem>
           );
