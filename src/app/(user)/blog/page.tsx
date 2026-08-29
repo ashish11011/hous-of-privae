@@ -1,5 +1,8 @@
 import React from "react";
 import BlogCard from "./blogCard";
+import { getVisibleBlogs } from "@/lib/blogHelper";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: {
@@ -24,18 +27,25 @@ export const metadata = {
   },
 };
 
-const blogs = [
+const staticBlogs = [
   {
-    id: 1,
+    id: "haus-of-privae-static",
     title: "Haus of Privae - Where Fashion Meets Power",
-    description:
+    metaDescription:
       "Luxury | Inclusivity | Sustainability | Empowerment - Discover how Haus of Privae redefines modern luxury with conscious craftsmanship and power dressing.",
     slug: "haus-of-privae-where-fashion-meets-power",
     color: "#B89146", // Deep Royal Gold
   },
 ];
 
-export default function BlogListPage() {
+export default async function BlogListPage() {
+  const databaseBlogs = (await getVisibleBlogs()).filter((blog) => blog.slug);
+  const existingSlugs = new Set(databaseBlogs.map((blog) => blog.slug));
+  const blogs = [
+    ...databaseBlogs,
+    ...staticBlogs.filter((blog) => !existingSlugs.has(blog.slug)),
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-20 px-6">
       {/* Page Title */}

@@ -1,7 +1,11 @@
 // lib/s3-upload.ts
 import imageCompression from "browser-image-compression";
 
-export async function uploadFileToS3(file: File, folder = "products") {
+export async function uploadFileToS3(
+  file: File,
+  folder = "products",
+  returnType: "url" | "key" = "url"
+) {
   let fileToUpload = file;
 
   // 1. Compress the image if needed
@@ -33,7 +37,7 @@ export async function uploadFileToS3(file: File, folder = "products") {
     throw new Error("Failed to get pre-signed URL");
   }
 
-  const { uploadUrl, fileUrl } = await res.json();
+  const { uploadUrl, fileUrl, key } = await res.json();
 
   // 3. Upload the file directly to S3 using the pre-signed URL
   const uploadRes = await fetch(uploadUrl, {
@@ -48,6 +52,6 @@ export async function uploadFileToS3(file: File, folder = "products") {
     throw new Error("Failed to upload file to S3");
   }
 
-  // 4. Return the public file URL
-  return fileUrl;
+  // 4. Products currently store URLs; blog uploads can request and store keys.
+  return returnType === "key" ? key || fileName : fileUrl;
 }

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     // Calculate the final file URL (without the auth query parameters)
     const fileUrl = uploadUrl.split("?")[0];
 
-    return NextResponse.json({ uploadUrl, fileUrl });
+    return NextResponse.json({ uploadUrl, fileUrl, key: fileName });
   } catch (error) {
     console.error("Error generating pre-signed URL:", error);
     return NextResponse.json({ error: "Failed to generate pre-signed URL" }, { status: 500 });

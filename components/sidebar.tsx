@@ -78,11 +78,11 @@ const items = [
     url: "/admin/site-settings",
     icon: Settings,
   },
-  // {
-  //   title: "Blog",
-  //   url: "/admin/blog",
-  //   icon: ChartNoAxesGanttIcon,
-  // },
+  {
+    title: "Blog",
+    url: "/admin/blog",
+    icon: ChartNoAxesGanttIcon,
+  },
   {
     title: "Subscriptions",
     url: "/admin/subscriptions",
