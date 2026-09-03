@@ -13,7 +13,6 @@ const Page = async ({ params }: any) => {
   }
 
   const categories = await getAllCategories();
-
   return (
     <>
       <ProductEdit

@@ -9,11 +9,7 @@ import {
 } from "@/components/index";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  COLORS,
-  MATERIALS,
-  SIZES,
-} from "@/const";
+import { COLORS, MATERIALS, SIZES } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
 import {
   useConvertColorToSelectOptions,
@@ -34,21 +30,28 @@ type CategoryOption = {
   isActive?: boolean;
 };
 
-function normalizeCategoryValue(value: string, categories: CategoryOption[], level: number) {
+function normalizeCategoryValue(
+  value: string,
+  categories: CategoryOption[],
+  level: number,
+) {
+  const normalizedValue = value?.trim().toLowerCase();
   const category = categories.find(
-    (item) => item.level === level && (item.id === value || item.slug === value)
+    (item) =>
+      item.level === level &&
+      (item.id === value ||
+        item.slug === value ||
+        item.name.toLowerCase() === normalizedValue),
   );
 
-  return category?.id ?? value ?? "";
+  return category?.id ?? "";
 }
 
 function categorySelectOptions(categories: CategoryOption[], level: number) {
-  return categories
-    .filter((category) => category.level === level && category.isActive !== false)
-    .map((category) => ({
-      value: category.id,
-      label: category.name,
-    }));
+  return categories.map((category) => ({
+    value: category.id,
+    label: category.name,
+  }));
 }
 
 const ProductEdit = ({ productData, slug, categories = [] }: any) => {
@@ -61,8 +64,16 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
 
     description: productData?.description || "",
     basePrice: productData?.basePrice || 0,
-    categoryId1: normalizeCategoryValue(productData?.categoryId1 || "", categories, 1),
-    categoryId2: normalizeCategoryValue(productData?.categoryId2 || "", categories, 2),
+    categoryId1: normalizeCategoryValue(
+      productData?.categoryId1 || "",
+      categories,
+      1,
+    ),
+    categoryId2: normalizeCategoryValue(
+      productData?.categoryId2 || "",
+      categories,
+      2,
+    ),
     slug: productData?.slug || "",
     model_height: productData?.model_height || "",
 
@@ -186,12 +197,12 @@ const ProductEdit = ({ productData, slug, categories = [] }: any) => {
             name="categoryId1"
             options={categorySelectOptions(categories, 1)}
           />
-          <Select
+          {/* <Select
             labelName="Category Level 2"
             placeholder="Category Level 2"
             name="categoryId2"
             options={categorySelectOptions(categories, 2)}
-          />
+          /> */}
           <div className=" space-y-2 w-md">
             <MultiSelect
               labelName="Select Colors"
@@ -290,7 +301,7 @@ const SelectedColors = () => {
               onClick={() =>
                 setFieldValue(
                   "colors",
-                  values.colors.filter((item) => item !== color)
+                  values.colors.filter((item) => item !== color),
                 )
               }
               className="text-muted-foreground hover:text-destructive"
@@ -448,7 +459,7 @@ const ProductImages = () => {
                 onClick={() =>
                   setFieldValue(
                     "images",
-                    values.images.filter((item) => item !== image)
+                    values.images.filter((item) => item !== image),
                   )
                 }
                 className=" absolute cursor-pointer -top-2 -right-2 border rounded-full bg-white"

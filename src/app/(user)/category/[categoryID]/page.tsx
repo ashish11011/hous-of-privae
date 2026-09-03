@@ -2,7 +2,7 @@
 import ProductCard from "@/components/ProductCard";
 import {
   fallbackCategories,
-  getCategoryBySlugOrId,
+  getCategoryBySlug,
   getProductByCategory,
 } from "@/lib";
 
@@ -18,10 +18,11 @@ export async function generateStaticParams() {
 }
 
 const Page = async ({ params }: { params: any }) => {
-  const categoryParam = (await params).categoryID;
-  const category = await getCategoryBySlugOrId(categoryParam);
-  const categoryID = category?.id ?? categoryParam;
-  const productsData = await getProductByCategory(categoryID, category?.slug);
+  const categorySlug = (await params).categoryID;
+  const category = await getCategoryBySlug(categorySlug);
+  const productsData = category?.id
+    ? await getProductByCategory(category.id)
+    : [];
 
   if (!productsData || productsData.length === 0)
     return (

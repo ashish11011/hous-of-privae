@@ -77,6 +77,22 @@ export async function getCategoryBySlugOrId(value: string) {
   return (await fallbackCategories()).find((item) => item.id === value || item.slug === value) ?? null;
 }
 
+export async function getCategoryBySlug(slug: string) {
+  try {
+    const [category] = await db
+      .select()
+      .from(categoryTable)
+      .where(eq(categoryTable.slug, slug))
+      .limit(1);
+
+    if (category) return category;
+  } catch {
+    console.warn("Category database unavailable; using fallback category lookup.");
+  }
+
+  return (await fallbackCategories()).find((item) => item.slug === slug) ?? null;
+}
+
 export async function createCategory(input: Record<string, any>) {
   const name = String(input.name ?? "").trim();
   if (!name) throw new Error("Category name is required");
