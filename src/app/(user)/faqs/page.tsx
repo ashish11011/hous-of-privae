@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export default function FaqsPage() {
   return (
     <main className="bg-background px-4 py-16 md:py-24 text-foreground">
-      <FaqSection />
+      {/* <FaqSection /> */}
     </main>
   );
 }

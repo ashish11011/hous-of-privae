@@ -194,10 +194,10 @@ const Footer = () => {
       label: "Returns & Exchange",
       href: "/returns",
     },
-    {
-      label: "FAQs",
-      href: "/faqs",
-    },
+    // {
+    //   label: "FAQs",
+    //   href: "/faqs",
+    // },
     { label: "Contact Us", href: "/contact-us" },
     {
       label: "Magazine",

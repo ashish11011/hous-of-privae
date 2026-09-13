@@ -15,7 +15,7 @@ import Link from "next/link";
 
 const bannerContent = [
   {
-    href: "/",
+    href: "/product",
     mobLink:
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/1-mob.mp4",
     webLink:
@@ -23,7 +23,7 @@ const bannerContent = [
     type: "video",
   },
   {
-    href: "/",
+    href: "/product",
     mobLink:
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/2-mob.png",
     webLink:
@@ -31,7 +31,7 @@ const bannerContent = [
     type: "img",
   },
   {
-    href: "/",
+    href: "/category/occasion-wear/",
     mobLink:
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/3-mob.mp4",
     webLink:

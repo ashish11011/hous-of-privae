@@ -41,10 +41,7 @@ const staticBlogs = [
 export default async function BlogListPage() {
   const databaseBlogs = (await getVisibleBlogs()).filter((blog) => blog.slug);
   const existingSlugs = new Set(databaseBlogs.map((blog) => blog.slug));
-  const blogs = [
-    ...databaseBlogs,
-    ...staticBlogs.filter((blog) => !existingSlugs.has(blog.slug)),
-  ];
+  const blogs = [...databaseBlogs];
 
   return (
     <div className="min-h-screen bg-gray-50 py-20 px-6">
