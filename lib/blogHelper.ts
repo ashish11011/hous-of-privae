@@ -79,6 +79,16 @@ export async function getAllBlogs() {
   return db.select().from(blogTable).orderBy(desc(blogTable.date));
 }
 
+export async function getBlogById(id: string) {
+  const [blog] = await db
+    .select()
+    .from(blogTable)
+    .where(eq(blogTable.id, id))
+    .limit(1);
+
+  return blog ?? null;
+}
+
 export async function getVisibleBlogs() {
   try {
     return await db

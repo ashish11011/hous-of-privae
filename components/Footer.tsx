@@ -199,14 +199,14 @@ const Footer = () => {
     //   href: "/faqs",
     // },
     { label: "Contact Us", href: "/contact-us" },
-    {
-      label: "Magazine",
-      href: "/magazine",
-    },
-    {
-      label: "The Edit",
-      href: "/lookbook",
-    },
+    // {
+    //   label: "Magazine",
+    //   href: "/magazine",
+    // },
+    // {
+    //   label: "The Edit",
+    //   href: "/lookbook",
+    // },
     {
       label: "Atelier Glossary",
       href: "/atelier/glossary",
