@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { getBlogBySlug } from "@/lib/blogHelper";
 import { getImagePreviewUrl } from "@/lib/blogImage";
+import Image from "next/image";
 
 export const revalidate = 86400;
 export const dynamic = "force-static";
@@ -66,10 +67,12 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         {blog.image && (
           <div className="px-4 md:px-8">
             <div className="mx-auto max-w-6xl">
-              <img
+              <Image
+                height={1200}
+                width={1200}
                 src={getImagePreviewUrl(blog.image)}
                 alt={blog.title ?? ""}
-                className="max-h-[680px] w-full object-cover"
+                className="h-auto max-w-4xl mx-auto w-full object-cover"
               />
             </div>
           </div>

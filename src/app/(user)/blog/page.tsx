@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { getVisibleBlogs } from "@/lib/blogHelper";
 import { getImagePreviewUrl } from "@/lib/blogImage";
+import Image from "next/image";
 
 export const revalidate = 86400;
 export const dynamic = "force-static";
@@ -43,10 +44,12 @@ export default async function BlogPage() {
               <article key={blog.id} className="border border-border bg-card">
                 <Link href={`/blog/${blog.slug}`} className="block">
                   {blog.image ? (
-                    <img
+                    <Image
+                      height={600}
+                      width={600}
                       src={getImagePreviewUrl(blog.image)}
                       alt={blog.title ?? ""}
-                      className="aspect-[4/3] w-full object-cover"
+                      className="h-auto w-full object-cover"
                     />
                   ) : (
                     <div className="aspect-[4/3] w-full bg-secondary" />
@@ -67,6 +70,35 @@ export default async function BlogPage() {
               </article>
             ))
           )}
+
+          <article className="border border-border bg-card">
+            <Link
+              target="_blank"
+              href={`https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Magazine_1.pdf`}
+              className="block"
+            >
+              <Image
+                height={600}
+                width={600}
+                src={
+                  "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Privae+edit+(magazine)+(1).png"
+                }
+                alt={"Magzine"}
+                className="h-auto w-full object-cover"
+              />
+
+              <div className="p-5">
+                <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-gold">
+                  {"Magazine"}
+                  {` / 2026-09-13`}
+                </p>
+                <h2 className="font-heading text-2xl">Magazine</h2>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                  Read our first ever editorial and brand lookbook
+                </p>
+              </div>
+            </Link>
+          </article>
         </div>
       </section>
     </main>
