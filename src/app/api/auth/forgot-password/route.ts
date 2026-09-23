@@ -11,15 +11,20 @@ export async function POST(request: NextRequest) {
     const { email } = await request.json();
 
     if (!email) {
-      return NextResponse.json({ message: "Email is required." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Email is required." },
+        { status: 400 },
+      );
     }
+
+    console.log(email);
 
     await cognitoClient.send(
       new ForgotPasswordCommand({
         ClientId: CLIENT_ID,
         Username: email,
         SecretHash: generateSecretHash(email),
-      })
+      }),
     );
 
     return NextResponse.json({
@@ -29,7 +34,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || "Could not send reset code." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }
@@ -41,7 +46,7 @@ export async function PUT(request: NextRequest) {
     if (!email || !code || !password) {
       return NextResponse.json(
         { message: "Email, code, and new password are required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +57,7 @@ export async function PUT(request: NextRequest) {
         ConfirmationCode: code,
         Password: password,
         SecretHash: generateSecretHash(email),
-      })
+      }),
     );
 
     return NextResponse.json({
@@ -62,7 +67,7 @@ export async function PUT(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || "Could not reset password." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

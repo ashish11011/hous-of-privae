@@ -54,6 +54,7 @@
     "pg-core": "^0.1.15",
     "postgres": "^3.4.7",
     "radix-ui": "^1.6.7",
+    "razorpay": "^2.9.8",
     "react": "^18.3.1",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.3.1",

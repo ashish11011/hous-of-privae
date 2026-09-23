@@ -1,24 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Toaster } from "@/components/ui/sonner";
-import { cn } from "@/lib/utils";
-import { Signout } from "@/src/hepler/auth";
-import {
-  ArrowLeft,
-  CirclePoundSterling,
-  Heart,
-  LogOut,
-  ShoppingCart,
-} from "lucide-react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { ProfileUser } from "./ProfileDashboard";
 
-const ContactForm = ({ userData }: any) => {
+export default function AddressForm({ userData }: { userData: ProfileUser }) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: userData?.name || "",
     email: userData?.email || "",
@@ -53,6 +44,7 @@ const ContactForm = ({ userData }: any) => {
       if (!res.ok) throw new Error("Failed to update profile");
 
       toast.success("Profile updated successfully");
+      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("Error updating profile.");
@@ -61,22 +53,8 @@ const ContactForm = ({ userData }: any) => {
     }
   };
   return (
-    <div className="max-w-2xl mx-auto my-16">
-      <Link href="/" className="mb-6 inline-flex">
-        <Button type="button" variant="outline" className="gap-2">
-          <ArrowLeft size={16} />
-          Back to Home
-        </Button>
-      </Link>
-      <AccountOptions />
-      {/* <CurrencyConverter /> */}
-
-      <div className=" border rounded-lg shadow p-8 space-y-6">
-        <Toaster position="top-right" />
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-2xl font-semibold">Update Profile</h2>
-        </div>
-
+<section className="bg-secondary/50 p-6 sm:p-8 max-w-3xl">
+<h2 className="text-2xl mb-6">Your details & address</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Info Section */}
           <div className="space-y-4">
@@ -195,89 +173,6 @@ const ContactForm = ({ userData }: any) => {
             {loading ? "Saving..." : "Update Profile"}
           </Button>
         </form>
-      </div>
-    </div>
-  );
-};
-
-export default ContactForm;
-
-function AccountOptions() {
-  const options = [
-    {
-      label: "Orders",
-      href: "/orders",
-      Icon: ShoppingCart,
-    },
-    {
-      label: "My Wishlist",
-      href: "/my-wishlist",
-      Icon: Heart,
-    },
-    {
-      label: "Loyalty Points",
-      href: "/loyalty-points",
-      Icon: CirclePoundSterling,
-    },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-      {options.map(({ label, href, Icon }) => (
-        <Link key={href} href={href} className="w-full">
-          <Button variant="outline" className="w-full">
-            <Icon size={20} />
-            <span className="text-sm font-medium">{label}</span>
-          </Button>
-        </Link>
-      ))}
-      <Button
-        type="button"
-        variant="destructive"
-        onClick={Signout}
-        className="gap-2"
-      >
-        <LogOut size={16} />
-        Logout
-      </Button>
-    </div>
-  );
-}
-
-function CurrencyConverter() {
-  const [defaultType, setDefaultType] = useState("INR");
-
-  useEffect(() => {
-    const currency = localStorage.getItem("currency");
-    if (currency) {
-      setDefaultType(currency);
-    }
-  });
-
-  function handleCurrencyChange(currency: string) {
-    localStorage.setItem("currency", currency);
-    toast.success("Currency changed to " + currency);
-    setDefaultType(currency);
-  }
-  return (
-    <div className=" my-12">
-      <p className=" text-xl capitalize mb-1">change currency </p>
-      <ButtonGroup>
-        <Button
-          className={cn(defaultType === "INR" ? "bg-gray-100" : "")}
-          onClick={() => handleCurrencyChange("INR")}
-          variant={"outline"}
-        >
-          INR
-        </Button>
-        <Button
-          className={cn(defaultType === "USD" ? "bg-gray-100" : "")}
-          onClick={() => handleCurrencyChange("USD")}
-          variant={"outline"}
-        >
-          USD
-        </Button>
-      </ButtonGroup>
-    </div>
-  );
+</section>
+);
 }

@@ -37,9 +37,9 @@ export default async function Home() {
     <div className=" w-full">
       <Carousel />
       <Categories categories={categories} />
-      <div className="reveal">
+      {/* <div className="reveal">
         <LandingFilmSection />
-      </div>
+      </div> */}
       {/* <div className="section-rule my-2" /> */}
       {/* <VideoPlay /> */}
       {/* <Categories2 /> */}

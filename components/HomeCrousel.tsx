@@ -31,7 +31,7 @@ const bannerContent = [
     type: "img",
   },
   {
-    href: "/category/occasion-wear/",
+    href: "/about-us/",
     mobLink:
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/3-mob.mp4",
     webLink:
@@ -62,7 +62,18 @@ export default function StackedCarousel() {
   }
 
   return (
-    <Carousel className="w-full max-h-screen overflow-hidden" setApi={setApi}>
+    <Carousel
+      className="w-full max-h-screen overflow-hidden"
+      setApi={setApi}
+      opts={{ loop: true }}
+      plugins={[
+        Autoplay({
+          delay: 3000,
+          stopOnInteraction: false,
+          stopOnMouseEnter: true,
+        }),
+      ]}
+    >
       <CarouselContent className="h-fit">
         {bannerContent.map((item, idx) => {
           const src = isMobile ? item.mobLink : item.webLink;

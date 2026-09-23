@@ -19,6 +19,21 @@ const videos = [
     src: "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/Gulnaar.mp4",
     href: "https://youtube.com/shorts/tZWRJqDnMCY?si=32VVc7IaBTxY7uXR",
   },
+  {
+    title: "Gulnaar",
+    src: "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/video5.mp4",
+    href: "https://youtube.com/shorts/tZWRJqDnMCY?si=32VVc7IaBTxY7uXR",
+  },
+  {
+    title: "Gulnaar",
+    src: "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/video3.mp4",
+    href: "https://youtube.com/shorts/tZWRJqDnMCY?si=32VVc7IaBTxY7uXR",
+  },
+  {
+    title: "Gulnaar",
+    src: "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/video4.mp4",
+    href: "https://youtube.com/shorts/tZWRJqDnMCY?si=32VVc7IaBTxY7uXR",
+  },
 ];
 
 const WatchTheMaisonSection = forwardRef<HTMLElement>((_, ref) => {
@@ -36,51 +51,45 @@ const WatchTheMaisonSection = forwardRef<HTMLElement>((_, ref) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 max-w-5xl mx-auto">
-          {videos.map((video) => (
-            <a
-              key={video.title}
-              href={video.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Watch ${video.title} on YouTube Shorts`}
-              className="group relative block overflow-hidden rounded-md bg-muted shadow-md hover:shadow-xl transition-shadow aspect-[9/16]"
-            >
-              <video
-                src={video.src}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/15 to-transparent" />
+        <div className="group/marquee overflow-hidden w-full">
+          <div
+            className="flex gap-4 md:gap-5 w-max animate-[marquee_30s_linear_infinite] group-hover/marquee:[animation-play-state:paused]"
+          >
+            {[...videos, ...videos].map((video, i) => (
+              <a
+                key={`${video.title}-${i}`}
+                href={video.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Watch ${video.title} on YouTube Shorts`}
+                className="group relative block overflow-hidden rounded-md bg-muted shadow-md hover:shadow-xl transition-shadow aspect-[9/16] w-[220px] md:w-[280px] shrink-0"
+              >
+                <video
+                  src={video.src}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/15 to-transparent" />
 
-              <div className="absolute top-3 left-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-background/90 text-foreground">
-                <Youtube size={14} />
-              </div>
+                <div className="absolute top-3 left-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-background/90 text-foreground">
+                  <Youtube size={14} />
+                </div>
 
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="inline-flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-lg transition-transform duration-300 group-hover:scale-110">
-                  <Play
-                    size={20}
-                    fill="currentColor"
-                    className="translate-x-0.5"
-                  />
-                </span>
-              </div>
-
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                <p className="text-primary-foreground font-heading leading-tight text-xl md:text-2xl">
-                  {video.title}
-                </p>
-                <p className="text-primary-foreground/70 text-[10px] tracking-[0.25em] uppercase font-body mt-1">
-                  Watch on YouTube
-                </p>
-              </div>
-            </a>
-          ))}
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                  <p className="text-primary-foreground font-heading leading-tight text-xl md:text-2xl">
+                    {video.title}
+                  </p>
+                  <p className="text-primary-foreground/70 text-[10px] tracking-[0.25em] uppercase font-body mt-1">
+                    Watch on YouTube
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="mt-8 flex items-center justify-center">

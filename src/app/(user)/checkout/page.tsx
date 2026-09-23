@@ -137,39 +137,113 @@ const Page = () => {
   const handlePlaceOrder = async (values: any, action: any) => {
     setIsSubmitting(true);
     try {
-      const userData = {
-        name: values.name,
-        email: values.email,
-        number: values.number,
-      };
-      const response = await fetch("/api/order/create", {
+      // 1. Create Razorpay order
+      const rzpOrderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
-        body: JSON.stringify({
-          ...values,
-          totalAmountPaid: finalTotal,
-          productDetails: productStore,
-          user: userData,
-        }),
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: finalTotal * 100, currency: "INR" }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create order");
+      const rzpOrderData = await rzpOrderRes.json();
+
+      if (!rzpOrderRes.ok || !rzpOrderData.success) {
+        toast.error(rzpOrderData.msg || "Failed to initiate payment.");
+        setIsSubmitting(false);
+        return;
       }
 
-      const data = await response.json();
-      if (data.success) {
-        setOrderId(data.orderId || "");
-        setLoyaltyPointsEarned(data.loyaltyPointsEarned || 0);
-        setShowSuccess(true);
-        clearCart();
-      } else {
-        toast.error(data.msg || "Something went wrong. Please try again.");
-      }
+      // 2. Open Razorpay checkout modal
+      const options: any = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: rzpOrderData.amount,
+        currency: rzpOrderData.currency,
+        name: "Haus of Privae",
+        description: "Order Payment",
+        order_id: rzpOrderData.orderId,
+        prefill: {
+          name: values.name,
+          email: values.email,
+          contact: values.number,
+        },
+        theme: { color: "#1a1a1a" },
+        handler: async (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            // 3. Verify payment signature
+            const verifyRes = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.verified) {
+              toast.error("Payment verification failed. Please contact support.");
+              setIsSubmitting(false);
+              return;
+            }
+
+            // 4. Create internal order with payment details
+            const userData = {
+              name: values.name,
+              email: values.email,
+              number: values.number,
+            };
+            const orderRes = await fetch("/api/order/create", {
+              method: "POST",
+              body: JSON.stringify({
+                ...values,
+                totalAmountPaid: finalTotal,
+                productDetails: productStore,
+                user: userData,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+              }),
+              headers: { "Content-Type": "application/json" },
+            });
+
+            const orderData = await orderRes.json();
+
+            if (orderData.success) {
+              setOrderId(orderData.orderId || "");
+              setLoyaltyPointsEarned(orderData.loyaltyPointsEarned || 0);
+              setShowSuccess(true);
+              clearCart();
+            } else {
+              toast.error(orderData.msg || "Order creation failed after payment. Please contact support.");
+            }
+          } catch (error) {
+            console.error("Post-payment error:", error);
+            toast.error("Something went wrong after payment. Please contact support.");
+          } finally {
+            setIsSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            toast.error("Payment was cancelled.");
+            setIsSubmitting(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+
+      rzp.on("payment.failed", (response: any) => {
+        toast.error(
+          response.error?.description || "Payment failed. Please try again."
+        );
+        setIsSubmitting(false);
+      });
+
+      rzp.open();
     } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("Failed to place order. Please try again.");
-    } finally {
+      console.error("Error initiating payment:", error);
+      toast.error("Failed to initiate payment. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -215,7 +289,7 @@ const Page = () => {
                   className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
                   size={"lg"}
                 >
-                  {isSubmitting ? "Placing Order..." : "Place Order"}
+                  {isSubmitting ? "Processing..." : "Pay & Place Order"}
                 </Button>
               </Form>
             </Formik>

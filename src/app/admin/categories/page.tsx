@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Edit2, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Edit2, Plus, Trash2, Upload } from "lucide-react";
+import { uploadFileToS3 } from "@/lib/s3-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,11 +53,9 @@ export default function CategoriesAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  const levelOneCategories = useMemo(
-    () => categories.filter((category) => category.level === 1),
-    [categories]
-  );
+
 
   async function loadCategories() {
     setLoading(true);
@@ -161,40 +160,56 @@ export default function CategoriesAdminPage() {
             <Input id="slug" value={form.slug} onChange={(e) => updateForm("slug", slugify(e.target.value))} required />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <label className="space-y-2">
-              <span className="text-sm font-medium">Level</span>
-              <select
-                value={form.level}
-                onChange={(e) => updateForm("level", Number(e.target.value))}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value={1}>Level 1</option>
-                <option value={2}>Level 2</option>
-              </select>
-            </label>
-
-            <label className="space-y-2">
-              <span className="text-sm font-medium">Parent</span>
-              <select
-                value={form.parentId}
-                onChange={(e) => updateForm("parentId", e.target.value)}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                disabled={form.level === 1}
-              >
-                <option value="">None</option>
-                {levelOneCategories.map((category) => (
-                  <option key={category.id ?? category.slug} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
-            <Input id="image" value={form.image ?? ""} onChange={(e) => updateForm("image", e.target.value)} />
+            <Label>Category Image</Label>
+            {form.image ? (
+              <div className="relative group w-full">
+                <img
+                  src={form.image}
+                  alt="Category"
+                  className="w-full h-36 object-cover rounded-md border"
+                />
+                <button
+                  type="button"
+                  onClick={() => updateForm("image", "")}
+                  className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Remove image"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ) : (
+              <label
+                className={`flex flex-col items-center justify-center gap-2 w-full h-36 border-2 border-dashed rounded-md cursor-pointer transition-colors ${
+                  uploading ? "opacity-50 pointer-events-none" : "hover:border-primary hover:bg-muted/40"
+                }`}
+              >
+                <Upload size={20} className="text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">
+                  {uploading ? "Uploading..." : "Click to upload image"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploading(true);
+                    try {
+                      const url = await uploadFileToS3(file, "categories");
+                      updateForm("image", url);
+                    } catch (err) {
+                      setMessage("Image upload failed. Please try again.");
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                />
+              </label>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -227,7 +242,7 @@ export default function CategoriesAdminPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Slug</TableHead>
-                  <TableHead>Level</TableHead>
+
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -237,7 +252,7 @@ export default function CategoriesAdminPage() {
                   <TableRow key={category.id ?? category.slug}>
                     <TableCell>{category.name}</TableCell>
                     <TableCell>{category.slug}</TableCell>
-                    <TableCell>Level {category.level}</TableCell>
+
                     <TableCell>{category.isActive ? "Active" : "Hidden"}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
