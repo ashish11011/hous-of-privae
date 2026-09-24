@@ -61,6 +61,7 @@ const Page = () => {
   } = useStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,7 +142,7 @@ const Page = () => {
       const rzpOrderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: finalTotal * 100, currency: "INR" }),
+        body: JSON.stringify({ ...values, productDetails: productStore }),
       });
 
       const rzpOrderData = await rzpOrderRes.json();
@@ -172,49 +173,30 @@ const Page = () => {
           razorpay_signature: string;
         }) => {
           try {
-            // 3. Verify payment signature
-            const verifyRes = await fetch("/api/razorpay/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(response),
-            });
-
-            const verifyData = await verifyRes.json();
-
-            if (!verifyRes.ok || !verifyData.verified) {
-              toast.error("Payment verification failed. Please contact support.");
-              setIsSubmitting(false);
-              return;
-            }
-
-            // 4. Create internal order with payment details
-            const userData = {
-              name: values.name,
-              email: values.email,
-              number: values.number,
-            };
-            const orderRes = await fetch("/api/order/create", {
-              method: "POST",
-              body: JSON.stringify({
-                ...values,
-                totalAmountPaid: finalTotal,
-                productDetails: productStore,
-                user: userData,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpayOrderId: response.razorpay_order_id,
-              }),
-              headers: { "Content-Type": "application/json" },
-            });
-
-            const orderData = await orderRes.json();
-
-            if (orderData.success) {
-              setOrderId(orderData.orderId || "");
-              setLoyaltyPointsEarned(orderData.loyaltyPointsEarned || 0);
-              setShowSuccess(true);
-              clearCart();
-            } else {
-              toast.error(orderData.msg || "Order creation failed after payment. Please contact support.");
+            setOrderId(rzpOrderData.internalOrderId);
+            setPaymentConfirmed(false);
+            setShowSuccess(true);
+            // Only the webhook confirms an order. Poll its saved result briefly;
+            // payment can still complete if the customer closes this browser.
+            for (let attempt = 0; attempt < 15; attempt++) {
+              const verifyRes = await fetch("/api/razorpay/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+              const result = await verifyRes.json();
+              if (verifyRes.ok && result.verified) {
+                clearCart();
+                if (result.confirmed) {
+                  setPaymentConfirmed(true);
+                  setLoyaltyPointsEarned(result.loyaltyPointsEarned || 0);
+                  break;
+                }
+              } else if (verifyRes.status === 400) {
+                toast.error("Payment verification failed. Please contact support with your order reference.");
+                break;
+              }
+              if (attempt < 14) await new Promise(resolve => setTimeout(resolve, 2000));
             }
           } catch (error) {
             console.error("Post-payment error:", error);
@@ -461,11 +443,12 @@ const Page = () => {
               Thank You
             </p>
             <DialogTitle className="font-heading text-3xl text-neutral-900 tracking-tight">
-              Order Confirmed
+              {paymentConfirmed ? "Order Confirmed" : "Confirming Your Payment"}
             </DialogTitle>
             <DialogDescription className="text-neutral-500 font-body text-sm max-w-xs leading-relaxed">
-              Your order has been successfully placed. Our Jaipuri artisans are
-              beginning to craft your selected garments.
+              {paymentConfirmed
+                ? "Your payment is confirmed. Your order confirmation will arrive by email."
+                : "We are waiting for payment confirmation. You can safely leave this page. We will email you once your order is confirmed; please do not pay again."}
             </DialogDescription>
           </DialogHeader>
 

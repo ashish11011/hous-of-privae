@@ -9,6 +9,7 @@ import {
   orderItem,
   orderRelations,
   orderItemRelations,
+  orderStatusEvent,
 } from "./orderSchema";
 
 export const productTable = product;
@@ -18,6 +19,7 @@ export const taileredFits = taileredFit;
 export const orderTable = order;
 
 export const orderItemsTable = orderItem;
+export const orderStatusEventsTable = orderStatusEvent;
 
 export const userTable = user;
 export const userCoupons = coupon;

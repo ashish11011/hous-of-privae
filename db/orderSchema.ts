@@ -4,10 +4,13 @@ import {
   varchar,
   timestamp,
   integer,
+  jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 import { user } from "./userSchema";
 import { product } from "./productSchema";
 import { relations } from "drizzle-orm";
+import type { OrderEmailInput } from "../lib/email/ses";
 
 // ----------------------
 // Orders Table
@@ -28,6 +31,14 @@ export const order = pgTable("order", {
   discountAmount: integer("discount_amount").notNull().default(0),
   couponCode: varchar("coupon_code"),
   totalAmountPaid: integer("total_amount_paid"),
+  paymentStatus: varchar("payment_status").notNull().default("unknown"),
+  razorpayOrderId: varchar("razorpay_order_id").unique(),
+  razorpayPaymentId: varchar("razorpay_payment_id").unique(),
+  expectedAmountPaise: integer("expected_amount_paise"),
+  currency: varchar("currency").notNull().default("INR"),
+  checkoutSnapshot: jsonb("checkout_snapshot").$type<OrderEmailInput>(),
+  confirmationEmailSentAt: timestamp("confirmation_email_sent_at"),
+  adminEmailSentAt: timestamp("admin_email_sent_at"),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -49,6 +60,18 @@ export const orderItem = pgTable("order_item", {
   color: varchar("color"), // Optional
   variant: varchar("variant").notNull().default("stitched"),
 });
+
+export const orderStatusEvent = pgTable("order_status_event", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id").notNull().references(() => order.id),
+  changedBy: uuid("changed_by").notNull().references(() => user.id),
+  fromStatus: varchar("from_status").notNull(),
+  toStatus: varchar("to_status").notNull(),
+  recipientEmail: varchar("recipient_email").notNull(),
+  recipientName: varchar("recipient_name"),
+  emailSentAt: timestamp("email_sent_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, table => [index("order_status_event_order_idx").on(table.orderId)]);
 
 // ----------------------
 // Relations

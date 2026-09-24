@@ -1,34 +1,17 @@
 import { NextResponse } from "next/server";
-import razorpay from "@/lib/razorpay";
+import { checkoutSchema, createCheckout } from "@/lib/payments/checkout";
 
 export async function POST(request: Request) {
+  let input;
   try {
-    const { amount, currency = "INR" } = await request.json();
-
-    if (!amount || amount < 100) {
-      return NextResponse.json(
-        { success: false, msg: "Amount must be at least 100 paise (₹1)." },
-        { status: 400 }
-      );
-    }
-
-    const order = await razorpay.orders.create({
-      amount,
-      currency,
-      receipt: `receipt_${Date.now()}`,
-    });
-
-    return NextResponse.json({
-      success: true,
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
-    });
-  } catch (error: any) {
-    console.error("Razorpay create-order error:", error);
-    return NextResponse.json(
-      { success: false, msg: error.message || "Failed to create Razorpay order." },
-      { status: 500 }
-    );
+    input = checkoutSchema.parse(await request.json());
+  } catch {
+    return NextResponse.json({ success: false, msg: "Valid customer, address and cart details are required." }, { status: 400 });
+  }
+  try {
+    return NextResponse.json(await createCheckout(input));
+  } catch (error) {
+    console.error("Razorpay checkout creation failed:", error);
+    return NextResponse.json({ success: false, msg: "Unable to start checkout. Please check your cart and try again." }, { status: 500 });
   }
 }

@@ -15,7 +15,7 @@ type OrderEmailItem = {
   unitPrice: number;
 };
 
-type OrderEmailInput = {
+export type OrderEmailInput = {
   orderId: string;
   user: {
     name?: string;
@@ -53,11 +53,12 @@ type BasicEmailContent = {
   html: string;
 };
 
-function sesClient() {
+function sesClient(options: AWS.SES.ClientConfiguration = {}) {
   return new AWS.SES({
     accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
     secretAccessKey: process.env.NEXT_S3_SECRET_KEY,
     region: process.env.NEXT_PUBLIC_S3_REGION,
+    ...options,
   });
 }
 
@@ -104,10 +105,10 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
     .map(
       (item) => `
         <tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${item.name}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.name)}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${item.quantity}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${item.size || "-"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${item.variant || "stitched"}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.size || "-")}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.variant || "stitched")}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">Rs. ${item.unitPrice * item.quantity}</td>
         </tr>`
     )
@@ -117,8 +118,8 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
     <div style="font-family:Arial,sans-serif;color:#241719;line-height:1.6;">
       <h2>${title}</h2>
       <p><strong>Order ID:</strong> ${input.orderId}</p>
-      <p><strong>Customer:</strong> ${input.user.name || "-"} (${input.user.email})</p>
-      <p><strong>Phone:</strong> ${input.user.number || "-"}</p>
+      <p><strong>Customer:</strong> ${escapeHtml(input.user.name || "-")} (${escapeHtml(input.user.email)})</p>
+      <p><strong>Phone:</strong> ${escapeHtml(input.user.number || "-")}</p>
       <p><strong>Ship To:</strong> ${[
         input.address.addressLine1,
         input.address.addressLine2,
@@ -127,6 +128,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
         input.address.pincode,
       ]
         .filter(Boolean)
+        .map(value => escapeHtml(value!))
         .join(", ")}</p>
       <table style="border-collapse:collapse;width:100%;margin-top:16px;">
         <thead>
@@ -174,7 +176,7 @@ Total: Rs. ${input.totalAmountPaid}`;
 }
 
 async function sendOrderEmail(to: string, subject: string, title: string, input: OrderEmailInput) {
-  await sesClient()
+  await sesClient({ maxRetries: 0, httpOptions: { connectTimeout: 1000, timeout: 2000 } })
     .sendEmail({
       Source: FROM_EMAIL,
       Destination: { ToAddresses: [to] },
@@ -205,26 +207,16 @@ async function sendBasicEmail(input: BasicEmailContent) {
     .promise();
 }
 
-export async function sendOrderNotificationEmails(input: OrderEmailInput) {
+export async function sendOrderConfirmationEmail(input: OrderEmailInput, recipient: "customer" | "admin") {
   if (!process.env.NEXT_PUBLIC_S3_ACCESS_KEY || !process.env.NEXT_S3_SECRET_KEY) {
-    console.warn("SES credentials are missing. Skipping order email.");
-    return;
+    throw new Error("SES credentials are missing. Order email must be retried.");
   }
-
-  await Promise.all([
-    sendOrderEmail(
-      input.user.email,
-      `Haus of Privae order received - ${input.orderId}`,
-      "Your order has been received",
-      input
-    ),
-    sendOrderEmail(
-      ADMIN_EMAIL,
-      `New order received - ${input.orderId}`,
-      "New order received",
-      input
-    ),
-  ]);
+  await sendOrderEmail(
+    recipient === "customer" ? input.user.email : ADMIN_EMAIL,
+    `${recipient === "customer" ? "Haus of Privae order confirmed" : "New paid order"} - ${input.orderId}`,
+    recipient === "customer" ? "Your payment is received and your order is confirmed" : "New paid order received",
+    input,
+  );
 }
 
 export async function sendFormNotificationEmails(input: FormEmailInput) {
@@ -374,4 +366,27 @@ Haus of Privae`;
     text,
     html,
   });
+}
+
+export async function sendOrderStatusEmail(input: {
+  orderId: string; name: string | null; email: string; status: import("@/lib/orders/status").EditableOrderStatus;
+}) {
+  if (!process.env.NEXT_PUBLIC_S3_ACCESS_KEY || !process.env.NEXT_S3_SECRET_KEY) {
+    throw new Error("SES credentials are missing. Order status email must be retried.");
+  }
+  const { statusLabel, statusMessages } = await import("@/lib/orders/status");
+  const label = statusLabel(input.status);
+  const message = statusMessages[input.status];
+  const subject = `Your Haus of Privae order is ${label.toLowerCase()} - ${input.orderId}`;
+  await sesClient({ maxRetries: 0, httpOptions: { connectTimeout: 1000, timeout: 3000 } }).sendEmail({
+    Source: FROM_EMAIL,
+    Destination: { ToAddresses: [input.email] },
+    Message: {
+      Subject: { Data: subject, Charset: "UTF-8" },
+      Body: {
+        Text: { Charset: "UTF-8", Data: `Hello ${input.name || "there"},\n\nOrder ${input.orderId}\nStatus: ${label}\n\n${message}\n\nThank you for shopping with Haus of Privae.` },
+        Html: { Charset: "UTF-8", Data: `<div style="font-family:Arial,sans-serif;color:#282121;line-height:1.7;max-width:600px;margin:auto"><div style="background:#5c0a25;color:white;padding:24px"><p style="letter-spacing:3px;font-size:11px">HAUS OF PRIVAE</p><h1 style="font-family:Georgia,serif;font-weight:normal">Order ${escapeHtml(label.toLowerCase())}</h1></div><div style="padding:24px;background:#faf7f2"><p>Hello ${escapeHtml(input.name || "there")},</p><p>${escapeHtml(message)}</p><p><strong>Order reference:</strong> ${escapeHtml(input.orderId)}<br/><strong>Current status:</strong> ${escapeHtml(label)}</p><p>Thank you for shopping with Haus of Privae.</p></div></div>` },
+      },
+    },
+  }).promise();
 }
