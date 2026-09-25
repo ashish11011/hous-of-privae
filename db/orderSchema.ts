@@ -8,7 +8,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { user } from "./userSchema";
-import { product } from "./productSchema";
+import { product, productVarient } from "./productSchema";
 import { relations } from "drizzle-orm";
 import type { OrderEmailInput } from "../lib/email/ses";
 
@@ -55,6 +55,7 @@ export const orderItem = pgTable("order_item", {
   productId: uuid("product_id")
     .notNull()
     .references(() => product.id),
+  productVariantId: uuid("product_variant_id").references(() => productVarient.id, { onDelete: "set null" }),
   quantity: integer("quantity").notNull(),
   size: varchar("size"), // Optional
   color: varchar("color"), // Optional

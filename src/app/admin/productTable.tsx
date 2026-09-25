@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 type Product = {
   id: string;
+  variants: { id: string }[];
   name: string | null;
   description: string | null;
   basePrice: number | null;
@@ -49,7 +50,8 @@ export function ProductTableAdmin({
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>Base Price</TableHead>
+            <TableHead>From price</TableHead>
+            <TableHead>Variants</TableHead>
             <TableHead>Category 1</TableHead>
             <TableHead>Category 2</TableHead>
             <TableHead>Created At</TableHead>
@@ -73,6 +75,7 @@ export function ProductTableAdmin({
               <TableCell>
                 {product.basePrice != null ? `Rs. ${product.basePrice}` : "-"}
               </TableCell>
+              <TableCell>{product.variants.length}</TableCell>
               <TableCell>{product.categoryId1 || "-"}</TableCell>
               <TableCell>{product.categoryId2 || "-"}</TableCell>
 

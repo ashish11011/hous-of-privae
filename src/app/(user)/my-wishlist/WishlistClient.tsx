@@ -38,7 +38,7 @@ export default function WishlistClient() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {productList.map((p: any) => (
-              <ProductCard product={p} key={p.id} />
+              <ProductCard product={p} key={p.variantId ?? p.id} />
             ))}
           </div>
         )}

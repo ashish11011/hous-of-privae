@@ -3,10 +3,10 @@ import { revalidateProductCatalogPaths } from "@/lib/revalidateProductPaths";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
-  const body = await req.json();
-  const slug = generateUniqueSlug(body.name);
-  body.slug = slug;
   try {
+    const body = await req.json();
+    if (typeof body.name !== "string" || !body.name.trim()) return NextResponse.json({ success: false, msg: "Product name is required" }, { status: 400 });
+    body.slug = generateUniqueSlug(body.name);
     await createProduct(body);
     await revalidateProductCatalogPaths(body);
 

@@ -1,8 +1,7 @@
+import { loadCatalog } from "@/lib/productCatalog";
+import { visibleSizePrices } from "@/lib/productPricing";
 import { CATEGORY_1 } from "@/const";
-import { productTable } from "@/db/schema";
-import { db } from "@/lib/db";
 import { MetadataRoute } from "next";
-// import { db } from '../../lib/db';
 // import { blogTable } from '../../db/schema';
 
 const paths = [
@@ -41,12 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date().toISOString(),
   }));
 
-  const productData = await db
-    .select({
-      slug: productTable.slug,
-    })
-    .from(productTable)
-    .catch(() => []);
+  const productData = (await loadCatalog()).filter(item => item.variants.length && visibleSizePrices(item.pricingConfig).length);
 
   const productDataEnteries = productData.map((product) => ({
     url: `${baseUrl}/product/${product.slug}/`,

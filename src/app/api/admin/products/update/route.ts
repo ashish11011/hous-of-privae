@@ -15,6 +15,10 @@ export const POST = async (req: Request) => {
       msg: "Product updated successfully",
     });
   } catch (error) {
-    return NextResponse.json({ success: false, msg: String(error) }, { status: 500 });
+    console.log(error);
+    return NextResponse.json(
+      { success: false, msg: String(error) },
+      { status: 500 },
+    );
   }
 };

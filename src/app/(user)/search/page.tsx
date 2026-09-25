@@ -18,7 +18,7 @@ const page = async ({ params, searchParams }: any) => {
         searchedProducts.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
             {searchedProducts.map((item: any) => (
-              <ProductCard itemData={item} key={item.id ?? item.slug} />
+              <ProductCard itemData={item} key={item.variantId ?? item.id ?? item.slug} />
             ))}
           </div>
         ) : (

@@ -60,14 +60,12 @@ export async function getAdminOrderDetail(id: string): Promise<AdminOrderDetail 
 }
 
 export async function deliverOrderStatusEmail(orderId: string, eventId: string) {
-  await db.transaction(async tx => {
-    const [event] = await tx.select().from(orderStatusEventsTable)
-      .where(and(eq(orderStatusEventsTable.id, eventId), eq(orderStatusEventsTable.orderId, orderId))).for("update");
-    if (!event) throw new OrderActionError("Status update not found.", 404);
-    if (event.emailSentAt) return;
-    await sendOrderStatusEmail({ orderId, name: event.recipientName, email: event.recipientEmail, status: event.toStatus as EditableOrderStatus });
-    await tx.update(orderStatusEventsTable).set({ emailSentAt: new Date() }).where(eq(orderStatusEventsTable.id, event.id));
-  });
+  const [event] = await db.select().from(orderStatusEventsTable)
+    .where(and(eq(orderStatusEventsTable.id, eventId), eq(orderStatusEventsTable.orderId, orderId)));
+  if (!event) throw new OrderActionError("Status update not found.", 404);
+  if (event.emailSentAt) return;
+  await sendOrderStatusEmail({ orderId, name: event.recipientName, email: event.recipientEmail, status: event.toStatus as EditableOrderStatus });
+  await db.update(orderStatusEventsTable).set({ emailSentAt: new Date() }).where(eq(orderStatusEventsTable.id, event.id));
 }
 
 export async function updateAdminOrderStatus(id: string, status: EditableOrderStatus, expectedUpdatedAt: string, adminId: string) {
@@ -77,9 +75,6 @@ export async function updateAdminOrderStatus(id: string, status: EditableOrderSt
     if (order.updatedAt.toISOString() !== expectedUpdatedAt) throw new OrderActionError("This order changed. Reload its details before updating.", 409);
     if (order.status === status) return { changed: false, eventId: null };
     if (!allowedOrderStatuses(order).includes(status)) throw new OrderActionError("This status change is not allowed for the order's current payment or fulfillment state.", 409);
-    const [pendingEmail] = await tx.select({ id: orderStatusEventsTable.id }).from(orderStatusEventsTable)
-      .where(and(eq(orderStatusEventsTable.orderId, id), isNull(orderStatusEventsTable.emailSentAt))).limit(1);
-    if (pendingEmail) throw new OrderActionError("Retry the pending customer email before changing the status again.", 409);
     const [customer] = await tx.select({ email: userTable.email, name: userTable.name }).from(userTable).where(eq(userTable.id, order.userId));
     const email = order.checkoutSnapshot?.user.email || customer?.email;
     if (!email) throw new OrderActionError("This order has no customer email address.", 422);
@@ -87,8 +82,8 @@ export async function updateAdminOrderStatus(id: string, status: EditableOrderSt
     const [event] = await tx.insert(orderStatusEventsTable).values({
       orderId: id, changedBy: adminId, fromStatus: order.status, toStatus: status,
       recipientEmail: email, recipientName: order.checkoutSnapshot?.user.name ?? customer?.name,
-    }).returning({ id: orderStatusEventsTable.id });
-    return { changed: true, eventId: event.id };
+    }).returning();
+    return { changed: true, eventId: event?.id ?? null };
   });
   if (!result.eventId) return { ...result, emailSent: false };
   try {

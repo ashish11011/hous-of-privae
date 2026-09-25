@@ -1,4 +1,5 @@
 "use client";
+import { productHref } from "@/lib/productAdapter";
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ interface SearchDialogProps {
 
 type SearchProduct = {
   id: string;
+  variantId?: string | null;
   name: string;
   slug: string;
   sku?: string | null;
@@ -179,8 +181,8 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
             <div className="grid gap-2">
               {results.map((product) => (
                 <Link
-                  key={product.id}
-                  href={`/product/${product.slug}`}
+                  key={product.variantId ?? product.id}
+                  href={productHref(product)}
                   onClick={onClose}
                   className="flex items-center gap-3 border border-neutral-200 p-2 hover:border-primary transition-colors"
                 >

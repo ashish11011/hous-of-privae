@@ -29,6 +29,7 @@
 //   );
 // }
 
+import { productHref } from "@/lib/productAdapter";
 import { Heart } from "lucide-react";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import { useCurrency } from "@/contextCurrencyContext";
@@ -57,7 +58,7 @@ const ProductCard = ({
 
   if (!productData) return null;
 
-  const wishlistId = wishlistKey ?? productData.id;
+  const wishlistId = wishlistKey ?? productData.wishlistKey ?? productData.variantId ?? productData.id;
   const isWishlisted = productWishlist.some((item) => item.id === wishlistId);
 
   const showNew = false;
@@ -66,7 +67,7 @@ const ProductCard = ({
   // Primary + optional secondary (hover-reveal). Falls back gracefully.
   const primaryImage = imageOverride ?? productData.bannerImage;
   const secondaryImage = secondaryImageOverride ?? productData.images?.[1];
-  const productHref = to ?? `/product/${productData.slug}`;
+  const href = to ?? productHref(productData);
   const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const target = e.currentTarget;
     const rect = target.getBoundingClientRect();
@@ -89,7 +90,7 @@ const ProductCard = ({
     <div className={cn("group flex flex-col h-full", className)}>
       <div className="relative">
         <Link
-          href={productHref}
+          href={href}
           onMouseMove={handleMove}
           className="product-cursor-area block overflow-hidden"
         >
@@ -140,6 +141,7 @@ const ProductCard = ({
         <h3 className="font-heading text-sm md:text-base text-foreground leading-snug">{nameOverride ?? productData.name}</h3>
         <p className="text-xs md:text-sm text-muted-foreground font-body mt-1 tracking-wide">
           {format(priceOverride ?? productData.basePrice ?? productData.price ?? 0)}
+          {productData.strikethroughPrice > productData.basePrice && <del className="ml-2 text-xs">{format(productData.strikethroughPrice)}</del>}
         </p>
       </div>
     </div>

@@ -6,7 +6,9 @@ import {
   integer,
   boolean,
   index,
+  jsonb,
 } from "drizzle-orm/pg-core";
+import type { SizePrice } from "../lib/productPricing";
 
 export const category = pgTable(
   "categories",
@@ -25,7 +27,7 @@ export const category = pgTable(
   (table) => [
     index("category_slug_idx").on(table.slug),
     index("category_level_idx").on(table.level),
-  ]
+  ],
 );
 
 export const product = pgTable(
@@ -40,22 +42,19 @@ export const product = pgTable(
     care: varchar("care"),
     style_note: varchar("style_note"),
     customization: varchar("customization"),
-    isInStoke : boolean("in_stock").default(true),
+    isInStoke: boolean("in_stock").default(true),
     model_height: varchar("model_height"),
     description: varchar("description"),
     basePrice: integer("base_price"),
-    semiStitchedPrice: integer("semi_stitched_price"),
+    pricingConfig: jsonb("pricing_config").$type<SizePrice[]>().notNull().default([]),
     categoryId1: varchar("category_id_1"),
     categoryId2: varchar("category2_id_2"),
     slug: varchar("slug").unique().notNull(),
-    bannerImage: varchar("banner_image"),
-    images: varchar("images").array(),
 
     //   all the filters
     sizes: varchar("sizes").array(),
     colors: varchar("colors").array(),
     materials: varchar("materials").array(),
-    isDeleted: boolean("is_deleted").notNull().default(false),
 
     // timestamp
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -64,5 +63,16 @@ export const product = pgTable(
   (table) => [
     index("name_idx").on(table.name),
     index("slug_idx").on(table.slug),
-  ]
+  ],
 );
+
+export const productVarient = pgTable("product_varient", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => product.id),
+  color: varchar("color").notNull(),
+  images: varchar("images").array(),
+  bannerImage: varchar("banner_image").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

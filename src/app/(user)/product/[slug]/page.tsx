@@ -1,10 +1,10 @@
-import { getProdcutInfoBySlug, getSimillarProducts } from "@/lib";
+import { getProdcutInfoBySlug } from "@/lib";
+import { notFound } from "next/navigation";
 import ProductInformation from "./ProductInformation";
 
-export const revalidate = 86400;
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
-const Page = async ({ params }: { params: any }) => {
+const Page = async ({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ variant?: string }> }) => {
   const productSlug = (await params).slug;
   if (!productSlug) return <div>no product found</div>;
   const productData = await getProdcutInfoBySlug(productSlug);
@@ -22,16 +22,15 @@ const Page = async ({ params }: { params: any }) => {
       </div>
     );
   }
-  const simillarProducts = await getSimillarProducts(
-    currentProduct.categoryId1 ?? "",
-    productSlug,
-  );
-  const { isDeleted, ...safeProductData } = currentProduct;
+  const requestedVariant = (await searchParams).variant;
+  const selected = requestedVariant ? currentProduct.variants.find(variant => variant.id === requestedVariant) : currentProduct.variants[0];
+  if (!selected || !currentProduct.sizes?.length) notFound();
+  const safeProductData = { ...currentProduct, variantId: selected.id, bannerImage: selected.bannerImage, images: [selected.bannerImage, ...(selected.images ?? []).filter(image => image !== selected.bannerImage)] };
 
   return (
     <>
       <div className=" container mx-auto px-6">
-        <ProductInformation productData={safeProductData} />
+        <ProductInformation key={selected.id} productData={safeProductData} />
         {/* <ShowMoreProducts simillarProducts={simillarProducts} /> */}
       </div>
     </>

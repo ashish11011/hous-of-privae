@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
-import { orderTable, orderItemsTable, productTable, userTable } from "@/db/schema";
+import { orderTable, orderItemsTable, productTable, productVariantsTable, userTable } from "@/db/schema";
+import { priceForSize } from "@/lib/productPricing";
 import { eq, inArray } from "drizzle-orm";
 import razorpay from "@/lib/razorpay";
 import type { OrderEmailInput } from "@/lib/email/ses";
@@ -17,8 +18,8 @@ export const checkoutSchema = z.object({
   addressLine2: z.string().trim().max(300).optional().default(""),
   city: requiredText, state: requiredText, pincode: requiredText,
   productDetails: z.array(z.object({
-    id: z.string().uuid(), quantity: z.number().int().min(1).max(100),
-    size: z.string().max(100).optional(), color: z.string().max(100).optional(),
+    id: z.string().uuid(), variantId: z.string().uuid(), quantity: z.number().int().min(1).max(100),
+    size: z.string().min(1).max(100), color: z.string().max(100).optional(),
     variant: z.enum(["stitched", "unstitched"]).default("stitched"),
   })).min(1).max(100),
 });
@@ -26,13 +27,16 @@ export const checkoutSchema = z.object({
 export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
   const products = await db.select().from(productTable)
     .where(inArray(productTable.id, input.productDetails.map(item => item.id)));
+  const variants = await db.select().from(productVariantsTable)
+    .where(inArray(productVariantsTable.id, input.productDetails.map(item => item.variantId)));
   const items = input.productDetails.map(item => {
     const product = products.find(product => product.id === item.id);
-    if (!product || product.isDeleted || product.isInStoke === false) throw new Error("A product is no longer available.");
-    const unitPrice = item.variant !== "unstitched" && item.size === "semi-stitched" && product.semiStitchedPrice
-      ? product.semiStitchedPrice : product.basePrice;
-    if (!unitPrice || unitPrice < 0) throw new Error("A product has an invalid price.");
-    return { ...item, name: product.name || "Privae garment", unitPrice };
+    const variant = variants.find(variant => variant.id === item.variantId && variant.productId === item.id);
+    if (!product || !variant || product.isInStoke === false) throw new Error("A product or variant is no longer available.");
+    const price = priceForSize(product.pricingConfig, item.size);
+    if (!price) throw new Error("The selected size is no longer available.");
+    return { ...item, productId: product.id, size: price.size, color: variant.color,
+      name: product.name || "Privae garment", unitPrice: price.basePrice, image: variant.bannerImage };
   });
   const subtotalAmount = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const deliveryCharge = subtotalAmount >= 1199 ? 0 : 60;
@@ -61,7 +65,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
       expectedAmountPaise: amount, currency: "INR", checkoutSnapshot: snapshot,
     });
     await tx.insert(orderItemsTable).values(items.map(item => ({
-      orderId: id, productId: item.id, quantity: item.quantity,
+      orderId: id, productId: item.id, productVariantId: item.variantId, quantity: item.quantity,
       size: item.size, color: item.color, variant: item.variant,
     })));
   });

@@ -36,7 +36,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { calculateOrderRewardPoints } from "@/lib/loyaltyRewards";
 
 const getColorNameByHex = (hex: string) => {
-  return COLORS.find((item) => item.hex === hex)?.label;
+  return COLORS.find((item) => item.hex.toLowerCase() === hex.toLowerCase())?.label ?? hex;
 };
 
 const userDetailInitialValues = {
@@ -313,6 +313,7 @@ const Page = () => {
                         onClick={() =>
                           decreaseQuantity({
                             id: item.id,
+                            variantId: item.variantId,
                             size: item.size,
                             color: item.color,
                             variant: item.variant,
@@ -335,6 +336,7 @@ const Page = () => {
                         onClick={() =>
                           increaseQuantity({
                             id: item.id,
+                            variantId: item.variantId,
                             size: item.size,
                             color: item.color,
                             variant: item.variant,
@@ -352,6 +354,7 @@ const Page = () => {
                         onClick={() =>
                           removeItemFromStore({
                             id: item.id,
+                            variantId: item.variantId,
                             size: item.size,
                             color: item.color,
                             variant: item.variant,

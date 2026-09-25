@@ -1,5 +1,5 @@
 import { coupon, couponTransaction, taileredFit, user } from "./userSchema";
-import { category, product } from "./productSchema";
+import { category, product, productVarient } from "./productSchema";
 import { review } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
 import { blog, blogForm } from "./blogSchema";
@@ -13,6 +13,7 @@ import {
 } from "./orderSchema";
 
 export const productTable = product;
+export const productVariantsTable = productVarient;
 export const categoryTable = category;
 export const taileredFits = taileredFit;
 

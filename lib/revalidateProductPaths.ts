@@ -13,7 +13,7 @@ type ProductPathInput = {
 export async function revalidateProductCatalogPaths(
   ...products: Array<ProductPathInput | null | undefined>
 ) {
-  const paths = new Set(["/product", "/bestsellers"]);
+  const paths = new Set(["/", "/product", "/bestsellers", "/collections", "/new-arrivals", "/search", "/admin"]);
   const categoryValues = new Set<string>();
 
   products.forEach((product) => {

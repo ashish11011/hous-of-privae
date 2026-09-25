@@ -1,19 +1,9 @@
 "use server";
-import { productTable } from "@/db/schema";
-import { db } from "@/lib/db";
-import { compactProduct, fallbackProducts } from "@/lib/productAdapter";
-import { inArray } from "drizzle-orm";
-
-export const getProductFromIds = async (ids: string[]) => {
-  if (ids.length === 0) return [];
-  try {
-    const data = await db
-      .select()
-      .from(productTable)
-      .where(inArray(productTable.id, ids));
-    return data.map(compactProduct);
-  } catch {
-    console.warn("Wishlist product database unavailable; using fallback product data.");
-    return fallbackProducts.filter((item) => ids.includes(item.id));
-  }
-};
+import { loadCatalog } from "@/lib/productCatalog";
+import { variantCards } from "@/lib/productAdapter";
+export async function getProductFromIds(ids: string[]) {
+  if (!ids.length) return [];
+  return variantCards(await loadCatalog())
+    .filter(item => ids.includes(item.variantId!) || (ids.includes(item.id) && item.variantId === item.variants[0]?.id))
+    .map(item => ({ ...item, wishlistKey: ids.includes(item.variantId!) ? item.variantId : item.id }));
+}

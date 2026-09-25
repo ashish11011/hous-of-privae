@@ -7,6 +7,9 @@ const ADMIN_EMAIL =
   "hausofprivae@gmail.com";
 
 type OrderEmailItem = {
+  productId?: string;
+  variantId?: string;
+  image?: string;
   name: string;
   quantity: number;
   size?: string | null;
@@ -93,7 +96,7 @@ function orderLines(items: OrderEmailItem[]) {
   return items
     .map(
       (item) =>
-        `${item.name} x ${item.quantity} (${item.size || "-"}, ${item.variant || "stitched"}) - Rs. ${
+        `${item.name} x ${item.quantity} (${item.size || "-"}, ${item.color || "-"}, ${item.variant || "stitched"}) - Rs. ${
           item.unitPrice * item.quantity
         }`
     )
@@ -108,6 +111,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
           <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.name)}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${item.quantity}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.size || "-")}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.color || "-")}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(item.variant || "stitched")}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">Rs. ${item.unitPrice * item.quantity}</td>
         </tr>`
@@ -136,6 +140,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
             <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Item</th>
             <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Qty</th>
             <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Size</th>
+            <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Color</th>
             <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Variant</th>
             <th style="text-align:right;padding:8px;border-bottom:1px solid #ddd;">Amount</th>
           </tr>
@@ -378,15 +383,20 @@ export async function sendOrderStatusEmail(input: {
   const label = statusLabel(input.status);
   const message = statusMessages[input.status];
   const subject = `Your Haus of Privae order is ${label.toLowerCase()} - ${input.orderId}`;
-  await sesClient({ maxRetries: 0, httpOptions: { connectTimeout: 1000, timeout: 3000 } }).sendEmail({
-    Source: FROM_EMAIL,
-    Destination: { ToAddresses: [input.email] },
-    Message: {
-      Subject: { Data: subject, Charset: "UTF-8" },
-      Body: {
-        Text: { Charset: "UTF-8", Data: `Hello ${input.name || "there"},\n\nOrder ${input.orderId}\nStatus: ${label}\n\n${message}\n\nThank you for shopping with Haus of Privae.` },
-        Html: { Charset: "UTF-8", Data: `<div style="font-family:Arial,sans-serif;color:#282121;line-height:1.7;max-width:600px;margin:auto"><div style="background:#5c0a25;color:white;padding:24px"><p style="letter-spacing:3px;font-size:11px">HAUS OF PRIVAE</p><h1 style="font-family:Georgia,serif;font-weight:normal">Order ${escapeHtml(label.toLowerCase())}</h1></div><div style="padding:24px;background:#faf7f2"><p>Hello ${escapeHtml(input.name || "there")},</p><p>${escapeHtml(message)}</p><p><strong>Order reference:</strong> ${escapeHtml(input.orderId)}<br/><strong>Current status:</strong> ${escapeHtml(label)}</p><p>Thank you for shopping with Haus of Privae.</p></div></div>` },
+  try {
+    await sesClient({ maxRetries: 2, httpOptions: { connectTimeout: 5000, timeout: 10000 } }).sendEmail({
+      Source: FROM_EMAIL,
+      Destination: { ToAddresses: [input.email] },
+      Message: {
+        Subject: { Data: subject, Charset: "UTF-8" },
+        Body: {
+          Text: { Charset: "UTF-8", Data: `Hello ${input.name || "there"},\n\nOrder ${input.orderId}\nStatus: ${label}\n\n${message}\n\nThank you for shopping with Haus of Privae.` },
+          Html: { Charset: "UTF-8", Data: `<div style="font-family:Arial,sans-serif;color:#282121;line-height:1.7;max-width:600px;margin:auto"><div style="background:#5c0a25;color:white;padding:24px"><p style="letter-spacing:3px;font-size:11px">HAUS OF PRIVAE</p><h1 style="font-family:Georgia,serif;font-weight:normal">Order ${escapeHtml(label.toLowerCase())}</h1></div><div style="padding:24px;background:#faf7f2"><p>Hello ${escapeHtml(input.name || "there")},</p><p>${escapeHtml(message)}</p><p><strong>Order reference:</strong> ${escapeHtml(input.orderId)}<br/><strong>Current status:</strong> ${escapeHtml(label)}</p><p>Thank you for shopping with Haus of Privae.</p></div></div>` },
+        },
       },
-    },
-  }).promise();
+    }).promise();
+  } catch (err) {
+    console.error("SES sendOrderStatusEmail error:", err);
+    throw err;
+  }
 }

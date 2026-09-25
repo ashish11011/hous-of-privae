@@ -1,5 +1,6 @@
 export type CartProduct = {
   id: string;
+  variantId: string;
   name: string;
   basePrice: number;
   slug: string;

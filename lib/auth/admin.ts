@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "./auth";
+import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { userTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";

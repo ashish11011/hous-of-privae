@@ -19,24 +19,60 @@ export default async function ProfilePage() {
   const [user, orders, appointments] = await Promise.all([
     getUserByEmail(session.email),
     getUserOrderData(),
-    db.select({ id: contactTable.id, message: contactTable.message })
+    db
+      .select({ id: contactTable.id, message: contactTable.message })
       .from(contactTable)
-      .where(and(eq(contactTable.email, session.email), eq(contactTable.location, "appointment")))
+      .where(
+        and(
+          eq(contactTable.email, session.email),
+          eq(contactTable.location, "appointment"),
+        ),
+      )
       .orderBy(desc(contactTable.createdAt)),
   ]);
   if (!user) redirect("/auth/login?callbackUrl=/profile");
 
-  const { name, email, number, addressLine1, addressLine2, city, state, pincode, loyaltyPoints } = user;
-  return <ProfileDashboard
-    userData={{ name, email, number, addressLine1, addressLine2, city, state, pincode, loyaltyPoints }}
-    orders={orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).map(order => ({
-      id: order.id, status: order.status, totalAmountPaid: order.totalAmountPaid,
-      createdAt: order.createdAt.toISOString(),
-    }))}
-    appointments={appointments.map(appointment => ({
-      id: appointment.id,
-      service: appointment.message?.match(/^Service: (.+)$/m)?.[1] ?? "Private appointment",
-      scheduled: appointment.message?.match(/^Scheduled: (.+)$/m)?.[1] ?? "Schedule to be confirmed",
-    }))}
-  />;
+  const {
+    name,
+    email,
+    number,
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    pincode,
+    loyaltyPoints,
+  } = user;
+  return (
+    <ProfileDashboard
+      userData={{
+        name,
+        email,
+        number,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        pincode,
+        loyaltyPoints,
+      }}
+      orders={orders
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .map((order) => ({
+          id: order.id,
+          status: order.status,
+          totalAmountPaid: order.totalAmountPaid,
+          createdAt: order.createdAt.toISOString(),
+        }))}
+      appointments={appointments.map((appointment) => ({
+        id: appointment.id,
+        service:
+          appointment.message?.match(/^Service: (.+)$/m)?.[1] ??
+          "Private appointment",
+        scheduled:
+          appointment.message?.match(/^Scheduled: (.+)$/m)?.[1] ??
+          "Schedule to be confirmed",
+      }))}
+    />
+  );
 }

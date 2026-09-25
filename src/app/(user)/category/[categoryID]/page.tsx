@@ -55,7 +55,7 @@ const Page = async ({ params }: { params: any }) => {
             <ProductCard
               className=" w-full lg:w-full"
               product={item}
-              key={idx}
+              key={item.variantId ?? item.id}
             />
           );
         })}

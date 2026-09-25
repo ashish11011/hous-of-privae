@@ -18,6 +18,7 @@ export const createProductOrder = async (order: any) => {
     return {
       orderId: order.orderId as string,
       productId: item.id,
+      productVariantId: item.variantId ?? null,
       quantity: item.quantity,
       size: item.size,
       color: item.color,

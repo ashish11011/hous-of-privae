@@ -1,4 +1,7 @@
 "use client";
+import type { ProductRecord } from "@/lib/productAdapter";
+import { productHref } from "@/lib/productAdapter";
+import { priceForSize } from "@/lib/productPricing";
 import { motion } from "motion/react";
 import {
   Carousel,
@@ -229,40 +232,17 @@ export default function ProductInformation({ productData }: any) {
   );
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  fabric: string | null;
-  care: string | null;
-  style_note: string | null;
-  customization: string | null;
-  model_height: string | null;
-  description: string;
-  bannerImage: string;
-  basePrice: number;
-  semiStitchedPrice?: number;
-  categoryId1: string;
-  categoryId2: string | null;
-  slug: string;
-  images: string[];
-  sizes: string[];
-  colors: string[]; // hex codes
-  materials: string[];
-  isInStoke?: boolean | null;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-}
+export type Product = ProductRecord;
 
 const ProductAbout = ({ productData }: { productData: Product }) => {
   const { addItemToStore, increaseQuantity, decreaseQuantity, productStore } =
     useStore();
   const { addItemToWishlist, productWishlist, removeItemFromWishlist } =
     userWishlistStore();
-  const productColors = productData.colors ?? [];
-  const [selectedColor, setSelectedColor] = useState(productColors[0]);
+  const productColors = productData.variants;
+  const [selectedColor, setSelectedColor] = useState(productData.variants.find(variant => variant.id === productData.variantId)?.color ?? "");
   const [selectedSize, setSelectedSize] = useState<string | null>(
-    productData.sizes?.[0],
+    productData.sizes?.[0] ?? null,
   );
   const [selectedVariant, setSelectedVariant] = useState<
     "stitched" | "unstitched"
@@ -275,9 +255,9 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     email: "",
     phone: "",
   });
-  const isInStock = productData.isInStoke !== false;
+  const isInStock = productData.isInStoke !== false && !!productData.variantId && !!productData.sizes?.length;
   const isUnstitchedVariant = selectedVariant === "unstitched";
-  const selectedCartSize = isUnstitchedVariant ? "unstitched" : selectedSize;
+  const selectedCartSize = selectedSize;
   const productUrl =
     typeof window === "undefined"
       ? `https://www.hausofprivae.com/product/${productData.slug}`
@@ -301,8 +281,9 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     if (selectedColor && selectedCartSize) {
       const product: CartProduct = {
         id: productData.id,
-        name: productData.name,
-        basePrice: productData.basePrice,
+        variantId: productData.variantId!,
+        name: productData.name ?? "Privae garment",
+        basePrice: getProdcutPrice(),
         slug: productData.slug,
         quantity: 1,
         bannerImage: productData.bannerImage,
@@ -404,15 +385,9 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   }
 
   function getProdcutPrice() {
-    if (
-      !isUnstitchedVariant &&
-      selectedSize === "semi-stitched" &&
-      productData.semiStitchedPrice
-    ) {
-      return productData.semiStitchedPrice;
-    }
-    return productData.basePrice;
+    return priceForSize(productData.pricingConfig, selectedSize ?? "")?.basePrice ?? 0;
   }
+  const comparisonPrice = priceForSize(productData.pricingConfig, selectedSize ?? "")?.strikethroughPrice;
 
   return (
     <div className="flex flex-col gap-6 h-fit sticky top-16 text-neutral-800">
@@ -437,6 +412,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </p>
         <p className="text-xl text-primary font-medium mb-4">
           <ShowProductPrice price={getProdcutPrice()} />
+          {comparisonPrice && comparisonPrice > getProdcutPrice() ? <del className="ml-3 text-sm text-muted-foreground"><ShowProductPrice price={comparisonPrice} /></del> : null}
         </p>
         <p className="text-sm text-neutral-600 leading-relaxed">
           {productData.description ||
@@ -447,7 +423,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       {/* Variant Selection */}
       <div className="space-y-3">
         <p className="text-xs font-semibold tracking-widest text-neutral-500 uppercase">
-          Choose Variant
+          Stitching
         </p>
         <div className="grid grid-cols-2 gap-0 border border-neutral-300">
           <button
@@ -493,23 +469,23 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           </p>
           {productColors.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {productColors.map((color) => (
+              {productColors.map((colorVariant) => (
                 <button
                   type="button"
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
+                  key={colorVariant.id}
+                  onClick={() => router.push(productHref({ slug: productData.slug, variantId: colorVariant.id }))}
                   className={`flex items-center gap-2 px-2 py-1 transition-colors ${
-                    selectedColor === color
+                    productData.variantId === colorVariant.id
                       ? " text-primary"
                       : "border-neutral-200 text-neutral-600 hover:border-neutral-400"
                   }`}
-                  aria-label={`Select color ${color}`}
+                  aria-label={`Select color ${colorVariant.color}`}
                 >
                   <span
                     className="size-6 border border-neutral-200"
-                    style={{ backgroundColor: color }}
+                    style={{ backgroundColor: colorVariant.color }}
                   />
-                  {/* <span className="font-mono text-[10px] uppercase">{color}</span> */}
+                  <span className="text-xs">{colorVariant.color}</span>
                 </button>
               ))}
             </div>
@@ -531,7 +507,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </div>
       </div>
 
-      {!isUnstitchedVariant && (
+      {(
         <>
           {/* Size Selection */}
           <div className="space-y-3">
@@ -546,7 +522,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
-              {productData.sizes.map((size: string) => (
+              {(productData.sizes ?? []).map((size: string) => (
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
@@ -576,6 +552,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             ? productStore.find(
                 (item) =>
                   item.id === productData.id &&
+                  item.variantId === productData.variantId &&
                   item.size === selectedCartSize &&
                   item.color === selectedColor &&
                   (item.variant ?? "stitched") ===
@@ -601,6 +578,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                     if (selectedCartSize && selectedColor) {
                       decreaseQuantity({
                         id: productData.id,
+        variantId: productData.variantId!,
                         size: selectedCartSize,
                         color: selectedColor,
                         variant: selectedVariant,
@@ -628,6 +606,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                     if (selectedCartSize && selectedColor) {
                       increaseQuantity({
                         id: productData.id,
+        variantId: productData.variantId!,
                         size: selectedCartSize,
                         color: selectedColor,
                         variant: selectedVariant,
@@ -652,12 +631,12 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               onClick={() => {
                 if (
                   productWishlist.filter(
-                    (item) => item.id === productData.id,
+                    (item) => item.id === productData.variantId,
                   )[0]
                 ) {
-                  removeWishlistHandler(productData.id);
+                  removeWishlistHandler(productData.variantId!);
                 } else {
-                  addWishlistHandler(productData.id);
+                  addWishlistHandler(productData.variantId!);
                 }
               }}
               variant="outline"
@@ -666,7 +645,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               <Heart
                 className={
                   productWishlist.filter(
-                    (item) => item.id === productData.id,
+                    (item) => item.id === productData.variantId,
                   )[0]
                     ? "fill-primary text-primary"
                     : "text-neutral-500"
@@ -718,7 +697,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               WhatsApp
             </a>
             <a
-              href={`https://t.me/share/url?url=${encodedProductUrl}&text=${encodeURIComponent(productData.name)}`}
+              href={`https://t.me/share/url?url=${encodedProductUrl}&text=${encodeURIComponent(productData.name ?? "Privae garment")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
@@ -727,7 +706,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
               Telegram
             </a>
             <a
-              href={`mailto:?subject=${encodeURIComponent(productData.name)}&body=${encodedShareText}`}
+              href={`mailto:?subject=${encodeURIComponent(productData.name ?? "Privae garment")}&body=${encodedShareText}`}
               className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
             >
               <Mail size={16} />

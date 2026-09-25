@@ -83,6 +83,7 @@ export function CartSheet() {
                           onClick={() =>
                             removeItemFromStore({
                               id: item.id,
+                            variantId: item.variantId,
                               color: item.color,
                               size: item.size,
                               variant: item.variant,
@@ -122,6 +123,7 @@ export function CartSheet() {
                         onClick={() =>
                           decreaseQuantity({
                             id: item.id,
+                            variantId: item.variantId,
                             color: item.color,
                             size: item.size,
                             variant: item.variant,
@@ -136,6 +138,7 @@ export function CartSheet() {
                         onClick={() =>
                           increaseQuantity({
                             id: item.id,
+                            variantId: item.variantId,
                             color: item.color,
                             size: item.size,
                             variant: item.variant,

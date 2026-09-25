@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { ProductTableAdmin } from "./productTable";
 import Link from "next/link";
 import { PAGINATION_LIMIT } from "@/const";
-import { useGetAllProducts } from "@/src/hepler";
+import { getAdminProducts } from "@/src/hepler";
 
 export const dynamic = "force-dynamic";
 
 const Page = async ({ searchParams }: any) => {
   const currentPage = (await searchParams).page || 1;
-  const productData: any = await useGetAllProducts(
+  const productData: any = await getAdminProducts(
     currentPage,
     PAGINATION_LIMIT
   );

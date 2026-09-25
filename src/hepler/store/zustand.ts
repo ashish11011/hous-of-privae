@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 type functionParams = {
   id: string;
+  variantId: string;
   size: string;
   color: string;
   variant?: string;
@@ -36,6 +37,7 @@ export const useStore = create<StoreState>()(
         const existingIndex = get().productStore.findIndex(
           (p) =>
             p.id === item.id &&
+            p.variantId === item.variantId &&
             p.size === item.size &&
             p.color === item.color &&
             (p.variant ?? "stitched") === (item.variant ?? "stitched")
@@ -43,18 +45,19 @@ export const useStore = create<StoreState>()(
 
         if (existingIndex !== -1) {
           const updatedProducts = [...get().productStore];
-          updatedProducts[existingIndex].quantity += item.quantity;
+          updatedProducts[existingIndex] = { ...item, quantity: updatedProducts[existingIndex].quantity + item.quantity };
           set({ productStore: updatedProducts });
         } else {
           set({ productStore: [...get().productStore, item] });
         }
       },
 
-      removeItemFromStore: ({ id, size, color, variant }: functionParams) =>
+      removeItemFromStore: ({ id, variantId, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore.filter(
             (item) =>
               item.id !== id ||
+              item.variantId !== variantId ||
               item.size !== size ||
               item.color !== color ||
               (item.variant ?? "stitched") !== (variant ?? "stitched")
@@ -62,10 +65,11 @@ export const useStore = create<StoreState>()(
           return { productStore: updated };
         }),
 
-      increaseQuantity: ({ id, size, color, variant }: functionParams) =>
+      increaseQuantity: ({ id, variantId, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore.map((item) =>
             item.id === id &&
+            item.variantId === variantId &&
             item.size === size &&
             item.color === color &&
             (item.variant ?? "stitched") === (variant ?? "stitched")
@@ -75,11 +79,12 @@ export const useStore = create<StoreState>()(
           return { productStore: updated };
         }),
 
-      decreaseQuantity: ({ id, size, color, variant }: functionParams) =>
+      decreaseQuantity: ({ id, variantId, size, color, variant }: functionParams) =>
         set((state) => {
           const updated = state.productStore
             .map((item) =>
               item.id === id &&
+              item.variantId === variantId &&
               item.size === size &&
               item.color === color &&
               (item.variant ?? "stitched") === (variant ?? "stitched")
@@ -97,6 +102,8 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "cart-storage",
+      version: 2,
+      migrate: (persisted: any) => ({ ...persisted, productStore: (persisted?.productStore ?? []).filter((item: any) => item.variantId) }),
       storage: createJSONStorage(() => localStorage),
     }
   )
