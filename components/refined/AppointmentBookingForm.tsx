@@ -206,44 +206,50 @@ export default function AppointmentBookingForm() {
 
     setSubmitting(true);
 
-    const response = await fetch("/api/appointment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        appointmentType,
-        appointmentLabel: selectedType.label,
-        duration: selectedType.duration,
-        date: dateKey(date),
-        time,
-        name,
-        phone,
-        email,
-        notes,
-      }),
-    });
+    try {
+      const response = await fetch("/api/appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appointmentType,
+          appointmentLabel: selectedType.label,
+          duration: selectedType.duration,
+          date: dateKey(date),
+          time,
+          name,
+          phone,
+          email,
+          notes,
+        }),
+      });
 
-    const payload = await response.json().catch(() => ({}));
-    setSubmitting(false);
+      const payload = await response.json().catch(() => ({}));
+      setSubmitting(false);
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        router.push(`/auth/login?callbackUrl=${encodeURIComponent("/appointment")}`);
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push(`/auth/login?callbackUrl=${encodeURIComponent("/appointment")}`);
+          return;
+        }
+
+        setErrorMessage(payload.error ?? "Could not request appointment. Please try again.");
+
+        if (response.status === 409) {
+          setBookedTimes((current) => ({
+            ...current,
+            [dateKey(date)]: Array.from(new Set([...(current[dateKey(date)] ?? []), time])),
+          }));
+          setTime(null);
+        }
         return;
       }
 
-      setErrorMessage(payload.error ?? "Could not request appointment. Please try again.");
-
-      if (response.status === 409) {
-        setBookedTimes((current) => ({
-          ...current,
-          [dateKey(date)]: Array.from(new Set([...(current[dateKey(date)] ?? []), time])),
-        }));
-        setTime(null);
-      }
-      return;
+      setSubmitted(true);
+    } catch {
+      setErrorMessage("Could not send your request. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitted(true);
   }
 
   if (submitted) {
@@ -286,16 +292,17 @@ export default function AppointmentBookingForm() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-12 md:py-16">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <p className="text-xs tracking-[0.3em] uppercase font-body text-gold mb-2">Privae Studio</p>
-          <h1 className="font-heading text-3xl md:text-4xl text-foreground mb-3 heading-rule">Book Your Appointment</h1>
-          <p className="text-sm text-muted-foreground font-body max-w-lg mx-auto leading-relaxed">
-            Choose a service, date and time. We&apos;ll confirm your visit within 24 hours.
-          </p>
+    <>
+      <section className="bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 py-16 md:py-20 text-center">
+          <CalIcon size={30} strokeWidth={1.25} className="mx-auto mb-5 text-gold" />
+          <p className="mb-3 text-[10px] uppercase tracking-[0.3em] text-gold">Privae Studio</p>
+          <h1 className="font-heading text-4xl md:text-5xl mb-5 heading-rule">An Hour Set Aside For You</h1>
+          <p className="mx-auto max-w-2xl text-sm leading-relaxed text-primary-foreground/75">Choose the kind of session you’d like, then a date and time that suits you. Our team will write back with a confirmation within 24 hours.</p>
         </div>
-
+      </section>
+      <main className="bg-[#f8f5f1] px-5 py-12 md:py-14">
+      <div className="max-w-xl mx-auto">
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-5">
           <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
             <MapPin size={14} className="text-gold" /> Jaipur, Rajasthan
@@ -320,12 +327,22 @@ export default function AppointmentBookingForm() {
           </a>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 md:p-8 border border-border">
+        <ol aria-label="Appointment details" className="mb-8 flex justify-between">
+          {[{ label: "Service", done: !!appointmentType }, { label: "Date", done: !!date }, { label: "Time", done: !!time }, { label: "Details", done: !!(name && email && phone) }].map((item, index) => (
+            <li key={item.label} className="flex flex-1 flex-col items-center gap-2">
+              <span className={cn("flex size-7 items-center justify-center rounded-full border text-[10px]", item.done ? "border-gold bg-gold text-white" : "border-border text-muted-foreground")}>
+                {item.done ? <Check size={12} /> : index + 1}
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">{item.label}</span>
+            </li>
+          ))}
+        </ol>
+        <form onSubmit={handleSubmit} className="space-y-6 bg-[#f4f0e9] p-5 sm:p-8 border border-border">
           <div>
-            <label className="block text-xs font-body uppercase tracking-[0.15em] text-muted-foreground mb-3">
-              1 · Choose Service
+            <label className="block font-heading text-xl text-foreground mb-3">
+              Choose Your Service
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 min-[380px]:grid-cols-3 gap-2">
               {APPOINTMENT_TYPES.map((type) => {
                 const active = appointmentType === type.value;
                 return (
@@ -351,8 +368,8 @@ export default function AppointmentBookingForm() {
           </div>
 
           <div>
-            <label className="block text-xs font-body uppercase tracking-[0.15em] text-muted-foreground mb-3">
-              2 · Pick a Date
+            <label className="block font-heading text-xl text-foreground mb-3">
+              Pick a Date
             </label>
             {loadingMeta ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -433,8 +450,8 @@ export default function AppointmentBookingForm() {
 
           {date && (
             <div>
-              <label className="block text-xs font-body uppercase tracking-[0.15em] text-muted-foreground mb-3">
-                3 · Pick a Time
+              <label className="block font-heading text-xl text-foreground mb-3">
+                Pick a Time
               </label>
               {dailySlots.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No slots available on this day.</p>
@@ -466,8 +483,8 @@ export default function AppointmentBookingForm() {
           )}
 
           <div className="pt-2 border-t border-border">
-            <label className="block text-xs font-body uppercase tracking-[0.15em] text-muted-foreground mb-3">
-              4 · Your Details
+            <label className="block font-heading text-xl text-foreground mb-3">
+              Your Details
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
@@ -483,6 +500,7 @@ export default function AppointmentBookingForm() {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                aria-label="Phone number"
                 placeholder="+91 XXXXX XXXXX"
                 className="w-full border border-border bg-background px-3 py-2.5 text-sm font-body"
               />
@@ -492,10 +510,12 @@ export default function AppointmentBookingForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="Email address"
               placeholder="Email"
               className="w-full mt-3 border border-border bg-background px-3 py-2.5 text-sm font-body"
             />
             <textarea
+              aria-label="Additional notes"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -541,5 +561,6 @@ export default function AppointmentBookingForm() {
         </div>
       </div>
     </main>
+    </>
   );
 }

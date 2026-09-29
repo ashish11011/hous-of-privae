@@ -24,3 +24,7 @@ export function priceForSize(config: unknown, size: string) {
 export function lowestVisiblePrice(config: unknown) {
   return visibleSizePrices(config).sort((a, b) => a.basePrice - b.basePrice)[0];
 }
+
+export function priceForSelection(config: unknown, size: string, variant: "stitched" | "unstitched") {
+  return variant === "unstitched" ? lowestVisiblePrice(config) : priceForSize(config, size);
+}

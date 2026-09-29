@@ -1,7 +1,7 @@
 "use client";
 import type { ProductRecord } from "@/lib/productAdapter";
 import { productHref } from "@/lib/productAdapter";
-import { priceForSize } from "@/lib/productPricing";
+import { priceForSelection } from "@/lib/productPricing";
 import { motion } from "motion/react";
 import {
   Carousel,
@@ -257,7 +257,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   });
   const isInStock = productData.isInStoke !== false && !!productData.variantId && !!productData.sizes?.length;
   const isUnstitchedVariant = selectedVariant === "unstitched";
-  const selectedCartSize = selectedSize;
+  const selectedCartSize = isUnstitchedVariant ? "" : selectedSize;
   const productUrl =
     typeof window === "undefined"
       ? `https://www.hausofprivae.com/product/${productData.slug}`
@@ -278,7 +278,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       return;
     }
 
-    if (selectedColor && selectedCartSize) {
+    if (selectedColor && (isUnstitchedVariant || selectedCartSize)) {
       const product: CartProduct = {
         id: productData.id,
         variantId: productData.variantId!,
@@ -287,7 +287,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         slug: productData.slug,
         quantity: 1,
         bannerImage: productData.bannerImage,
-        size: selectedCartSize,
+        size: selectedCartSize ?? "",
         color: selectedColor,
         variant: selectedVariant,
       };
@@ -296,7 +296,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       return;
     }
 
-    toast.error("Please select color and size");
+    toast.error(isUnstitchedVariant ? "Please select a color" : "Please select color and size");
   };
 
   const productExtraDetails = [
@@ -385,9 +385,9 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   }
 
   function getProdcutPrice() {
-    return priceForSize(productData.pricingConfig, selectedSize ?? "")?.basePrice ?? 0;
+    return priceForSelection(productData.pricingConfig, selectedSize ?? "", selectedVariant)?.basePrice ?? 0;
   }
-  const comparisonPrice = priceForSize(productData.pricingConfig, selectedSize ?? "")?.strikethroughPrice;
+  const comparisonPrice = priceForSelection(productData.pricingConfig, selectedSize ?? "", selectedVariant)?.strikethroughPrice;
 
   return (
     <div className="flex flex-col gap-6 h-fit sticky top-16 text-neutral-800">
@@ -507,7 +507,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </div>
       </div>
 
-      {(
+      {!isUnstitchedVariant && (
         <>
           {/* Size Selection */}
           <div className="space-y-3">
@@ -548,7 +548,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       {/* Add to Bag and Wishlist */}
       {(() => {
         const cartItem =
-          selectedCartSize && selectedColor
+          (isUnstitchedVariant || selectedCartSize) && selectedColor
             ? productStore.find(
                 (item) =>
                   item.id === productData.id &&
@@ -575,11 +575,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if (selectedCartSize && selectedColor) {
+                    if ((isUnstitchedVariant || selectedCartSize) && selectedColor) {
                       decreaseQuantity({
                         id: productData.id,
         variantId: productData.variantId!,
-                        size: selectedCartSize,
+                        size: selectedCartSize ?? "",
                         color: selectedColor,
                         variant: selectedVariant,
                       });
@@ -603,11 +603,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if (selectedCartSize && selectedColor) {
+                    if ((isUnstitchedVariant || selectedCartSize) && selectedColor) {
                       increaseQuantity({
                         id: productData.id,
         variantId: productData.variantId!,
-                        size: selectedCartSize,
+                        size: selectedCartSize ?? "",
                         color: selectedColor,
                         variant: selectedVariant,
                       });

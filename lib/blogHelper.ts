@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 import { desc, eq } from "drizzle-orm";
 import { blogTable } from "@/db/schema";
@@ -118,6 +119,7 @@ export async function getBlogBySlug(slug: string) {
 }
 
 export async function createBlog(input: Record<string, unknown>) {
+  await requireAdmin();
   const [created] = await db
     .insert(blogTable)
     .values(await normalizeBlogInput(input))
@@ -127,6 +129,7 @@ export async function createBlog(input: Record<string, unknown>) {
 }
 
 export async function updateBlog(input: Record<string, unknown>) {
+  await requireAdmin();
   const id = String(input.id ?? "");
   if (!id) throw new Error("Blog id is required");
 
@@ -140,6 +143,7 @@ export async function updateBlog(input: Record<string, unknown>) {
 }
 
 export async function deleteBlog(id: string) {
+  await requireAdmin();
   const [deleted] = await db.delete(blogTable).where(eq(blogTable.id, id)).returning();
   return deleted;
 }

@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 import { contactTable } from "@/db/schema";
 import { db } from "@/lib/db";
 
@@ -6,6 +7,7 @@ export const useGetContactsPaginated = async (
   page: number,
   pageSize: number
 ) => {
+  await requireAdmin();
   const offset = (page - 1) * pageSize;
 
   try {

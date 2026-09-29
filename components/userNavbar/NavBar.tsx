@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import NotificationBar from "../navbar/notificationBar";
 import SearchDialog from "./SearchDialog";
+import ShoppingPanel from "./ShoppingPanel";
 import { useStore, userWishlistStore } from "@/src/hepler/store/zustand";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
@@ -151,22 +152,22 @@ export default function NavBar({
             >
               <Search size={16} />
             </button>
-            <Link
-              href="/my-wishlist"
+            <ShoppingPanel kind="wishlist"><button
+              type="button"
               className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
               aria-label="Wishlist"
             >
               <Heart size={16} />
               {wishlistCount > 0 && <CountBadge count={wishlistCount} />}
-            </Link>
-            <Link
-              href="/checkout"
+            </button></ShoppingPanel>
+            <ShoppingPanel kind="cart"><button
+              type="button"
               className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
               aria-label="Cart"
             >
               <ShoppingBag size={16} />
               {cartCount > 0 && <CountBadge count={cartCount} />}
-            </Link>
+            </button></ShoppingPanel>
             <Link
               href="/profile"
               className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors"

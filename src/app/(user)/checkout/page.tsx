@@ -301,7 +301,7 @@ const Page = () => {
                   <p className="font-heading text-lg leading-6">{item.name}</p>
                   <div>
                     <p>
-                      {item.size} - {getColorNameByHex(item.color)} -{" "}
+                      {item.variant !== "unstitched" && item.size ? `${item.size} - ` : ""}{getColorNameByHex(item.color)} -{" "}
                       {item.variant ?? "stitched"}
                     </p>
                   </div>

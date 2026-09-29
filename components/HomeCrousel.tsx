@@ -23,7 +23,7 @@ const bannerContent = [
     type: "video",
   },
   {
-    href: "/product",
+    href: "/category/new-aravials/",
     mobLink:
       "https://codeframe-ashish-harshit.s3.ap-south-1.amazonaws.com/haus-of-privae/v1/website-images/2-mob.png",
     webLink:

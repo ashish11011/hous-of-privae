@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { eq } from "drizzle-orm";
@@ -5,6 +6,21 @@ import { contactTable } from "@/db/schema";
 import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { sendFormNotificationEmails } from "@/lib/email/ses";
+
+const services = {
+  studio_visit: { label: "Studio Visit", duration: 60 },
+  virtual_fitting: { label: "Virtual Fitting", duration: 45 },
+  bespoke_consultation: { label: "Bespoke Consultation", duration: 90 },
+};
+const appointmentSchema = z.object({
+  appointmentType: z.enum(["studio_visit", "virtual_fitting", "bespoke_consultation"]),
+  date: z.iso.date(),
+  time: z.string().regex(/^(1[0-8]):00$/),
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(255),
+  phone: z.string().trim().min(6).max(40),
+  notes: z.string().trim().max(2000).default(""),
+}).refine(data => new Date(`${data.date}T${data.time}:00+05:30`).getTime() > Date.now(), "Please choose a future appointment.");
 
 const APPOINTMENT_LOCATION = "appointment";
 
@@ -47,22 +63,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const {
-      appointmentLabel,
-      appointmentType,
-      date,
-      duration,
-      email,
-      name,
-      notes,
-      phone,
-      time,
-    } = body;
-
-    if (!appointmentType || !date || !time || !name || !phone || !email) {
-      return NextResponse.json({ error: "Missing appointment details." }, { status: 400 });
+    const parsed = appointmentSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Please enter a valid service, future date and time, and contact details." }, { status: 400 });
     }
+    const { appointmentType, date, email, name, notes, phone, time } = parsed.data;
+    const { label: appointmentLabel, duration } = services[appointmentType];
 
     const rows = await db
       .select({ message: contactTable.message })
@@ -98,21 +104,29 @@ export async function POST(req: Request) {
       })
       .returning();
 
-    await sendFormNotificationEmails({
-      type: "appointment",
-      title: "Appointment request received",
-      userEmail: email,
-      fields: {
-        Name: name,
-        Email: email,
-        Phone: phone,
-        Service: appointmentLabel ?? appointmentType,
-        Type: appointmentType,
-        Scheduled: `${date} ${time}`,
-        Duration: `${duration ?? 60} min`,
-        Notes: notes || "-",
-      },
-    });
+    try {
+      await sendFormNotificationEmails({
+        type: "appointment",
+        requireDelivery: true,
+        adminSubject: `New Privae Studio appointment request - ${name}`,
+        title: "Appointment request received",
+        userEmail: email,
+        fields: {
+          Name: name,
+          Email: email,
+          Phone: phone,
+          Service: appointmentLabel ?? appointmentType,
+          Type: appointmentType,
+          Scheduled: `${date} ${time}`,
+          Duration: `${duration ?? 60} min`,
+          Notes: notes || "-",
+        },
+      });
+
+    } catch (error) {
+      await db.delete(contactTable).where(eq(contactTable.id, inserted.id));
+      throw error;
+    }
 
     return NextResponse.json({
       success: true,

@@ -41,6 +41,7 @@ export type OrderEmailInput = {
 };
 
 type FormEmailInput = {
+  requireDelivery?: boolean;
   type: string;
   title: string;
   fields: Record<string, string | number | null | undefined>;
@@ -226,6 +227,7 @@ export async function sendOrderConfirmationEmail(input: OrderEmailInput, recipie
 
 export async function sendFormNotificationEmails(input: FormEmailInput) {
   if (!process.env.NEXT_PUBLIC_S3_ACCESS_KEY || !process.env.NEXT_S3_SECRET_KEY) {
+    if (input.requireDelivery) throw new Error("Form email delivery is not configured.");
     console.warn("SES credentials are missing. Skipping form email.");
     return;
   }

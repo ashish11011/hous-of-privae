@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { orderTable, orderItemsTable, productTable, productVariantsTable, userTable } from "@/db/schema";
-import { priceForSize } from "@/lib/productPricing";
+import { priceForSelection } from "@/lib/productPricing";
 import { eq, inArray } from "drizzle-orm";
 import razorpay from "@/lib/razorpay";
 import type { OrderEmailInput } from "@/lib/email/ses";
@@ -19,9 +19,9 @@ export const checkoutSchema = z.object({
   city: requiredText, state: requiredText, pincode: requiredText,
   productDetails: z.array(z.object({
     id: z.string().uuid(), variantId: z.string().uuid(), quantity: z.number().int().min(1).max(100),
-    size: z.string().min(1).max(100), color: z.string().max(100).optional(),
+    size: z.string().trim().max(100).default(""), color: z.string().max(100).optional(),
     variant: z.enum(["stitched", "unstitched"]).default("stitched"),
-  })).min(1).max(100),
+  }).refine(item => item.variant === "unstitched" || item.size.length > 0, "Please select a size for stitched items.")).min(1).max(100),
 });
 
 export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
@@ -33,9 +33,9 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
     const product = products.find(product => product.id === item.id);
     const variant = variants.find(variant => variant.id === item.variantId && variant.productId === item.id);
     if (!product || !variant || product.isInStoke === false) throw new Error("A product or variant is no longer available.");
-    const price = priceForSize(product.pricingConfig, item.size);
+    const price = priceForSelection(product.pricingConfig, item.size, item.variant);
     if (!price) throw new Error("The selected size is no longer available.");
-    return { ...item, productId: product.id, size: price.size, color: variant.color,
+    return { ...item, productId: product.id, size: item.variant === "unstitched" ? "" : price.size, color: variant.color,
       name: product.name || "Privae garment", unitPrice: price.basePrice, image: variant.bannerImage };
   });
   const subtotalAmount = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);

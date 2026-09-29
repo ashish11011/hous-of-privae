@@ -52,22 +52,22 @@ const tiers = [
     benefits: "Free shipping on every order · Birthday gift",
   },
   {
-    name: "Éclat",
+    name: "Eclat",
     min: 50000,
     range: "50,000–99,999 pts",
     benefits: "Welcome gift · Early access to new launches",
   },
   {
-    name: "Lumière",
+    name: "Lumiere",
     min: 100000,
     range: "1,00,000–1,99,999 pts",
-    benefits: "All Éclat perks · Alterations on every order",
+    benefits: "All Eclat perks · Alterations on every order",
   },
   {
     name: "Royale",
     min: 200000,
     range: "2,00,000 pts and above",
-    benefits: "All Lumière perks · Private trunk shows",
+    benefits: "All Lumiere perks · Private trunk shows",
   },
 ];
 const format = (value: number) => value.toLocaleString("en-IN");

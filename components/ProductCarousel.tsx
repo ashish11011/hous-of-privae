@@ -1,19 +1,15 @@
 import React from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "./ui/carousel";
-import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
-import { useGetAllProducts } from "@/src/hepler";
+import { getCategoryBySlug } from "@/lib/categoryHelper";
+import { getProductByCategory } from "@/lib/productHelper";
 import Link from "next/link";
 import ProductCard from "./ProductCard";
 
 const ProductCarousel = async () => {
-  const productsData: any = await useGetAllProducts(1, 4);
+  const category = await getCategoryBySlug("new-aravials");
+  if (!category) return null;
+
+  const products = (await getProductByCategory(category.id)).slice(0, 4);
+  if (products.length === 0) return null;
 
   return (
     <section className="py-16 md:py-24 px-4">
@@ -28,7 +24,7 @@ const ProductCarousel = async () => {
         <div
           className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-stretch transition-opacity duration-300 ${"opacity-100"}`}
         >
-          {productsData?.products.map((item: any) => (
+          {products.map((item: any) => (
             <ProductCard
               key={item.variantId ?? item.id}
               product={item}
@@ -61,6 +57,3 @@ const ProductCarousel = async () => {
 };
 
 export default ProductCarousel;
-
-const buttonStyle =
-  "rounded-xs bg-neutral-800 hover:scale-105 disabled:hidden cursor-pointer hover:bg-neutral-950 hover:text-white text-white size-10 z-20";

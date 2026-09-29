@@ -177,7 +177,12 @@ const Footer = () => {
       label: "About Us",
       href: "/about-us",
     },
-    { label: "Trend Talks", href: "/blog" },
+    { label: "Privae Studio", href: "/appointment" },
+    {
+      label: "Privae Bespoke",
+      href: "/bespoke",
+    },
+    { label: "Private Edit", href: "/blog" },
     {
       label: "Privacy Policy",
       href: "/privacy",
@@ -210,10 +215,6 @@ const Footer = () => {
     {
       label: "Atelier Glossary",
       href: "/atelier/glossary",
-    },
-    {
-      label: "Privae Bespoke",
-      href: "/bespoke",
     },
     {
       label: "Privae Fit",

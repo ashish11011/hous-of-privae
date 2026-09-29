@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 import { subscriptionTable } from "@/db/schema";
 import { db } from "@/lib/db";
@@ -8,6 +9,7 @@ export const useGetSubscriptionsPaginated = async (
   page: number,
   pageSize: number
 ) => {
+  await requireAdmin();
   const offset = (page - 1) * pageSize;
 
   try {
@@ -29,6 +31,7 @@ export const useGetSubscriptionsPaginated = async (
 };
 
 export const useGetAllSubscriptions = async () => {
+  await requireAdmin();
   try {
     return await db
       .select()

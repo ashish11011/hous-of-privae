@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 import { loadCatalog } from "@/lib/productCatalog";
 import { variantCards } from "@/lib/productAdapter";
 
@@ -7,6 +8,7 @@ export async function useGetAllProducts(page: number | null, pageSize: number | 
   return page && pageSize ? { products: products.slice((page - 1) * pageSize, page * pageSize), total: products.length } : products;
 }
 export async function getAdminProducts(page: number, pageSize: number) {
+  await requireAdmin();
   const products = await loadCatalog();
   return { products: products.slice((page - 1) * pageSize, page * pageSize), total: products.length };
 }

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Page() {
   if (!await getOrderAdmin()) {
-    return <div className="p-8 space-y-3"><h1 className="text-2xl">Admin sign-in required</h1><p>Sign in with an account whose admin role is enabled to view and manage orders.</p><Link className="text-primary underline" href="/auth/login?callbackUrl=/admin/orders">Sign in</Link></div>;
+    return <div className="p-8 space-y-3"><h1 className="text-2xl">Admin sign-in required</h1><p>Sign in with an allowed admin account to view and manage orders.</p><Link className="text-primary underline" href="/auth/login?callbackUrl=/admin/orders">Sign in</Link></div>;
   }
   const orders = await getAdminOrderList();
   return <div className="w-full min-w-0 p-4 md:p-8">

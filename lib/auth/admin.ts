@@ -1,13 +1,15 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
-import { db } from "@/lib/db";
-import { userTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { isAdminEmail } from "./adminEmails";
 
 export async function getOrderAdmin() {
   const session = await getServerSession(authOptions);
-  if (!session?.id) return null;
-  const [admin] = await db.select({ id: userTable.id }).from(userTable)
-    .where(and(eq(userTable.id, session.id), eq(userTable.user_type, "1")));
-  return admin ?? null;
+  if (!session?.id || !isAdminEmail(session.email)) return null;
+  return { id: session.id };
+}
+
+export async function requireAdmin() {
+  const admin = await getOrderAdmin();
+  if (!admin) throw new Error("Admin sign-in is required.");
+  return admin;
 }

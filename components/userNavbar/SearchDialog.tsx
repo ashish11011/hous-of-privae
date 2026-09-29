@@ -29,10 +29,10 @@ type SearchProduct = {
 const quickSearches = [
   "Saree",
   "Sharara",
+  "Lilac",
+  "Bridal",
   "Chanderi",
   "Zardozi",
-  "Occasion Wear",
-  "Ready To Wear",
 ];
 
 const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
@@ -60,6 +60,11 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
 
   useEffect(() => {
     if (!open) return;
+    if (!q.trim()) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
 
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
@@ -160,10 +165,10 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
             </div>
           </div>
 
-          <div className="px-5 py-4">
+          {hasQuery && <div className="px-5 py-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-[10px] tracking-[0.25em] uppercase text-neutral-500">
-                {hasQuery ? "Search results" : "Suggestions"}
+                Search results
               </p>
               {loading && (
                 <span className="text-[10px] uppercase tracking-[0.18em] text-neutral-400">
@@ -219,7 +224,7 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
                 View all results
               </button>
             )}
-          </div>
+          </div>}
         </div>
       </div>
     </div>

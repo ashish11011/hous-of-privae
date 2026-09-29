@@ -1,4 +1,5 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 import { asc, eq, or } from "drizzle-orm";
 import { categoryTable } from "@/db/schema";
@@ -94,6 +95,7 @@ export async function getCategoryBySlug(slug: string) {
 }
 
 export async function createCategory(input: Record<string, any>) {
+  await requireAdmin();
   const name = String(input.name ?? "").trim();
   if (!name) throw new Error("Category name is required");
 
@@ -117,6 +119,7 @@ export async function createCategory(input: Record<string, any>) {
 }
 
 export async function updateCategory(input: Record<string, any>) {
+  await requireAdmin();
   if (!input.id) throw new Error("Category id is required");
 
   const name = String(input.name ?? "").trim();
@@ -144,6 +147,7 @@ export async function updateCategory(input: Record<string, any>) {
 }
 
 export async function deleteCategory(id: string) {
+  await requireAdmin();
   const [deleted] = await db.delete(categoryTable).where(eq(categoryTable.id, id)).returning();
   return deleted;
 }

@@ -1,6 +1,6 @@
 # Manage orders
 
-Open `/admin/orders` while signed in with an account whose database `users.user_type` is `1`.
+Open `/admin/orders` while signed in with one of the allowed accounts: `bishnoi11011@gmail.com`, `vatskritika07@gmail.com`, or `Vaishnavidhamija95@gmail.com` (case-insensitive).
 
 Each row has **View details** and **Update status** links beside the order reference. They open `/admin/orders/<order-id>`, where admins can see:
 
@@ -11,7 +11,7 @@ Each row has **View details** and **Update status** links beside the order refer
 
 The status control appears at the top of the details page. **Update & email customer** saves the new fulfillment status and sends the customer a status email through SES. If SES fails, the new status remains saved and the history shows **Retry email**. Retry the pending email before advancing to another status. Ordinary duplicate requests do not resend email. As with other SES notifications, a crash after SES accepts mail but before the delivery timestamp commits can cause a repeated email.
 
-The server checks the database admin role for details, updates, and email retries. The existing browser PIN alone does not grant these permissions. Payment confirmation remains exclusively controlled by the verified Razorpay webhook. Fulfillment requires a paid order, or a legacy order with a recorded paid amount. Cancellation and return statuses do not issue refunds.
+The server checks the signed-in account against the admin email allowlist for details, updates, and email retries. The browser PIN login has been removed. Payment confirmation remains exclusively controlled by the verified Razorpay webhook. Fulfillment requires a paid order, or a legacy order with a recorded paid amount. Cancellation and return statuses do not issue refunds.
 
 Orders with no original price snapshot show “Not recorded” for item prices instead of using today's catalog prices.
 

@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 import { Signout } from "@/src/hepler/auth";
 
 // Menu items.
@@ -91,12 +90,6 @@ const items = [
 ];
 
 const SidebarAdmin = () => {
-  const router = useRouter();
-  const handleAdminLogout = () => {
-    // clear local storage
-    localStorage.clear();
-    router.push("/");
-  };
   return (
     <Sidebar>
       <SidebarContent>

@@ -1,10 +1,12 @@
 "use server";
+import { requireAdmin } from "@/lib/auth/admin";
 import { userCoupons } from "@/db/schema";
 import { couponTransaction } from "@/db/userSchema";
 import { db } from "@/lib/db";
 import { and, eq } from "drizzle-orm";
 
 export const getAllCoupons = async () => {
+  await requireAdmin();
   try {
     const data = await db.select().from(userCoupons);
     return data;
@@ -15,6 +17,7 @@ export const getAllCoupons = async () => {
 };
 
 export const addCoupon = async (coupon: any) => {
+  await requireAdmin();
   try {
     const data = await db.insert(userCoupons).values(coupon).returning();
     return data;
@@ -25,6 +28,7 @@ export const addCoupon = async (coupon: any) => {
 };
 
 export const updateCoupon = async (coupon: any) => {
+  await requireAdmin();
   try {
     const data = await db
       .update(userCoupons)
