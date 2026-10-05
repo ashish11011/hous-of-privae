@@ -15,7 +15,8 @@ function LoginForm() {
   const [message, setMessage] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || searchParams.get("redirect") || "/";
+  const callbackUrl =
+    searchParams.get("callbackUrl") || searchParams.get("redirect") || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,8 +61,8 @@ function LoginForm() {
               message.includes("Invalid")
                 ? "text-red-600"
                 : message.includes("failed")
-                ? "text-red-600"
-                : "text-blue-600"
+                  ? "text-red-600"
+                  : "text-blue-600"
             }`}
           >
             {message}
@@ -117,7 +118,7 @@ function LoginForm() {
         </div>
 
         {/* Google Sign-In */}
-        <Button
+        {/* <Button
           variant="outline"
           size="lg"
           className="w-full flex items-center justify-center rounded-none h-12"
@@ -125,7 +126,7 @@ function LoginForm() {
         >
           <Tgoogle className="text-2xl mr-2" />
           Continue with Google
-        </Button>
+        </Button> */}
 
         {/* Optional link to signup */}
         <p className="text-center text-sm text-gray-500 mt-6">
@@ -135,7 +136,10 @@ function LoginForm() {
           </Link>
         </p>
         <p className="text-center text-sm text-gray-500">
-          <Link href="/auth/forgot-password" className="text-[#B89146] hover:underline">
+          <Link
+            href="/auth/forgot-password"
+            className="text-[#B89146] hover:underline"
+          >
             Forgot password?
           </Link>
         </p>
