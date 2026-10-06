@@ -24,12 +24,12 @@ const requiredCoercedString = z.preprocess(
 export const checkoutSchema = z.object({
   name: requiredText,
   email: z.string().trim().email().max(254),
-  number: z.string(),
+  number: z.string().optional(),
   addressLine1: requiredText,
   addressLine2: z.string().trim().max(300).optional().default(""),
   city: requiredText,
   state: requiredText,
-  pincode: z.string(),
+  pincode: z.string().optional(),
   productDetails: z
     .array(
       z
