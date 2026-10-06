@@ -36,7 +36,10 @@ import { Toaster } from "@/components/ui/sonner";
 import { calculateOrderRewardPoints } from "@/lib/loyaltyRewards";
 
 const getColorNameByHex = (hex: string) => {
-  return COLORS.find((item) => item.hex.toLowerCase() === hex.toLowerCase())?.label ?? hex;
+  return (
+    COLORS.find((item) => item.hex.toLowerCase() === hex.toLowerCase())
+      ?.label ?? hex
+  );
 };
 
 const userDetailInitialValues = {
@@ -138,11 +141,18 @@ const Page = () => {
   const handlePlaceOrder = async (values: any, action: any) => {
     setIsSubmitting(true);
     try {
+      const orderPayload = {
+        ...values,
+        number: values.number !== undefined && values.number !== null ? String(values.number) : "",
+        pincode: values.pincode !== undefined && values.pincode !== null ? String(values.pincode) : "",
+        productDetails: productStore,
+      };
+
       // 1. Create Razorpay order
       const rzpOrderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, productDetails: productStore }),
+        body: JSON.stringify(orderPayload),
       });
 
       const rzpOrderData = await rzpOrderRes.json();
@@ -164,7 +174,7 @@ const Page = () => {
         prefill: {
           name: values.name,
           email: values.email,
-          contact: values.number,
+          contact: values.number !== undefined && values.number !== null ? String(values.number) : "",
         },
         theme: { color: "#1a1a1a" },
         handler: async (response: {
@@ -193,14 +203,19 @@ const Page = () => {
                   break;
                 }
               } else if (verifyRes.status === 400) {
-                toast.error("Payment verification failed. Please contact support with your order reference.");
+                toast.error(
+                  "Payment verification failed. Please contact support with your order reference.",
+                );
                 break;
               }
-              if (attempt < 14) await new Promise(resolve => setTimeout(resolve, 2000));
+              if (attempt < 14)
+                await new Promise((resolve) => setTimeout(resolve, 2000));
             }
           } catch (error) {
             console.error("Post-payment error:", error);
-            toast.error("Something went wrong after payment. Please contact support.");
+            toast.error(
+              "Something went wrong after payment. Please contact support.",
+            );
           } finally {
             setIsSubmitting(false);
           }
@@ -217,7 +232,7 @@ const Page = () => {
 
       rzp.on("payment.failed", (response: any) => {
         toast.error(
-          response.error?.description || "Payment failed. Please try again."
+          response.error?.description || "Payment failed. Please try again.",
         );
         setIsSubmitting(false);
       });
@@ -301,7 +316,10 @@ const Page = () => {
                   <p className="font-heading text-lg leading-6">{item.name}</p>
                   <div>
                     <p>
-                      {item.variant !== "unstitched" && item.size ? `${item.size} - ` : ""}{getColorNameByHex(item.color)} -{" "}
+                      {item.variant !== "unstitched" && item.size
+                        ? `${item.size} - `
+                        : ""}
+                      {getColorNameByHex(item.color)} -{" "}
                       {item.variant ?? "stitched"}
                     </p>
                   </div>
