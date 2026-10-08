@@ -4,6 +4,7 @@ import { review } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
 import { blog, blogForm } from "./blogSchema";
 import { siteSettings } from "./siteSettingsSchema";
+import { loyaltyTransaction } from "./loyaltyTransactionSchema";
 import {
   order,
   orderItem,
@@ -23,6 +24,7 @@ export const orderItemsTable = orderItem;
 export const orderStatusEventsTable = orderStatusEvent;
 
 export const userTable = user;
+export const loyaltyTransactionsTable = loyaltyTransaction;
 export const userCoupons = coupon;
 export const usercouponTransaction = couponTransaction;
 

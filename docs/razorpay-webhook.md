@@ -25,11 +25,11 @@ Use your normal migration tracking process; do not apply the same migration twic
 
 ## Behavior
 
-- `/api/razorpay/create-order` now accepts customer/address details and cart product IDs, quantities, sizes, colors and variants. It calculates prices and shipping from the database, saves an unpaid internal order and its items, then creates and links the Razorpay order. Client-supplied totals are ignored. The current checkout has no active coupon discount implementation.
+- `/api/razorpay/create-order` accepts customer/address details, cart product IDs, quantities, sizes, colors and variants, and optional `loyaltyPointsToRedeem`. It calculates prices and shipping from the database and saves the unpaid order, items, points reservation, and Razorpay order ID in one database transaction. Client-supplied totals are ignored. Signed-in customers can redeem points for up to 20% of the item subtotal; see [loyalty checkout](loyalty-checkout.md). The current checkout has no active coupon discount implementation.
 - The webhook verifies HMAC-SHA256 over the raw request body using `X-Razorpay-Signature`, then checks saved order ID, amount and currency.
 - `payment.authorized`: payment `authorized`, order `pending_payment`, no email/rewards.
 - `payment.failed`: payment `failed`, order `payment_failed`, no email/rewards. It cannot overwrite an authorized or paid state.
-- `payment.captured` / `order.paid`: payment `paid`, order `confirmed`, paid amount and payment ID saved; loyalty rewards awarded atomically once. Existing fulfillment status is preserved on replay.
+- `payment.captured` / `order.paid`: payment `paid`, order `confirmed`, paid amount and payment ID saved; reserved points deducted and loyalty rewards awarded with transaction history atomically once. Existing fulfillment status is preserved on replay.
 - Only the webhook sends customer confirmation and admin order email. The old `/api/order/create` endpoint returns 410. `/api/razorpay/verify-payment` checks the checkout signature and reads status; it cannot confirm or send mail.
 - The checkout polls for up to roughly 30 seconds and otherwise shows a pending confirmation message. Closing the browser does not prevent webhook processing.
 - Duplicate/concurrent success events are serialized using PostgreSQL row locks. Separate customer/admin sent timestamps prevent ordinary duplicate emails, including partial email failures. Database or SES errors return 500 so Razorpay can retry; successful payment/reward updates are not rolled back by an email failure.

@@ -43,6 +43,8 @@ export async function getAdminOrderDetail(id: string): Promise<AdminOrderDetail 
     subtotalAmount: snapshot?.subtotalAmount ?? order.subtotalAmount,
     deliveryCharge: snapshot?.deliveryCharge ?? order.deliveryCharge,
     discountAmount: snapshot?.discountAmount ?? order.discountAmount,
+    loyaltyPointsRedeemed: order.loyaltyPointsRedeemed,
+    loyaltyPointsStatus: order.loyaltyPointsStatus,
     totalAmount: order.expectedAmountPaise !== null ? order.expectedAmountPaise / 100 : order.totalAmountPaid,
     couponCode: order.couponCode, razorpayOrderId: order.razorpayOrderId, razorpayPaymentId: order.razorpayPaymentId,
     // Use the purchase snapshot even if a product is renamed or repriced later.

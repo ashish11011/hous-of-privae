@@ -64,6 +64,13 @@
       "when": 1790276630113,
       "tag": "0010_noisy_lizard",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791453068495,
+      "tag": "0011_public_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

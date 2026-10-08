@@ -6,10 +6,11 @@ import {
   integer,
   jsonb,
   index,
+  check,
 } from "drizzle-orm/pg-core";
 import { user } from "./userSchema";
 import { product, productVarient } from "./productSchema";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import type { OrderEmailInput } from "../lib/email/ses";
 
 // ----------------------
@@ -29,6 +30,10 @@ export const order = pgTable("order", {
   subtotalAmount: integer("subtotal_amount").notNull().default(0),
   deliveryCharge: integer("delivery_charge").notNull().default(0),
   discountAmount: integer("discount_amount").notNull().default(0),
+  loyaltyPointsRedeemed: integer("loyalty_points_redeemed").notNull().default(0),
+  loyaltyPointsStatus: varchar("loyalty_points_status", {
+    enum: ["none", "reserved", "spent"],
+  }).notNull().default("none"),
   couponCode: varchar("coupon_code"),
   totalAmountPaid: integer("total_amount_paid"),
   paymentStatus: varchar("payment_status").notNull().default("unknown"),
@@ -42,7 +47,15 @@ export const order = pgTable("order", {
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, table => [
+  index("order_user_loyalty_status_idx").on(table.userId, table.loyaltyPointsStatus),
+  check("order_loyalty_points_valid", sql`${table.loyaltyPointsRedeemed} >= 0 and ${table.loyaltyPointsRedeemed} % 10 = 0`),
+  check("order_loyalty_status_valid", sql`
+    (${table.loyaltyPointsStatus} = 'none' and ${table.loyaltyPointsRedeemed} = 0)
+    or (${table.loyaltyPointsStatus} in ('reserved', 'spent') and ${table.loyaltyPointsRedeemed} > 0)
+  `),
+  check("order_loyalty_redemption_cap", sql`${table.loyaltyPointsRedeemed} <= (${table.subtotalAmount} / 5) * 10`),
+]);
 
 // ----------------------
 // Order Items Table

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
-import { orderTable, userTable } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { calculateOrderRewardPoints } from "@/lib/loyaltyRewards";
+import { orderTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { settleOrderLoyalty } from "@/lib/loyalty";
 import { sendOrderConfirmationEmail } from "@/lib/email/ses";
 import { paymentTransition, type PaymentEvent } from "./razorpay-events";
 
@@ -16,15 +16,14 @@ export async function processPaymentWebhook(payment: PaymentEvent) {
       await tx.update(orderTable).set({
         ...transition,
         razorpayPaymentId: payment.id,
-        ...(transition.paymentStatus === "paid" ? { totalAmountPaid: payment.amount / 100 } : {}),
+        ...(transition.paymentStatus === "paid" ? {
+          totalAmountPaid: payment.amount / 100,
+          loyaltyPointsStatus: order.loyaltyPointsRedeemed > 0 ? "spent" as const : "none" as const,
+        } : {}),
         updatedAt: new Date(),
       }).where(eq(orderTable.id, order.id));
       if (transition.paymentStatus === "paid") {
-        const points = calculateOrderRewardPoints(payment.amount / 100);
-        await tx.update(userTable).set({
-          loyaltyPoints: sql`${userTable.loyaltyPoints} + ${points}`,
-          updatedAt: new Date(),
-        }).where(eq(userTable.id, order.userId));
+        await settleOrderLoyalty(tx, order, payment.amount / 100);
       }
     }
     return order.id;

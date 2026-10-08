@@ -341,6 +341,12 @@ export default function OrderDetails({
                   <dd>{detail.couponCode}</dd>
                 </div>
               )}
+              {detail.loyaltyPointsRedeemed > 0 && (
+                <div className="flex justify-between gap-4">
+                  <dt>Loyalty points {detail.loyaltyPointsStatus === "reserved" ? "reserved" : "used"}</dt>
+                  <dd>{detail.loyaltyPointsRedeemed.toLocaleString("en-IN")} pts</dd>
+                </div>
+              )}
             </dl>
           </div>
 

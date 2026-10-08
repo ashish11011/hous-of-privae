@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkoutSchema, createCheckout } from "@/lib/payments/checkout";
+import { CheckoutError } from "@/lib/payments/checkout-error";
 
 export async function POST(request: Request) {
   let input;
@@ -18,6 +19,8 @@ export async function POST(request: Request) {
   try {
     return NextResponse.json(await createCheckout(input));
   } catch (error) {
+    if (error instanceof CheckoutError)
+      return NextResponse.json({ success: false, msg: error.message }, { status: error.status });
     console.error("Razorpay checkout creation failed:", error);
     return NextResponse.json(
       {

@@ -7,6 +7,7 @@ export type AdminOrderDetail = AdminOrderSummary & {
   customerPhone: string | null;
   address: { addressLine1: string | null; addressLine2: string | null; city: string | null; state: string | null; pincode: string | null };
   subtotalAmount: number; deliveryCharge: number; discountAmount: number;
+  loyaltyPointsRedeemed: number; loyaltyPointsStatus: "none" | "reserved" | "spent";
   totalAmount: number | null; couponCode: string | null;
   razorpayOrderId: string | null; razorpayPaymentId: string | null;
   items: { id: string; name: string; quantity: number; size: string | null; color: string | null; variant: string; unitPrice: number | null }[];

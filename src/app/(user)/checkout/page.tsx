@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Form, Formik } from "formik";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
@@ -33,7 +33,15 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { calculateOrderRewardPoints } from "@/lib/loyaltyRewards";
+import { calculateOrderRewardPoints, loyaltyPointsToRupees, maximumRedeemablePoints } from "@/lib/loyaltyRewards";
+import Link from "next/link";
+
+type CheckoutPayment = {
+  orderId: string; internalOrderId: string; amount: number; currency: string;
+  loyaltyPointsRedeemed: number;
+};
+type PendingCheckout = { id: string; points: number; amount: number | null; subtotalAmount: number };
+const formatINR = (amount: number) => amount.toLocaleString("en-IN");
 
 const getColorNameByHex = (hex: string) => {
   return (
@@ -68,48 +76,51 @@ const Page = () => {
   const [orderId, setOrderId] = useState("");
   const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availablePoints, setAvailablePoints] = useState<number | null>(null);
+  const [pendingCheckout, setPendingCheckout] = useState<PendingCheckout | null>(null);
+  const [pointsInput, setPointsInput] = useState("0");
+  const [pointsLoading, setPointsLoading] = useState(true);
+  const [pointsLoadError, setPointsLoadError] = useState(false);
+  const [pointsUsed, setPointsUsed] = useState(0);
   const [checkoutInitialValues, setCheckoutInitialValues] = useState(
     userDetailInitialValues,
   );
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadProfile() {
-      try {
-        const response = await fetch("/api/profile", { cache: "no-store" });
-
-        if (response.status === 401 || response.status === 404) return;
-        if (!response.ok) throw new Error("Failed to load profile");
-
-        const payload = await response.json();
-        const user = payload.user;
-
-        if (!user || !isMounted) return;
-
-        setCheckoutInitialValues({
-          name: user.name || "",
-          number: user.number || "",
-          email: user.email || "",
-          addressLine1: user.addressLine1 || "",
-          addressLine2: user.addressLine2 || "",
-          city: user.city || "",
-          state: user.state || "",
-          pincode: user.pincode || "",
-        });
-      } catch (error) {
-        console.error("Failed to prefill checkout details:", error);
+  const loadProfile = useCallback(async (prefill = false, signal?: AbortSignal) => {
+    try {
+      const response = await fetch("/api/profile", { cache: "no-store", signal });
+      if (signal?.aborted) return;
+      if (response.status === 401 || response.status === 404) {
+        setPointsLoadError(false);
+        setAvailablePoints(null); setPendingCheckout(null); return;
       }
+      if (!response.ok) throw new Error("Failed to load profile");
+      const payload = await response.json();
+      const user = payload.user;
+      if (!user || signal?.aborted) return;
+      setPointsLoadError(false);
+      setAvailablePoints(payload.availablePoints ?? 0);
+      setPendingCheckout(payload.pendingCheckout ?? null);
+      if (prefill) setCheckoutInitialValues({
+        name: user.name || "", number: user.number || "", email: user.email || "",
+        addressLine1: user.addressLine1 || "", addressLine2: user.addressLine2 || "",
+        city: user.city || "", state: user.state || "", pincode: user.pincode || "",
+      });
+    } catch (error) {
+      if (signal?.aborted) return;
+      setPointsLoadError(true);
+      console.error("Failed to load checkout profile:", error);
+    } finally {
+      if (!signal?.aborted) setPointsLoading(false);
     }
-
-    loadProfile();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadProfile(true, controller.signal);
+    return () => controller.abort();
+  }, [loadProfile]);
 
-  if (productStore.length === 0 && !showSuccess) {
+  if (productStore.length === 0 && !showSuccess && !pendingCheckout) {
     return (
       <main className="bg-background px-4 py-12 md:py-20 text-center min-h-[60vh] flex flex-col items-center justify-center">
         <h1 className="font-heading text-3xl md:text-4xl mb-4">
@@ -134,11 +145,14 @@ const Page = () => {
     0,
   );
 
-  const deliveryCharge = cartTotal >= 1199 ? 0 : 60;
-  const finalTotal = cartTotal + deliveryCharge;
+  const deliveryCharge = cartTotal === 0 || cartTotal >= 1199 ? 0 : 60;
+  const maximumPoints = maximumRedeemablePoints(cartTotal, availablePoints ?? 0);
+  const appliedPoints = Math.min(Math.max(0, Math.floor((Number(pointsInput) || 0) / 10) * 10), maximumPoints);
+  const pointsDiscount = loyaltyPointsToRupees(appliedPoints);
+  const finalTotal = cartTotal + deliveryCharge - pointsDiscount;
   const estimatedLoyaltyPoints = calculateOrderRewardPoints(finalTotal);
 
-  const handlePlaceOrder = async (values: any, action: any) => {
+  const handlePlaceOrder = async (values: typeof userDetailInitialValues) => {
     setIsSubmitting(true);
     try {
       const orderPayload = {
@@ -146,6 +160,7 @@ const Page = () => {
         number: values.number !== undefined && values.number !== null ? String(values.number) : "",
         pincode: values.pincode !== undefined && values.pincode !== null ? String(values.pincode) : "",
         productDetails: productStore,
+        loyaltyPointsToRedeem: appliedPoints,
       };
 
       // 1. Create Razorpay order
@@ -160,88 +175,124 @@ const Page = () => {
       if (!rzpOrderRes.ok || !rzpOrderData.success) {
         toast.error(rzpOrderData.msg || "Failed to initiate payment.");
         setIsSubmitting(false);
+        await loadProfile();
         return;
       }
 
-      // 2. Open Razorpay checkout modal
-      const options: any = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: rzpOrderData.amount,
-        currency: rzpOrderData.currency,
-        name: "Haus of Privae",
-        description: "Order Payment",
-        order_id: rzpOrderData.orderId,
-        prefill: {
-          name: values.name,
-          email: values.email,
-          contact: values.number !== undefined && values.number !== null ? String(values.number) : "",
-        },
-        theme: { color: "#1a1a1a" },
-        handler: async (response: {
-          razorpay_payment_id: string;
-          razorpay_order_id: string;
-          razorpay_signature: string;
-        }) => {
-          try {
-            setOrderId(rzpOrderData.internalOrderId);
-            setPaymentConfirmed(false);
-            setShowSuccess(true);
-            // Only the webhook confirms an order. Poll its saved result briefly;
-            // payment can still complete if the customer closes this browser.
-            for (let attempt = 0; attempt < 15; attempt++) {
-              const verifyRes = await fetch("/api/razorpay/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
-              });
-              const result = await verifyRes.json();
-              if (verifyRes.ok && result.verified) {
-                clearCart();
-                if (result.confirmed) {
-                  setPaymentConfirmed(true);
-                  setLoyaltyPointsEarned(result.loyaltyPointsEarned || 0);
-                  break;
-                }
-              } else if (verifyRes.status === 400) {
-                toast.error(
-                  "Payment verification failed. Please contact support with your order reference.",
-                );
-                break;
-              }
-              if (attempt < 14)
-                await new Promise((resolve) => setTimeout(resolve, 2000));
-            }
-          } catch (error) {
-            console.error("Post-payment error:", error);
-            toast.error(
-              "Something went wrong after payment. Please contact support.",
-            );
-          } finally {
-            setIsSubmitting(false);
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            toast.error("Payment was cancelled.");
-            setIsSubmitting(false);
-          },
-        },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-
-      rzp.on("payment.failed", (response: any) => {
-        toast.error(
-          response.error?.description || "Payment failed. Please try again.",
-        );
-        setIsSubmitting(false);
-      });
-
-      rzp.open();
+      await loadProfile();
+      setPointsInput("0");
+      openPayment(rzpOrderData, values);
     } catch (error) {
       console.error("Error initiating payment:", error);
       toast.error("Failed to initiate payment. Please try again.");
+      void loadProfile();
       setIsSubmitting(false);
+    }
+  };
+
+  const openPayment = (rzpOrderData: CheckoutPayment, values: typeof userDetailInitialValues, clearPaidCart = true) => {
+    const options: any = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: rzpOrderData.amount,
+      currency: rzpOrderData.currency,
+      name: "Haus of Privae",
+      description: "Order Payment",
+      order_id: rzpOrderData.orderId,
+      prefill: {
+        name: values.name,
+        email: values.email,
+        contact: values.number !== undefined && values.number !== null ? String(values.number) : "",
+      },
+      theme: { color: "#1a1a1a" },
+      handler: async (response: {
+        razorpay_payment_id: string;
+        razorpay_order_id: string;
+        razorpay_signature: string;
+      }) => {
+        try {
+          setOrderId(rzpOrderData.internalOrderId);
+          setPaymentConfirmed(false);
+          setShowSuccess(true);
+          // Only the webhook confirms an order. Poll its saved result briefly;
+          // payment can still complete if the customer closes this browser.
+          for (let attempt = 0; attempt < 15; attempt++) {
+            const verifyRes = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+            const result = await verifyRes.json();
+            if (verifyRes.ok && result.verified) {
+              if (clearPaidCart) clearCart();
+              if (result.confirmed) {
+                setPaymentConfirmed(true);
+                setLoyaltyPointsEarned(result.loyaltyPointsEarned || 0);
+                setPointsUsed(result.loyaltyPointsRedeemed || 0);
+                void loadProfile();
+                break;
+              }
+            } else if (verifyRes.status === 400) {
+              toast.error(
+                "Payment verification failed. Please contact support with your order reference.",
+              );
+              break;
+            }
+            if (attempt < 14)
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+        } catch (error) {
+          console.error("Post-payment error:", error);
+          toast.error(
+            "Something went wrong after payment. Please contact support.",
+          );
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          toast.info(rzpOrderData.loyaltyPointsRedeemed > 0
+            ? "Payment closed. Your points are reserved for this order; use Resume payment to continue."
+            : "Payment was cancelled.");
+          void loadProfile();
+          setIsSubmitting(false);
+        },
+      },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+
+    rzp.on("payment.failed", (response: any) => {
+      toast.error(
+        response.error?.description || "Payment failed. Please try again.",
+      );
+      void loadProfile();
+    });
+
+    rzp.open();
+  };
+
+  const resumePayment = async () => {
+    if (!pendingCheckout) return;
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/razorpay/resume-order", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: pendingCheckout.id }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.msg || "Unable to resume payment.");
+      const matchesCurrentCart = result.items?.length === productStore.length && result.items.every(
+        (ordered: { productId: string; variantId: string; size?: string; variant?: string; quantity: number }) =>
+          productStore.some(item => item.id === ordered.productId && item.variantId === ordered.variantId &&
+            (item.variant === "unstitched" ? "" : (item.size || "").toLowerCase()) === (ordered.size || "").toLowerCase() &&
+            (item.variant || "stitched") === (ordered.variant || "stitched") && item.quantity === ordered.quantity),
+      );
+      openPayment(result, { ...userDetailInitialValues, ...result.prefill }, matchesCurrentCart);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to resume payment.");
+      setIsSubmitting(false);
+      await loadProfile();
     }
   };
 
@@ -280,9 +331,49 @@ const Page = () => {
                 </div>
                 <LabelInput labelName="Pincode" name="pincode" type="number" />
                 <DiscountInput />
+                <section className="border border-border p-4 space-y-3" aria-label="Use loyalty points">
+                  <h2 className="font-heading text-lg">Use your loyalty points</h2>
+                  {pointsLoading ? (
+                    <p className="text-sm text-muted-foreground">Loading your points…</p>
+                  ) : pointsLoadError ? (
+                    <div className="text-sm text-muted-foreground">
+                      Points balance unavailable. <button type="button" className="underline" onClick={() => void loadProfile()}>Refresh balance</button>
+                    </div>
+                  ) : availablePoints === null ? (
+                    <p className="text-sm text-muted-foreground">
+                      <Link href="/auth/login?callbackUrl=/checkout" className="underline">Sign in</Link> to use your points.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        {formatINR(availablePoints)} points available · Worth ₹{formatINR(loyaltyPointsToRupees(availablePoints))}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Cover up to 20% of your cart value with points. Delivery is excluded. 10 points = ₹1.
+                      </p>
+                      <Label htmlFor="checkout-points">Points to use (in multiples of 10)</Label>
+                      <div className="flex gap-2">
+                        <input id="checkout-points" type="number" min="0" max={maximumPoints} step="10"
+                          value={pointsInput} disabled={isSubmitting || !!pendingCheckout}
+                          onChange={event => setPointsInput(event.target.value)}
+                          onBlur={() => setPointsInput(String(appliedPoints))}
+                          className="min-w-0 w-full border border-border bg-background px-3 py-2" />
+                        <Button type="button" variant="outline" disabled={isSubmitting || maximumPoints === 0 || !!pendingCheckout}
+                          onClick={() => setPointsInput(String(maximumPoints))}>Use maximum</Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Maximum for this cart: {formatINR(maximumPoints)} points (₹{formatINR(loyaltyPointsToRupees(maximumPoints))}).</p>
+                    </>
+                  )}
+                  {pendingCheckout && (
+                    <div className="space-y-2 border-t border-border pt-3">
+                      <p className="text-sm">{formatINR(pendingCheckout.points)} points are reserved for your pending order. Amount due: ₹{formatINR((pendingCheckout.amount ?? 0) / 100)}.</p>
+                      <Button type="button" variant="outline" disabled={isSubmitting} onClick={resumePayment}>Resume payment for pending order</Button>
+                    </div>
+                  )}
+                </section>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || productStore.length === 0}
                   className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
                   size={"lg"}
                 >
@@ -413,6 +504,12 @@ const Page = () => {
                       {deliveryCharge}
                     </TableCell>
                   </TableRow>
+                  {appliedPoints > 0 && (
+                    <TableRow>
+                      <TableHead>Points discount ({formatINR(appliedPoints)} pts)</TableHead>
+                      <TableCell className="text-right">− ₹{formatINR(pointsDiscount)}</TableCell>
+                    </TableRow>
+                  )}
                   {/* {appliedCoupon && (
                   <TableRow className="   hover:bg-neutral-900">
                     <TableHead>Discount Applied ({appliedCoupon})</TableHead>
@@ -484,6 +581,11 @@ const Page = () => {
             </div>
           )}
 
+          {pointsUsed > 0 && (
+            <div className="bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
+              <span>Loyalty Used</span><span>{formatINR(pointsUsed)} pts · ₹{formatINR(loyaltyPointsToRupees(pointsUsed))}</span>
+            </div>
+          )}
           {loyaltyPointsEarned > 0 && (
             <div className="bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
               <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">

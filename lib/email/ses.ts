@@ -36,6 +36,7 @@ export type OrderEmailInput = {
   subtotalAmount: number;
   deliveryCharge: number;
   discountAmount: number;
+  loyaltyPointsRedeemed?: number;
   totalAmountPaid: number;
   couponCode?: string | null;
 };
@@ -151,6 +152,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
       <p><strong>Subtotal:</strong> Rs. ${input.subtotalAmount}</p>
       <p><strong>Delivery:</strong> Rs. ${input.deliveryCharge}</p>
       <p><strong>Discount:</strong> Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}</p>
+      ${input.loyaltyPointsRedeemed ? `<p><strong>Loyalty points used:</strong> ${input.loyaltyPointsRedeemed}</p>` : ""}
       <h3>Total: Rs. ${input.totalAmountPaid}</h3>
     </div>
   `;
@@ -178,7 +180,7 @@ ${orderLines(input.items)}
 Subtotal: Rs. ${input.subtotalAmount}
 Delivery: Rs. ${input.deliveryCharge}
 Discount: Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}
-Total: Rs. ${input.totalAmountPaid}`;
+${input.loyaltyPointsRedeemed ? `Loyalty points used: ${input.loyaltyPointsRedeemed}\n` : ""}Total: Rs. ${input.totalAmountPaid}`;
 }
 
 async function sendOrderEmail(to: string, subject: string, title: string, input: OrderEmailInput) {

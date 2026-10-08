@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,13 +19,14 @@ import { Info, SendHorizonal } from "lucide-react";
 import React, { useState } from "react";
 import { transferLoyaltyPoints } from "@/src/hepler/loyalty/transfer";
 import { loyaltyPointsToRupees } from "@/lib/loyaltyRewards";
+import { useRouter } from "next/navigation";
 
 const LoyalityCard = ({ logedinUserData }: any) => {
-  const [userData, setUserData] = useState({
+  const userData = {
     name: logedinUserData.name || "",
     email: logedinUserData.email || "",
     points: logedinUserData.loyaltyPoints || 0,
-  });
+  };
   return (
     <div className="flex justify-center items-center min-h-[80vh] ">
       <Card className="relative min-w-96 rounded-xl shadow-lg border bg-[#2e0e2c] text-white border-gray-200 flex flex-col justify-between  transition-all duration-300 hover:shadow-amber-400/30 hover:scale-[1.02]">
@@ -118,13 +118,29 @@ function InfoCardPoints({ points }: { points: number }) {
 }
 
 function TransferPoints() {
+  const router = useRouter();
   const [transferEmail, setTransferEmail] = useState("");
   const [transferAmount, setTransferAmount] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
   async function handleSendPoints() {
-    const res = await transferLoyaltyPoints(transferEmail, transferAmount);
+    setSending(true);
+    setError("");
+    try {
+      await transferLoyaltyPoints(transferEmail, transferAmount);
+      setTransferAmount(0);
+      setTransferEmail("");
+      setOpen(false);
+      router.refresh();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unable to send points.");
+    } finally {
+      setSending(false);
+    }
   }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="rounded-full bg-amber-100 hover:bg-amber-200 p-1.5 transition">
           <SendHorizonal size={14} className="text-amber-700" />
@@ -148,12 +164,15 @@ function TransferPoints() {
           <Input
             placeholder="Points to send"
             type="number"
+            min="1"
+            step="1"
             value={transferAmount}
             onChange={(e) => setTransferAmount(Number(e.target.value))}
             className="border-gray-300"
           />
-          <Button onClick={handleSendPoints} className="  w-full">
-            Send Points
+          {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+          <Button onClick={handleSendPoints} disabled={sending} className="  w-full">
+            {sending ? "Sending…" : "Send Points"}
           </Button>
         </div>
       </DialogContent>
