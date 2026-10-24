@@ -17,9 +17,12 @@ import { loyaltyPointsToRupees, maximumRedeemablePoints, LOYALTY_POINTS_PER_RUPE
 import { CheckoutError } from "./checkout-error";
 import razorpay from "@/lib/razorpay";
 import type { OrderEmailInput } from "@/lib/email/ses";
+import { GIFT_WRAP_CHARGE, GIFT_WRAP_NOTE_LIMIT } from "@/lib/giftWrap";
 
 const requiredText = z.string().trim().min(1).max(300);
 export const checkoutSchema = z.object({
+  giftWrap: z.boolean().default(false),
+  giftWrapNote: z.string().trim().max(GIFT_WRAP_NOTE_LIMIT).default(""),
   loyaltyPointsToRedeem: z.number().int().min(0).max(2147483647).multipleOf(LOYALTY_POINTS_PER_RUPEE_VALUE).default(0),
   name: requiredText,
   email: z.string().trim().email().max(254),
@@ -97,6 +100,8 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
     0,
   );
   const deliveryCharge = subtotalAmount >= 1199 ? 0 : 60;
+  const giftWrapCharge = input.giftWrap ? GIFT_WRAP_CHARGE : 0;
+  const giftWrapNote = input.giftWrap ? input.giftWrapNote : "";
   const session = await getServerSession(authOptions);
   const points = input.loyaltyPointsToRedeem;
   if (points > 0 && !session?.id)
@@ -123,7 +128,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
         throw new CheckoutError("Points must fit your available balance and cover no more than 20% of the cart value.");
     }
     const discountAmount = loyaltyPointsToRupees(points);
-    const total = subtotalAmount + deliveryCharge - discountAmount;
+    const total = subtotalAmount + deliveryCharge + giftWrapCharge - discountAmount;
     const amount = total * 100;
     if (!Number.isSafeInteger(amount) || amount < 100 || amount > 2147483647)
       throw new CheckoutError("Order total is outside the supported range.");
@@ -135,6 +140,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
         city: input.city, state: input.state, pincode: input.pincode,
       },
       items, subtotalAmount, deliveryCharge, discountAmount,
+      giftWrap: input.giftWrap, giftWrapCharge, giftWrapNote,
       loyaltyPointsRedeemed: points, totalAmountPaid: total,
     };
     await tx.insert(orderTable).values({
@@ -156,6 +162,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
     return {
       success: true, orderId: gatewayOrder.id, internalOrderId: id, amount, currency: "INR",
       loyaltyPointsRedeemed: points, discountAmount, subtotalAmount, deliveryCharge,
+      giftWrap: input.giftWrap, giftWrapCharge, giftWrapNote,
     };
   });
 }

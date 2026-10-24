@@ -326,6 +326,7 @@ export default function OrderDetails({
               {[
                 ["Subtotal", detail.subtotalAmount],
                 ["Delivery", detail.deliveryCharge],
+                ...(detail.giftWrap ? [["Gift wrapping", detail.giftWrapCharge]] : []),
                 ["Discount", detail.discountAmount],
                 ["Order total", detail.totalAmount],
                 ["Total paid", detail.totalAmountPaid],
@@ -349,6 +350,15 @@ export default function OrderDetails({
               )}
             </dl>
           </div>
+
+          {detail.giftWrap && <section className="rounded-lg border p-4">
+            <h3 className="text-lg mb-2">Gift wrapping requested</h3>
+            <p className="text-sm text-muted-foreground">Wrap this order in signature gift packaging.</p>
+            {detail.giftWrapNote && <div className="mt-3">
+              <h4 className="text-sm font-medium">Handwritten note for the recipient</h4>
+              <p className="mt-1 whitespace-pre-wrap break-words text-sm">{detail.giftWrapNote}</p>
+            </div>}
+          </section>}
 
           <section>
             <h3 className="text-xl mb-3">Status history</h3>

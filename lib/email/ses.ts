@@ -35,6 +35,9 @@ export type OrderEmailInput = {
   items: OrderEmailItem[];
   subtotalAmount: number;
   deliveryCharge: number;
+  giftWrap?: boolean;
+  giftWrapCharge?: number;
+  giftWrapNote?: string;
   discountAmount: number;
   loyaltyPointsRedeemed?: number;
   totalAmountPaid: number;
@@ -151,6 +154,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
       </table>
       <p><strong>Subtotal:</strong> Rs. ${input.subtotalAmount}</p>
       <p><strong>Delivery:</strong> Rs. ${input.deliveryCharge}</p>
+      ${input.giftWrap ? `<p><strong>Gift wrapping:</strong> Rs. ${input.giftWrapCharge ?? 0}</p>${input.giftWrapNote ? `<p><strong>Handwritten gift note:</strong><br><span style="white-space:pre-wrap;">${escapeHtml(input.giftWrapNote)}</span></p>` : ""}` : ""}
       <p><strong>Discount:</strong> Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}</p>
       ${input.loyaltyPointsRedeemed ? `<p><strong>Loyalty points used:</strong> ${input.loyaltyPointsRedeemed}</p>` : ""}
       <h3>Total: Rs. ${input.totalAmountPaid}</h3>
@@ -179,7 +183,7 @@ ${orderLines(input.items)}
 
 Subtotal: Rs. ${input.subtotalAmount}
 Delivery: Rs. ${input.deliveryCharge}
-Discount: Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}
+${input.giftWrap ? `Gift wrapping: Rs. ${input.giftWrapCharge ?? 0}\n${input.giftWrapNote ? `Handwritten gift note: ${input.giftWrapNote}\n` : ""}` : ""}Discount: Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}
 ${input.loyaltyPointsRedeemed ? `Loyalty points used: ${input.loyaltyPointsRedeemed}\n` : ""}Total: Rs. ${input.totalAmountPaid}`;
 }
 

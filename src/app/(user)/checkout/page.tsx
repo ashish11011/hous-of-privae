@@ -35,6 +35,8 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { calculateOrderRewardPoints, loyaltyPointsToRupees, maximumRedeemablePoints } from "@/lib/loyaltyRewards";
 import Link from "next/link";
+import GiftWrapOption from "@/components/cart/GiftWrapOption";
+import { GIFT_WRAP_CHARGE } from "@/lib/giftWrap";
 
 type CheckoutPayment = {
   orderId: string; internalOrderId: string; amount: number; currency: string;
@@ -69,6 +71,8 @@ const Page = () => {
     decreaseQuantity,
     removeItemFromStore,
     clearCart,
+    giftWrap,
+    giftWrapNote,
   } = useStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -149,7 +153,8 @@ const Page = () => {
   const maximumPoints = maximumRedeemablePoints(cartTotal, availablePoints ?? 0);
   const appliedPoints = Math.min(Math.max(0, Math.floor((Number(pointsInput) || 0) / 10) * 10), maximumPoints);
   const pointsDiscount = loyaltyPointsToRupees(appliedPoints);
-  const finalTotal = cartTotal + deliveryCharge - pointsDiscount;
+  const giftWrapCharge = giftWrap && productStore.length > 0 ? GIFT_WRAP_CHARGE : 0;
+  const finalTotal = cartTotal + deliveryCharge + giftWrapCharge - pointsDiscount;
   const estimatedLoyaltyPoints = calculateOrderRewardPoints(finalTotal);
 
   const handlePlaceOrder = async (values: typeof userDetailInitialValues) => {
@@ -161,6 +166,8 @@ const Page = () => {
         pincode: values.pincode !== undefined && values.pincode !== null ? String(values.pincode) : "",
         productDetails: productStore,
         loyaltyPointsToRedeem: appliedPoints,
+        giftWrap,
+        giftWrapNote: giftWrap ? giftWrapNote : "",
       };
 
       // 1. Create Razorpay order
@@ -282,7 +289,9 @@ const Page = () => {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.msg || "Unable to resume payment.");
-      const matchesCurrentCart = result.items?.length === productStore.length && result.items.every(
+      const matchesCurrentCart = Boolean(result.giftWrap) === giftWrap &&
+        (result.giftWrapNote ?? "") === (giftWrap ? giftWrapNote.trim() : "") &&
+        result.items?.length === productStore.length && result.items.every(
         (ordered: { productId: string; variantId: string; size?: string; variant?: string; quantity: number }) =>
           productStore.some(item => item.id === ordered.productId && item.variantId === ordered.variantId &&
             (item.variant === "unstitched" ? "" : (item.size || "").toLowerCase()) === (ordered.size || "").toLowerCase() &&
@@ -331,6 +340,7 @@ const Page = () => {
                 </div>
                 <LabelInput labelName="Pincode" name="pincode" type="number" />
                 <DiscountInput />
+                {productStore.length > 0 && <GiftWrapOption disabled={isSubmitting} />}
                 <section className="border border-border p-4 space-y-3" aria-label="Use loyalty points">
                   <h2 className="font-heading text-lg">Use your loyalty points</h2>
                   {pointsLoading ? (
@@ -349,7 +359,7 @@ const Page = () => {
                         {formatINR(availablePoints)} points available · Worth ₹{formatINR(loyaltyPointsToRupees(availablePoints))}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Cover up to 20% of your cart value with points. Delivery is excluded. 10 points = ₹1.
+                        Cover up to 20% of your cart value with points. Delivery and gift wrapping are excluded. 10 points = ₹1.
                       </p>
                       <Label htmlFor="checkout-points">Points to use (in multiples of 10)</Label>
                       <div className="flex gap-2">
@@ -510,19 +520,15 @@ const Page = () => {
                       <TableCell className="text-right">− ₹{formatINR(pointsDiscount)}</TableCell>
                     </TableRow>
                   )}
+                  {giftWrapCharge > 0 && <TableRow>
+                    <TableHead>Gift wrapping</TableHead>
+                    <TableCell className="text-right">₹{formatINR(giftWrapCharge)}</TableCell>
+                  </TableRow>}
                   {/* {appliedCoupon && (
                   <TableRow className="   hover:bg-neutral-900">
                     <TableHead>Discount Applied ({appliedCoupon})</TableHead>
                     <TableCell className="text-right w-52  text-base">
                       - ₹ {(cartTotal - discountedTotal).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                )}
-                {isGiftWrap && (
-                  <TableRow className="   hover:bg-neutral-900">
-                    <TableHead>Gift Wrap</TableHead>
-                    <TableCell className="text-right w-52  text-base">
-                      ₹ 40
                     </TableCell>
                   </TableRow>
                 )} */}

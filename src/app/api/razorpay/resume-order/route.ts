@@ -25,6 +25,9 @@ export async function POST(request: Request) {
       loyaltyPointsRedeemed: order.loyaltyPointsRedeemed,
       prefill: order.checkoutSnapshot.user,
       items: order.checkoutSnapshot.items,
+      giftWrap: order.checkoutSnapshot.giftWrap ?? false,
+      giftWrapCharge: order.checkoutSnapshot.giftWrapCharge ?? 0,
+      giftWrapNote: order.checkoutSnapshot.giftWrapNote ?? "",
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Unable to resume points checkout:", error);

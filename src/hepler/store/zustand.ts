@@ -1,6 +1,7 @@
 import { CartProduct } from "@/types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { GIFT_WRAP_NOTE_LIMIT } from "@/lib/giftWrap";
 
 type functionParams = {
   id: string;
@@ -12,6 +13,10 @@ type functionParams = {
 
 interface StoreState {
   productStore: CartProduct[];
+  giftWrap: boolean;
+  giftWrapNote: string;
+  setGiftWrap: (selected: boolean) => void;
+  setGiftWrapNote: (note: string) => void;
   addItemToStore: (item: CartProduct) => void;
   removeItemFromStore: (index: functionParams) => void;
   increaseQuantity: (index: functionParams) => void;
@@ -32,6 +37,10 @@ export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
       productStore: [],
+      giftWrap: false,
+      giftWrapNote: "",
+      setGiftWrap: (selected) => set({ giftWrap: selected }),
+      setGiftWrapNote: (note) => set({ giftWrapNote: note.slice(0, GIFT_WRAP_NOTE_LIMIT) }),
 
       addItemToStore: (item) => {
         const existingIndex = get().productStore.findIndex(
@@ -62,7 +71,7 @@ export const useStore = create<StoreState>()(
               item.color !== color ||
               (item.variant ?? "stitched") !== (variant ?? "stitched")
           );
-          return { productStore: updated };
+          return { productStore: updated, ...(updated.length === 0 ? { giftWrap: false, giftWrapNote: "" } : {}) };
         }),
 
       increaseQuantity: ({ id, variantId, size, color, variant }: functionParams) =>
@@ -95,10 +104,10 @@ export const useStore = create<StoreState>()(
             )
             .filter((item) => item !== null) as typeof state.productStore;
 
-          return { productStore: updated };
+          return { productStore: updated, ...(updated.length === 0 ? { giftWrap: false, giftWrapNote: "" } : {}) };
         }),
 
-      clearCart: () => set({ productStore: [] }),
+      clearCart: () => set({ productStore: [], giftWrap: false, giftWrapNote: "" }),
     }),
     {
       name: "cart-storage",

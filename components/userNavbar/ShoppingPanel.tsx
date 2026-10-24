@@ -18,6 +18,8 @@ import { useCurrency } from "@/contextCurrencyContext";
 import { getProductFromIds } from "@/src/hepler/order/getPorductFromids";
 import { productHref } from "@/lib/productAdapter";
 import ImageWithSkeleton from "@/components/ImageWithSkeleton";
+import GiftWrapOption from "@/components/cart/GiftWrapOption";
+import { GIFT_WRAP_CHARGE } from "@/lib/giftWrap";
 
 type SavedProduct = Awaited<ReturnType<typeof getProductFromIds>>[number];
 const actionClass =
@@ -36,6 +38,7 @@ export default function ShoppingPanel({
     increaseQuantity,
     decreaseQuantity,
     removeItemFromStore,
+    giftWrap,
   } = useStore();
   const { productWishlist, removeItemFromWishlist } = userWishlistStore();
   const { format } = useCurrency();
@@ -296,10 +299,14 @@ export default function ShoppingPanel({
           <SheetFooter className="shrink-0 border-t border-[#e2d9d1] px-6 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             {isCart ? (
               <>
+                <GiftWrapOption compact priceLabel={format(GIFT_WRAP_CHARGE)} />
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="text-neutral-500">Subtotal</span>
                   <span aria-live="polite">{format(subtotal)}</span>
                 </div>
+                {giftWrap && <div className="mb-2 flex justify-between text-[11px] text-neutral-500">
+                  <span>Gift wrapping</span><span>{format(GIFT_WRAP_CHARGE)}</span>
+                </div>}
                 <p className="mb-3 text-[11px] text-neutral-500">
                   Shipping and discounts calculated at checkout.
                 </p>
