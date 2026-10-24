@@ -329,7 +329,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
   function addWishlistHandler(id: string) {
     addItemToWishlist(id);
-    toast.success("Added to wishlist");
+    toast.success(`${productData.name} added to wishlist`);
   }
 
   function handleBackClick() {

@@ -24,14 +24,19 @@ export default function WishlistClient() {
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <p className="eyebrow mb-3">Your Edit</p>
-          <h1 className="font-heading text-4xl md:text-5xl heading-rule">Wishlist</h1>
+          <h1 className="font-heading text-4xl md:text-5xl heading-rule">
+            Wishlist
+          </h1>
         </div>
         {productWishlist.length === 0 ? (
           <div className="mx-auto max-w-md text-center">
             <p className="font-body text-sm text-muted-foreground mb-6">
               Save pieces you love and return when the occasion calls.
             </p>
-            <Link href="/product" className="inline-flex border border-primary px-8 py-3 text-xs uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground">
+            <Link
+              href="/product"
+              className="inline-flex border border-primary px-8 py-3 text-xs uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground"
+            >
               Explore Collection
             </Link>
           </div>

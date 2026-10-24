@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { useCurrency } from "@/contextCurrencyContext";
 import ImageWithSkeleton from "../ImageWithSkeleton";
-import { convertS3ToImageKit } from "@/src/hepler";
 
 interface SearchDialogProps {
   open: boolean;
@@ -192,8 +191,10 @@ const SearchDialog = ({ open, onClose }: SearchDialogProps) => {
                   className="flex items-center gap-3 border border-neutral-200 p-2 hover:border-primary transition-colors"
                 >
                   <ImageWithSkeleton
-                    src={convertS3ToImageKit(product.bannerImage)}
+                    src={product.bannerImage}
                     alt={product.name}
+                    sizes="48px"
+                    loading="eager"
                     wrapperClassName="h-16 w-12 shrink-0 bg-neutral-100"
                     fit="cover"
                   />

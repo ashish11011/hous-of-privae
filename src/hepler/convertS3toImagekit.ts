@@ -5,7 +5,10 @@ export const convertS3ToImageKit = (imageUrl?: string | null): string => {
   if (!imageUrl) return "/refined/shyama-purple-sharara.jpg";
 
   if (imageUrl.startsWith(s3Origin)) {
-    return `/${imageUrl.slice(s3Origin.length)}`;
+    // S3 accepts '+' for spaces in object paths, but ImageKit treats it as a
+    // literal plus. Preserve encoded literal plus signs (%2B) and query values.
+    const url = new URL(imageUrl);
+    return `${url.pathname.replace(/\+/g, "%20")}${url.search}${url.hash}`;
   }
 
   if (imageUrl.startsWith(`${imageKitOrigin}/`)) {

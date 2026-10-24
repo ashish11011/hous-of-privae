@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // import { ShowProductPrice } from "@/lib/productHealper";
 // import { cn } from "@/lib/utils";
 // import { convertS3ToImageKit, formatNumberWithCommas } from "@/src/hepler";
@@ -38,7 +38,6 @@ import { cn } from "@/lib/utils";
 import { userWishlistStore } from "@/src/hepler/store/zustand";
 import { toast } from "sonner";
 
-
 const ProductCard = ({
   product,
   itemData,
@@ -58,7 +57,11 @@ const ProductCard = ({
 
   if (!productData) return null;
 
-  const wishlistId = wishlistKey ?? productData.wishlistKey ?? productData.variantId ?? productData.id;
+  const wishlistId =
+    wishlistKey ??
+    productData.wishlistKey ??
+    productData.variantId ??
+    productData.id;
   const isWishlisted = productWishlist.some((item) => item.id === wishlistId);
 
   const showNew = false;
@@ -82,7 +85,7 @@ const ProductCard = ({
       toast.success("Removed from wishlist");
     } else {
       addItemToWishlist(wishlistId);
-      toast.success("Added to wishlist");
+      toast.success(`${nameOverride ?? productData.name} added to wishlist`);
     }
   };
 
@@ -100,11 +103,11 @@ const ProductCard = ({
               src={primaryImage}
               alt={nameOverride ?? productData.name}
               fit="contain"
-              className={`transition-transform duration-700 group-hover:scale-105 ${secondaryImage ? "md:group-hover:opacity-0" : ""}`}
+              className="transition-transform duration-700 group-hover:scale-105"
             />
             {secondaryImage && (
               <ImageWithSkeleton
-                wrapperClassName="absolute inset-0 hidden md:block opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none"
+                wrapperClassName="absolute inset-0 hidden md:block opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none [&_.img-skeleton]:hidden"
                 src={secondaryImage}
                 alt=""
                 fit="contain"
@@ -123,7 +126,9 @@ const ProductCard = ({
         >
           <Heart
             size={16}
-            className={isWishlisted ? "fill-primary text-primary" : "text-neutral-700"}
+            className={
+              isWishlisted ? "fill-primary text-primary" : "text-neutral-700"
+            }
           />
         </button>
         {showNew && (
@@ -138,10 +143,18 @@ const ProductCard = ({
         )}
       </div>
       <div className="mt-3 text-center">
-        <h3 className="font-heading text-sm md:text-base text-foreground leading-snug">{nameOverride ?? productData.name}</h3>
+        <h3 className="font-heading text-sm md:text-base text-foreground leading-snug">
+          {nameOverride ?? productData.name}
+        </h3>
         <p className="text-xs md:text-sm text-muted-foreground font-body mt-1 tracking-wide">
-          {format(priceOverride ?? productData.basePrice ?? productData.price ?? 0)}
-          {productData.strikethroughPrice > productData.basePrice && <del className="ml-2 text-xs">{format(productData.strikethroughPrice)}</del>}
+          {format(
+            priceOverride ?? productData.basePrice ?? productData.price ?? 0,
+          )}
+          {productData.strikethroughPrice > productData.basePrice && (
+            <del className="ml-2 text-xs">
+              {format(productData.strikethroughPrice)}
+            </del>
+          )}
         </p>
       </div>
     </div>
