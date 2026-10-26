@@ -15,6 +15,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import NotificationBar from "../navbar/notificationBar";
 import SearchDialog from "./SearchDialog";
 import ShoppingPanel from "./ShoppingPanel";
@@ -47,6 +48,7 @@ export default function NavBar({
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { status: sessionStatus } = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const cartCount = useStore((state) =>
@@ -152,22 +154,26 @@ export default function NavBar({
             >
               <Search size={16} />
             </button>
-            <ShoppingPanel kind="wishlist"><button
-              type="button"
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
-              aria-label="Wishlist"
-            >
-              <Heart size={16} />
-              {wishlistCount > 0 && <CountBadge count={wishlistCount} />}
-            </button></ShoppingPanel>
-            <ShoppingPanel kind="cart"><button
-              type="button"
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
-              aria-label="Cart"
-            >
-              <ShoppingBag size={16} />
-              {cartCount > 0 && <CountBadge count={cartCount} />}
-            </button></ShoppingPanel>
+            <ShoppingPanel kind="wishlist">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
+                aria-label="Wishlist"
+              >
+                <Heart size={16} />
+                {wishlistCount > 0 && <CountBadge count={wishlistCount} />}
+              </button>
+            </ShoppingPanel>
+            <ShoppingPanel kind="cart">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors relative"
+                aria-label="Cart"
+              >
+                <ShoppingBag size={16} />
+                {cartCount > 0 && <CountBadge count={cartCount} />}
+              </button>
+            </ShoppingPanel>
             <Link
               href="/profile"
               className="inline-flex items-center justify-center w-8 h-8 rounded-full text-neutral-950 bg-primary/10 hover:bg-primary hover:text-white transition-colors"
@@ -179,13 +185,13 @@ export default function NavBar({
         </div>
 
         {isMenuOpen && (
-          <div className="absolute left-0 right-0 top-full z-50 border-b border-t border-neutral-900 bg-white shadow-sm animate-fade-in-up">
-            <div className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12 bg-white">
+          <div className="absolute left-0 right-0 top-full z-50 border-b border-t bg-primary shadow-sm text-white animate-fade-in-up">
+            <div className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
               <div className="md:col-span-2">
                 <Link
                   href="/"
                   onClick={closeMenu}
-                  className="nav-link inline-flex items-center gap-2 text-sm tracking-[0.15em] uppercase font-body text-neutral-700 hover:text-neutral-950"
+                  className="nav-link inline-flex items-center gap-2 text-sm tracking-[0.15em] uppercase font-body"
                 >
                   <Home size={14} strokeWidth={1.5} /> Home
                 </Link>
@@ -215,15 +221,17 @@ export default function NavBar({
                 ]}
                 onClick={closeMenu}
               /> */}
-              <div className="md:col-span-2 border-t border-neutral-900 pt-5 mt-2">
-                <Link
-                  href="/auth/login"
-                  onClick={closeMenu}
-                  className="text-sm tracking-[0.15em] uppercase font-body text-neutral-700 hover:text-neutral-950 transition-colors"
-                >
-                  Sign In / Create Account
-                </Link>
-              </div>
+              {sessionStatus === "unauthenticated" && (
+                <div className="md:col-span-2 border-t border-white/30 pt-5 mt-2">
+                  <Link
+                    href="/auth/login"
+                    onClick={closeMenu}
+                    className="text-sm tracking-[0.15em] uppercase font-body transition-colors"
+                  >
+                    Sign In / Create Account
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -244,7 +252,7 @@ function MenuGroup({
 }) {
   return (
     <div>
-      <h4 className="text-[10px] tracking-[0.25em] uppercase font-body text-neutral-700 mb-4">
+      <h4 className="text-[10px] tracking-[0.25em] text-gray-400 uppercase font-body mb-4">
         {title}
       </h4>
       <div className="space-y-3">
@@ -253,7 +261,7 @@ function MenuGroup({
             key={link.href}
             href={link.href}
             onClick={onClick}
-            className="nav-link block text-sm tracking-[0.15em] uppercase font-body text-neutral-700 hover:text-neutral-950 transition-colors"
+            className="nav-link block text-sm tracking-[0.15em] uppercase font-body  transition-colors"
           >
             {link.label}
           </Link>

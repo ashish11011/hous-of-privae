@@ -240,7 +240,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   const { addItemToWishlist, productWishlist, removeItemFromWishlist } =
     userWishlistStore();
   const productColors = productData.variants;
-  const [selectedColor, setSelectedColor] = useState(productData.variants.find(variant => variant.id === productData.variantId)?.color ?? "");
+  const [selectedColor, setSelectedColor] = useState(
+    productData.variants.find((variant) => variant.id === productData.variantId)
+      ?.color ?? "",
+  );
   const [selectedSize, setSelectedSize] = useState<string | null>(
     productData.sizes?.[0] ?? null,
   );
@@ -255,7 +258,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     email: "",
     phone: "",
   });
-  const isInStock = productData.isInStoke !== false && !!productData.variantId && !!productData.sizes?.length;
+  const isInStock =
+    productData.isInStoke !== false &&
+    !!productData.variantId &&
+    !!productData.sizes?.length;
   const isUnstitchedVariant = selectedVariant === "unstitched";
   const selectedCartSize = isUnstitchedVariant ? "" : selectedSize;
   const productUrl =
@@ -296,7 +302,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
       return;
     }
 
-    toast.error(isUnstitchedVariant ? "Please select a color" : "Please select color and size");
+    toast.error(
+      isUnstitchedVariant
+        ? "Please select a color"
+        : "Please select color and size",
+    );
   };
 
   const productExtraDetails = [
@@ -385,9 +395,19 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
   }
 
   function getProdcutPrice() {
-    return priceForSelection(productData.pricingConfig, selectedSize ?? "", selectedVariant)?.basePrice ?? 0;
+    return (
+      priceForSelection(
+        productData.pricingConfig,
+        selectedSize ?? "",
+        selectedVariant,
+      )?.basePrice ?? 0
+    );
   }
-  const comparisonPrice = priceForSelection(productData.pricingConfig, selectedSize ?? "", selectedVariant)?.strikethroughPrice;
+  const comparisonPrice = priceForSelection(
+    productData.pricingConfig,
+    selectedSize ?? "",
+    selectedVariant,
+  )?.strikethroughPrice;
 
   return (
     <div className="flex flex-col gap-6 h-fit sticky top-16 text-neutral-800">
@@ -412,7 +432,11 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </p>
         <p className="text-xl text-primary font-medium mb-4">
           <ShowProductPrice price={getProdcutPrice()} />
-          {comparisonPrice && comparisonPrice > getProdcutPrice() ? <del className="ml-3 text-sm text-muted-foreground"><ShowProductPrice price={comparisonPrice} /></del> : null}
+          {comparisonPrice && comparisonPrice > getProdcutPrice() ? (
+            <del className="ml-3 text-sm text-muted-foreground">
+              <ShowProductPrice price={comparisonPrice} />
+            </del>
+          ) : null}
         </p>
         <p className="text-sm text-neutral-600 leading-relaxed">
           {productData.description ||
@@ -473,7 +497,14 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   key={colorVariant.id}
-                  onClick={() => router.push(productHref({ slug: productData.slug, variantId: colorVariant.id }))}
+                  onClick={() =>
+                    router.push(
+                      productHref({
+                        slug: productData.slug,
+                        variantId: colorVariant.id,
+                      }),
+                    )
+                  }
                   className={`flex items-center gap-2 px-2 py-1 transition-colors ${
                     productData.variantId === colorVariant.id
                       ? " text-primary"
@@ -540,7 +571,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
 
           {/* Complimentary Fit Adjustment */}
           <div className="bg-[#fdfbf7] border border-[#eaddce] text-[#a68a61] text-xs py-3 px-4 flex items-center gap-2 uppercase tracking-wide">
-            <span>✂</span> Complimentary fit adjustment · 14 days
+            <span>✂</span> Complimentary fit adjustment · 5 days
           </div>
         </>
       )}
@@ -575,10 +606,13 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if ((isUnstitchedVariant || selectedCartSize) && selectedColor) {
+                    if (
+                      (isUnstitchedVariant || selectedCartSize) &&
+                      selectedColor
+                    ) {
                       decreaseQuantity({
                         id: productData.id,
-        variantId: productData.variantId!,
+                        variantId: productData.variantId!,
                         size: selectedCartSize ?? "",
                         color: selectedColor,
                         variant: selectedVariant,
@@ -603,10 +637,13 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 <button
                   type="button"
                   onClick={() => {
-                    if ((isUnstitchedVariant || selectedCartSize) && selectedColor) {
+                    if (
+                      (isUnstitchedVariant || selectedCartSize) &&
+                      selectedColor
+                    ) {
                       increaseQuantity({
                         id: productData.id,
-        variantId: productData.variantId!,
+                        variantId: productData.variantId!,
                         size: selectedCartSize ?? "",
                         color: selectedColor,
                         variant: selectedVariant,
