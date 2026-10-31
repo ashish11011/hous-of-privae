@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   CalendarDays,
   Gem,
+  Gift,
   Heart,
   LayoutGrid,
   LogOut,
@@ -16,6 +17,7 @@ import { Signout } from "@/src/hepler/auth";
 import { userWishlistStore } from "@/src/hepler/store/zustand";
 import { loyaltyPointsToRupees } from "@/lib/loyaltyRewards";
 import AddressForm from "./AddressForm";
+import AccountGiftCards from "@/components/gift-cards/AccountGiftCards";
 
 export type ProfileUser = {
   name: string | null;
@@ -39,6 +41,7 @@ const tabs = [
   { label: "Overview", icon: LayoutGrid },
   { label: "Orders", icon: Package },
   { label: "Privae Circle", icon: Gem },
+  { label: "Gift Cards", icon: Gift },
   { label: "Wishlist", icon: Heart },
   { label: "Addresses", icon: MapPin },
   { label: "Appointments", icon: CalendarDays },
@@ -139,7 +142,13 @@ export default function ProfileDashboard({
   const wishlistCount = userWishlistStore(
     (state) => state.productWishlist.length,
   );
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const selectGiftCards = () => { if (window.location.hash === "#gift-cards") setActiveTab("Gift Cards"); };
+    selectGiftCards();
+    window.addEventListener("hashchange", selectGiftCards);
+    return () => window.removeEventListener("hashchange", selectGiftCards);
+  }, []);
   const points = Math.max(0, userData.loyaltyPoints);
   const tierIndex = tiers.reduce(
     (current, tier, index) => (points >= tier.min ? index : current),
@@ -399,6 +408,7 @@ export default function ProfileDashboard({
               </section>
             )}
             {label === "Addresses" && <AddressForm userData={userData} />}
+            {label === "Gift Cards" && activeTab === "Gift Cards" && <AccountGiftCards />}
             {label === "Appointments" && (
               <section>
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">

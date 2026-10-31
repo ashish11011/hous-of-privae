@@ -45,10 +45,13 @@ export async function getAdminOrderDetail(id: string): Promise<AdminOrderDetail 
     giftWrap: snapshot?.giftWrap ?? false,
     giftWrapCharge: snapshot?.giftWrapCharge ?? 0,
     giftWrapNote: snapshot?.giftWrapNote ?? "",
+    giftCardAmount: snapshot?.giftCardAmount ?? 0,
+    giftCardSuffix: snapshot?.giftCardSuffix ?? null,
+    cashAmount: snapshot?.cashAmount ?? (order.expectedAmountPaise !== null ? order.expectedAmountPaise / 100 : null),
     discountAmount: snapshot?.discountAmount ?? order.discountAmount,
     loyaltyPointsRedeemed: order.loyaltyPointsRedeemed,
     loyaltyPointsStatus: order.loyaltyPointsStatus,
-    totalAmount: order.expectedAmountPaise !== null ? order.expectedAmountPaise / 100 : order.totalAmountPaid,
+    totalAmount: snapshot?.totalAmountPaid ?? (order.expectedAmountPaise !== null ? order.expectedAmountPaise / 100 : order.totalAmountPaid),
     couponCode: order.couponCode, razorpayOrderId: order.razorpayOrderId, razorpayPaymentId: order.razorpayPaymentId,
     // Use the purchase snapshot even if a product is renamed or repriced later.
     // Historical orders without price snapshots must not show today's price as the purchase price.

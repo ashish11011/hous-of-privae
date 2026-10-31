@@ -2,47 +2,41 @@ import { db } from "@/lib/db";
 import { orderTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { settleOrderLoyalty } from "@/lib/loyalty";
-import { sendOrderConfirmationEmail } from "@/lib/email/ses";
 import { paymentTransition, type PaymentEvent } from "./razorpay-events";
+import { sendPaidOrderEmails } from "./order-emails";
+import { processGiftCardPayment } from "@/lib/gift-cards/service";
+import { getOrderGiftCardReservation, settleGiftCardReservation } from "@/lib/gift-cards/redemption";
 
 export async function processPaymentWebhook(payment: PaymentEvent) {
+  if (await processGiftCardPayment(payment)) return;
   const orderId = await db.transaction(async tx => {
-    // Serializes all events for an order, including order.paid + payment.captured.
     const [order] = await tx.select().from(orderTable)
       .where(eq(orderTable.razorpayOrderId, payment.order_id)).for("update");
     if (!order) throw new Error("No saved order for Razorpay payment; retry required");
     const transition = paymentTransition(order, payment);
     if (transition) {
+      const giftAmount = order.checkoutSnapshot?.giftCardAmount ?? 0;
+      if (transition.paymentStatus === "paid" && giftAmount > 0) {
+        const reservation = await getOrderGiftCardReservation(order.id, tx);
+        if (!reservation || reservation.status !== "reserved" || reservation.userId !== order.userId || reservation.amountPaise !== giftAmount * 100)
+          throw new Error("Gift card funding does not match the saved order");
+      }
+      const settledTotal = payment.amount / 100 + giftAmount;
       await tx.update(orderTable).set({
         ...transition,
         razorpayPaymentId: payment.id,
         ...(transition.paymentStatus === "paid" ? {
-          totalAmountPaid: payment.amount / 100,
+          totalAmountPaid: settledTotal,
           loyaltyPointsStatus: order.loyaltyPointsRedeemed > 0 ? "spent" as const : "none" as const,
         } : {}),
         updatedAt: new Date(),
       }).where(eq(orderTable.id, order.id));
       if (transition.paymentStatus === "paid") {
-        await settleOrderLoyalty(tx, order, payment.amount / 100);
+        await settleOrderLoyalty(tx, order, settledTotal);
+        if (giftAmount > 0) await settleGiftCardReservation(tx, order.id);
       }
     }
     return order.id;
   });
-
-  if (payment.status !== "captured") return;
-  // Payment remains committed even if SES fails. A webhook retry resumes email only.
-  // Separate delivery markers ensure an admin failure does not resend customer mail.
-  for (const recipient of ["customer", "admin"] as const) {
-    await db.transaction(async tx => {
-      const [order] = await tx.select().from(orderTable).where(eq(orderTable.id, orderId)).for("update");
-      const sentAt = recipient === "customer" ? order.confirmationEmailSentAt : order.adminEmailSentAt;
-      if (order.paymentStatus !== "paid" || sentAt) return;
-      if (!order.checkoutSnapshot) throw new Error("Missing order email snapshot");
-      await sendOrderConfirmationEmail(order.checkoutSnapshot, recipient);
-      await tx.update(orderTable).set(recipient === "customer"
-        ? { confirmationEmailSentAt: new Date() }
-        : { adminEmailSentAt: new Date() }
-      ).where(eq(orderTable.id, order.id));
-    });
-  }
+  if (payment.status === "captured") await sendPaidOrderEmails(orderId);
 }

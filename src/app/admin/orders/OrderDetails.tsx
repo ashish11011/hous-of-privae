@@ -328,6 +328,7 @@ export default function OrderDetails({
                 ["Delivery", detail.deliveryCharge],
                 ...(detail.giftWrap ? [["Gift wrapping", detail.giftWrapCharge]] : []),
                 ["Discount", detail.discountAmount],
+                ...(detail.giftCardAmount > 0 ? [[`Gift card •••• ${detail.giftCardSuffix ?? ""}`, detail.giftCardAmount], ["Razorpay payment", detail.cashAmount]] : []),
                 ["Order total", detail.totalAmount],
                 ["Total paid", detail.totalAmountPaid],
               ].map(([label, amount]) => (

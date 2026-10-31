@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
@@ -18,9 +18,15 @@ import { CheckoutError } from "./checkout-error";
 import razorpay from "@/lib/razorpay";
 import type { OrderEmailInput } from "@/lib/email/ses";
 import { GIFT_WRAP_CHARGE, GIFT_WRAP_NOTE_LIMIT } from "@/lib/giftWrap";
+import { giftCardCodeSchema } from "@/lib/gift-cards/validation";
+import { getPendingGiftCardCheckout, reserveGiftCard, settleGiftCardReservation } from "@/lib/gift-cards/redemption";
+import { settleOrderLoyalty } from "@/lib/loyalty";
+import { sendPaidOrderEmails } from "./order-emails";
 
 const requiredText = z.string().trim().min(1).max(300);
 export const checkoutSchema = z.object({
+  giftCardCode: z.union([giftCardCodeSchema, z.literal("")]).default(""),
+  requestId: z.uuid().optional(),
   giftWrap: z.boolean().default(false),
   giftWrapNote: z.string().trim().max(GIFT_WRAP_NOTE_LIMIT).default(""),
   loyaltyPointsToRedeem: z.number().int().min(0).max(2147483647).multipleOf(LOYALTY_POINTS_PER_RUPEE_VALUE).default(0),
@@ -104,12 +110,15 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
   const giftWrapNote = input.giftWrap ? input.giftWrapNote : "";
   const session = await getServerSession(authOptions);
   const points = input.loyaltyPointsToRedeem;
+  if (input.giftCardCode && (!session?.id || !input.requestId))
+    throw new CheckoutError("Sign in and refresh checkout to use a gift card.", 401);
   if (points > 0 && !session?.id)
     throw new CheckoutError("Sign in to use your loyalty points.", 401);
-  const id = randomUUID();
+  const id = input.giftCardCode ? input.requestId! : randomUUID();
+  const checkoutFingerprint = input.giftCardCode ? createHash("sha256").update(JSON.stringify(input)).digest("hex") : undefined;
   // Lock the user's balance until the reservation and gateway order are saved.
   // A gateway failure rolls back the reservation without taking any points.
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     let [user] = await tx.select().from(userTable)
       .where(session?.id ? eq(userTable.id, session.id) : eq(userTable.email, input.email.toLowerCase()))
       .for("update");
@@ -120,6 +129,22 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
       [user] = await tx.select().from(userTable).where(eq(userTable.email, input.email.toLowerCase())).for("update");
     }
     if (!user) throw new CheckoutError("Unable to find your account.", 404);
+    if (input.giftCardCode) {
+      const [existing] = await tx.select().from(orderTable).where(eq(orderTable.id, id));
+      if (existing) {
+        if (existing.userId !== user.id || existing.checkoutSnapshot?.checkoutFingerprint !== checkoutFingerprint)
+          throw new CheckoutError("This checkout request is already in use. Refresh checkout to start again.", 409);
+        return {
+          success: true, orderId: existing.razorpayOrderId, internalOrderId: existing.id,
+          amount: existing.expectedAmountPaise ?? 0, currency: existing.currency,
+          confirmed: existing.paymentStatus === "paid", loyaltyPointsRedeemed: existing.loyaltyPointsRedeemed,
+          totalAmountPaid: existing.totalAmountPaid ?? 0,
+          giftCardAmount: existing.checkoutSnapshot?.giftCardAmount ?? 0,
+        };
+      }
+      if (await getPendingGiftCardCheckout(user.id, tx))
+        throw new CheckoutError("You have a pending gift card checkout. Resume that payment before starting another.", 409);
+    }
     if (points > 0) {
       const availability = await getLoyaltyAvailability(user.id, user.loyaltyPoints, tx);
       if (availability.pendingCheckout)
@@ -142,6 +167,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
       items, subtotalAmount, deliveryCharge, discountAmount,
       giftWrap: input.giftWrap, giftWrapCharge, giftWrapNote,
       loyaltyPointsRedeemed: points, totalAmountPaid: total,
+      ...(checkoutFingerprint ? { checkoutFingerprint } : {}),
     };
     await tx.insert(orderTable).values({
       id, userId: user.id, ...snapshot.address, subtotalAmount, deliveryCharge,
@@ -154,15 +180,42 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
       orderId: id, productId: item.id, productVariantId: item.variantId,
       quantity: item.quantity, size: item.size, color: item.color, variant: item.variant,
     })));
+    let giftCardAmount = 0;
+    if (input.giftCardCode) {
+      const credit = await reserveGiftCard(tx, input.giftCardCode, user.id, id, amount);
+      giftCardAmount = credit.amountPaise / 100;
+      snapshot.giftCardAmount = giftCardAmount;
+      snapshot.giftCardSuffix = credit.suffix;
+      snapshot.cashAmount = total - giftCardAmount;
+      await tx.update(orderTable).set({ expectedAmountPaise: amount - credit.amountPaise, checkoutSnapshot: snapshot }).where(eq(orderTable.id, id));
+      if (credit.amountPaise === amount) {
+        const [savedOrder] = await tx.select().from(orderTable).where(eq(orderTable.id, id));
+        await settleOrderLoyalty(tx, savedOrder, total);
+        await settleGiftCardReservation(tx, id);
+        await tx.update(orderTable).set({
+          status: "confirmed", paymentStatus: "paid", totalAmountPaid: total,
+          loyaltyPointsStatus: points > 0 ? "spent" : "none", updatedAt: new Date(),
+        }).where(eq(orderTable.id, id));
+        return { success: true, orderId: null, internalOrderId: id, amount: 0, currency: "INR", confirmed: true, loyaltyPointsRedeemed: points, totalAmountPaid: total, giftCardAmount };
+      }
+    }
+    const cashAmount = amount - giftCardAmount * 100;
     const gatewayOrder = await razorpay.orders.create({
-      amount, currency: "INR", receipt: id, notes: { internal_order_id: id },
+      amount: cashAmount, currency: "INR", receipt: id, notes: { internal_order_id: id },
     });
     await tx.update(orderTable).set({ razorpayOrderId: gatewayOrder.id, updatedAt: new Date() })
       .where(eq(orderTable.id, id));
     return {
-      success: true, orderId: gatewayOrder.id, internalOrderId: id, amount, currency: "INR",
+      success: true, orderId: gatewayOrder.id, internalOrderId: id, amount: cashAmount, currency: "INR",
       loyaltyPointsRedeemed: points, discountAmount, subtotalAmount, deliveryCharge,
       giftWrap: input.giftWrap, giftWrapCharge, giftWrapNote,
+      giftCardAmount, confirmed: false, totalAmountPaid: total,
     };
   });
+  let emailPending = false;
+  if (result.confirmed && result.amount === 0) {
+    try { await sendPaidOrderEmails(result.internalOrderId); }
+    catch { emailPending = true; console.error("Gift-card-funded order email pending", { orderId: result.internalOrderId }); }
+  }
+  return { ...result, emailPending };
 }

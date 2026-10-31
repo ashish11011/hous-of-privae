@@ -5,6 +5,7 @@ import { user } from "@/db/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { getLoyaltyAvailability } from "@/lib/loyaltyBalance";
+import { getPendingGiftCardCheckout } from "@/lib/gift-cards/redemption";
 
 export async function GET() {
   try {
@@ -35,8 +36,8 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const availability = await getLoyaltyAvailability(userId, userData.loyaltyPoints);
-    return NextResponse.json({ success: true, user: userData, ...availability }, {
+    const [availability, giftCheckout] = await Promise.all([getLoyaltyAvailability(userId, userData.loyaltyPoints), getPendingGiftCardCheckout(userId)]);
+    return NextResponse.json({ success: true, user: userData, ...availability, pendingCheckout: giftCheckout ?? availability.pendingCheckout }, {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {

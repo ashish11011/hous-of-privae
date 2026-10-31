@@ -34,7 +34,7 @@ const categoryLinks = [
 const discoverLinks = [
   { label: "Privae Bespoke", href: "/bespoke" },
   { label: "Privae Fit", href: "/privae-fit" },
-  { label: "The Experience", href: "/gifting" },
+  { label: "Privae Experience — Gift Card", href: "/gifting" },
 ];
 
 export default function NavBar({

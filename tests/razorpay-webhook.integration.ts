@@ -17,6 +17,9 @@ import { POST as checkout } from "../src/app/api/razorpay/create-order/route";
 import { deliveries, failEmailFor, setTestSession, statusDeliveries } from "./fixtures/payment-services";
 
 const sql = postgres(process.env.DATABASE_URL!);
+let resolveSchemaReady: () => void;
+let rejectSchemaReady: (error: unknown) => void;
+export const testSchemaReady = new Promise<void>((resolve, reject) => { resolveSchemaReady = resolve; rejectSchemaReady = reject; });
 const secret = "test-webhook-secret";
 let gatewayOrderId: string;
 let internalOrderId: string;
@@ -48,6 +51,7 @@ function callback() {
 }
 
 before(async () => {
+  try {
   // Only a disposable, empty local database is accepted by the runner.
   const journal = JSON.parse(readFileSync("db/migrations/meta/_journal.json", "utf8"));
   // 0004 already adds the variant column from historical migration 0001.
@@ -58,6 +62,8 @@ before(async () => {
   await sql`insert into product_varient (id, product_id, color, banner_image, images) values (${variantId}, ${productId}, 'Purple', '/test-purple.jpg', ARRAY['/test-purple.jpg'])`;
   process.env.RAZORPAY_WEBHOOK_SECRET = secret;
   process.env.RAZORPAY_KEY_SECRET = "test-api-secret";
+  resolveSchemaReady();
+  } catch (error) { rejectSchemaReady(error); throw error; }
 });
 after(async () => { await sql.end(); });
 
@@ -167,7 +173,7 @@ test("admin details and status APIs reject guests and non-admin accounts", async
   setTestSession({ id: customer.id });
   assert.equal((await getDetails(post({}), context())).status, 403);
   await sql`insert into users (id, email, user_type) values (${adminId}, 'admin@example.com', '1')`;
-  setTestSession({ id: adminId });
+  setTestSession({ id: adminId, email: "bishnoi11011@gmail.com" });
 });
 
 test("admin sees purchased items and original prices after catalog changes", async () => {
@@ -311,7 +317,7 @@ test("variant edits are atomic, retain IDs and protect cross-product ownership",
   assert.ok(updated.variants.every(item => item.bannerImage.startsWith("/updated-")));
   setTestSession(null);
   await assert.rejects(createProduct(catalogInput), /Admin sign-in/);
-  setTestSession({ id: adminId });
+  setTestSession({ id: adminId, email: "bishnoi11011@gmail.com" });
 });
 
 test("removing variants preserves past order snapshots and archiving hides all storefront cards", async () => {

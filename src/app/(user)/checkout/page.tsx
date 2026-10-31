@@ -9,21 +9,14 @@ import {
 } from "@/components/ui/table";
 import { Form, Formik } from "formik";
 import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/const";
 import { convertS3ToImageKit } from "@/src/hepler";
 import { useRouter } from "next/navigation";
 import { Plus, Minus, Trash2, CheckCircle2 } from "lucide-react";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-import { checkCoupon } from "@/src/hepler/coupons/coupon.helper";
 import {
   Dialog,
   DialogContent,
@@ -37,12 +30,15 @@ import { calculateOrderRewardPoints, loyaltyPointsToRupees, maximumRedeemablePoi
 import Link from "next/link";
 import GiftWrapOption from "@/components/cart/GiftWrapOption";
 import { GIFT_WRAP_CHARGE } from "@/lib/giftWrap";
+import GiftCardRedeemBlock, { type AppliedGiftCard } from "@/components/gift-cards/GiftCardRedeemBlock";
+import { giftCardRequest } from "@/lib/gift-cards/client";
 
 type CheckoutPayment = {
   orderId: string; internalOrderId: string; amount: number; currency: string;
   loyaltyPointsRedeemed: number;
+  giftCardAmount?: number;
 };
-type PendingCheckout = { id: string; points: number; amount: number | null; subtotalAmount: number };
+type PendingCheckout = { id: string; points: number; amount: number | null; subtotalAmount: number; giftCardAmountPaise?: number };
 const formatINR = (amount: number) => amount.toLocaleString("en-IN");
 
 const getColorNameByHex = (hex: string) => {
@@ -86,6 +82,9 @@ const Page = () => {
   const [pointsLoading, setPointsLoading] = useState(true);
   const [pointsLoadError, setPointsLoadError] = useState(false);
   const [pointsUsed, setPointsUsed] = useState(0);
+  const [appliedGiftCard, setAppliedGiftCard] = useState<AppliedGiftCard | null>(null);
+  const [emailPending, setEmailPending] = useState(false);
+  const checkoutAttempt = useRef({ fingerprint: "", id: "" });
   const [checkoutInitialValues, setCheckoutInitialValues] = useState(
     userDetailInitialValues,
   );
@@ -154,8 +153,10 @@ const Page = () => {
   const appliedPoints = Math.min(Math.max(0, Math.floor((Number(pointsInput) || 0) / 10) * 10), maximumPoints);
   const pointsDiscount = loyaltyPointsToRupees(appliedPoints);
   const giftWrapCharge = giftWrap && productStore.length > 0 ? GIFT_WRAP_CHARGE : 0;
-  const finalTotal = cartTotal + deliveryCharge + giftWrapCharge - pointsDiscount;
-  const estimatedLoyaltyPoints = calculateOrderRewardPoints(finalTotal);
+  const totalBeforeGiftCard = cartTotal + deliveryCharge + giftWrapCharge - pointsDiscount;
+  const giftCardAmount = appliedGiftCard ? Math.min(appliedGiftCard.balancePaise / 100, totalBeforeGiftCard) : 0;
+  const finalTotal = totalBeforeGiftCard - giftCardAmount;
+  const estimatedLoyaltyPoints = calculateOrderRewardPoints(totalBeforeGiftCard);
 
   const handlePlaceOrder = async (values: typeof userDetailInitialValues) => {
     setIsSubmitting(true);
@@ -168,13 +169,16 @@ const Page = () => {
         loyaltyPointsToRedeem: appliedPoints,
         giftWrap,
         giftWrapNote: giftWrap ? giftWrapNote : "",
+        giftCardCode: appliedGiftCard?.code || "",
       };
+      const fingerprint = JSON.stringify(orderPayload);
+      if (checkoutAttempt.current.fingerprint !== fingerprint) checkoutAttempt.current = { fingerprint, id: crypto.randomUUID() };
 
       // 1. Create Razorpay order
       const rzpOrderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload),
+        body: JSON.stringify({ ...orderPayload, requestId: checkoutAttempt.current.id }),
       });
 
       const rzpOrderData = await rzpOrderRes.json();
@@ -188,6 +192,15 @@ const Page = () => {
 
       await loadProfile();
       setPointsInput("0");
+      if (rzpOrderData.confirmed) {
+        setOrderId(rzpOrderData.internalOrderId);
+        setPaymentConfirmed(true); setShowSuccess(true);
+        setPointsUsed(rzpOrderData.loyaltyPointsRedeemed || 0);
+        setLoyaltyPointsEarned(calculateOrderRewardPoints(rzpOrderData.totalAmountPaid ?? totalBeforeGiftCard));
+        setEmailPending(Boolean(rzpOrderData.emailPending));
+        clearCart(); setAppliedGiftCard(null); setIsSubmitting(false);
+        return;
+      }
       openPayment(rzpOrderData, values);
     } catch (error) {
       console.error("Error initiating payment:", error);
@@ -230,7 +243,7 @@ const Page = () => {
             });
             const result = await verifyRes.json();
             if (verifyRes.ok && result.verified) {
-              if (clearPaidCart) clearCart();
+              if (clearPaidCart) { clearCart(); setAppliedGiftCard(null); }
               if (result.confirmed) {
                 setPaymentConfirmed(true);
                 setLoyaltyPointsEarned(result.loyaltyPointsEarned || 0);
@@ -258,8 +271,8 @@ const Page = () => {
       },
       modal: {
         ondismiss: () => {
-          toast.info(rzpOrderData.loyaltyPointsRedeemed > 0
-            ? "Payment closed. Your points are reserved for this order; use Resume payment to continue."
+          toast.info(rzpOrderData.loyaltyPointsRedeemed > 0 || (rzpOrderData.giftCardAmount ?? 0) > 0
+            ? "Payment closed. Your points or gift card credit are reserved for this order; use Resume payment to continue."
             : "Payment was cancelled.");
           void loadProfile();
           setIsSubmitting(false);
@@ -339,7 +352,7 @@ const Page = () => {
                   <LabelInput labelName="State" name="state" />
                 </div>
                 <LabelInput labelName="Pincode" name="pincode" type="number" />
-                <DiscountInput />
+                <GiftCardRedeemBlock applied={appliedGiftCard} onChange={setAppliedGiftCard} payablePaise={totalBeforeGiftCard * 100} disabled={isSubmitting || Boolean(pendingCheckout)} />
                 {productStore.length > 0 && <GiftWrapOption disabled={isSubmitting} />}
                 <section className="border border-border p-4 space-y-3" aria-label="Use loyalty points">
                   <h2 className="font-heading text-lg">Use your loyalty points</h2>
@@ -376,18 +389,18 @@ const Page = () => {
                   )}
                   {pendingCheckout && (
                     <div className="space-y-2 border-t border-border pt-3">
-                      <p className="text-sm">{formatINR(pendingCheckout.points)} points are reserved for your pending order. Amount due: ₹{formatINR((pendingCheckout.amount ?? 0) / 100)}.</p>
+                      <p className="text-sm">{pendingCheckout.giftCardAmountPaise ? `₹${formatINR(pendingCheckout.giftCardAmountPaise / 100)} in gift card credit${pendingCheckout.points ? ` and ${formatINR(pendingCheckout.points)} points` : ""}` : `${formatINR(pendingCheckout.points)} points`} reserved for your pending order. Amount due: ₹{formatINR((pendingCheckout.amount ?? 0) / 100)}.</p>
                       <Button type="button" variant="outline" disabled={isSubmitting} onClick={resumePayment}>Resume payment for pending order</Button>
                     </div>
                   )}
                 </section>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || productStore.length === 0}
+                  disabled={isSubmitting || productStore.length === 0 || Boolean(pendingCheckout?.giftCardAmountPaise)}
                   className="w-full rounded-none h-12 tracking-[0.18em] uppercase text-xs"
                   size={"lg"}
                 >
-                  {isSubmitting ? "Processing..." : "Pay & Place Order"}
+                  {isSubmitting ? "Processing..." : finalTotal === 0 && appliedGiftCard ? "Place Order with Gift Card" : "Pay & Place Order"}
                 </Button>
               </Form>
             </Formik>
@@ -524,16 +537,9 @@ const Page = () => {
                     <TableHead>Gift wrapping</TableHead>
                     <TableCell className="text-right">₹{formatINR(giftWrapCharge)}</TableCell>
                   </TableRow>}
-                  {/* {appliedCoupon && (
-                  <TableRow className="   hover:bg-neutral-900">
-                    <TableHead>Discount Applied ({appliedCoupon})</TableHead>
-                    <TableCell className="text-right w-52  text-base">
-                      - ₹ {(cartTotal - discountedTotal).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                )} */}
+                  {giftCardAmount > 0 && <TableRow><TableHead>Gift card •••• {appliedGiftCard?.suffix}</TableHead><TableCell className="text-right">− ₹{formatINR(giftCardAmount)}</TableCell></TableRow>}
                   <TableRow className=" ">
-                    <TableHead>Total</TableHead>
+                    <TableHead>Amount due</TableHead>
                     <TableCell className="text-right w-52 text-xl">
                       Rs. {finalTotal}
                     </TableCell>
@@ -592,6 +598,10 @@ const Page = () => {
               <span>Loyalty Used</span><span>{formatINR(pointsUsed)} pts · ₹{formatINR(loyaltyPointsToRupees(pointsUsed))}</span>
             </div>
           )}
+          {emailPending && <Button type="button" variant="outline" onClick={async () => {
+            try { await giftCardRequest("/complete-order", { id: orderId }); setEmailPending(false); toast.success("Confirmation email sent."); }
+            catch { toast.error("Email delivery is still pending. Please try again shortly."); }
+          }}>Retry confirmation email</Button>}
           {loyaltyPointsEarned > 0 && (
             <div className="bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
               <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">
@@ -632,35 +642,3 @@ const Page = () => {
 };
 
 export default Page;
-
-function DiscountInput() {
-  const [couponCode, setCouponCode] = useState("");
-  const [message, setMessage] = useState<any>("");
-  async function applyCoupon(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    try {
-      const res = await checkCoupon(couponCode);
-    } catch (error: any) {
-      console.error(error);
-      setMessage(error);
-    }
-  }
-  return (
-    <div className=" space-y-1">
-      <Label>Add Coupon</Label>
-      <InputGroup className=" w-full">
-        <InputGroupInput
-          value={couponCode}
-          onChange={(e) => setCouponCode(e.currentTarget.value)}
-          placeholder="WELCOME10"
-        />
-        <InputGroupAddon align={"inline-end"}>
-          <InputGroupButton onClick={applyCoupon} className=" cursor-pointer">
-            Apply
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
-      <p>{message}</p>
-    </div>
-  );
-}

@@ -8,6 +8,7 @@ export type AdminOrderDetail = AdminOrderSummary & {
   address: { addressLine1: string | null; addressLine2: string | null; city: string | null; state: string | null; pincode: string | null };
   subtotalAmount: number; deliveryCharge: number; discountAmount: number;
   giftWrap: boolean; giftWrapCharge: number; giftWrapNote: string;
+  giftCardAmount: number; giftCardSuffix: string | null; cashAmount: number | null;
   loyaltyPointsRedeemed: number; loyaltyPointsStatus: "none" | "reserved" | "spent";
   totalAmount: number | null; couponCode: string | null;
   razorpayOrderId: string | null; razorpayPaymentId: string | null;

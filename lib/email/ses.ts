@@ -40,6 +40,10 @@ export type OrderEmailInput = {
   giftWrapNote?: string;
   discountAmount: number;
   loyaltyPointsRedeemed?: number;
+  giftCardAmount?: number;
+  giftCardSuffix?: string | null;
+  cashAmount?: number;
+  checkoutFingerprint?: string;
   totalAmountPaid: number;
   couponCode?: string | null;
 };
@@ -157,6 +161,7 @@ function htmlOrderSummary(input: OrderEmailInput, title: string) {
       ${input.giftWrap ? `<p><strong>Gift wrapping:</strong> Rs. ${input.giftWrapCharge ?? 0}</p>${input.giftWrapNote ? `<p><strong>Handwritten gift note:</strong><br><span style="white-space:pre-wrap;">${escapeHtml(input.giftWrapNote)}</span></p>` : ""}` : ""}
       <p><strong>Discount:</strong> Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}</p>
       ${input.loyaltyPointsRedeemed ? `<p><strong>Loyalty points used:</strong> ${input.loyaltyPointsRedeemed}</p>` : ""}
+      ${input.giftCardAmount ? `<p><strong>Gift card •••• ${escapeHtml(input.giftCardSuffix || "")}:</strong> Rs. ${input.giftCardAmount}</p><p><strong>Paid via Razorpay:</strong> Rs. ${input.cashAmount ?? 0}</p>` : ""}
       <h3>Total: Rs. ${input.totalAmountPaid}</h3>
     </div>
   `;
@@ -184,7 +189,7 @@ ${orderLines(input.items)}
 Subtotal: Rs. ${input.subtotalAmount}
 Delivery: Rs. ${input.deliveryCharge}
 ${input.giftWrap ? `Gift wrapping: Rs. ${input.giftWrapCharge ?? 0}\n${input.giftWrapNote ? `Handwritten gift note: ${input.giftWrapNote}\n` : ""}` : ""}Discount: Rs. ${input.discountAmount}${input.couponCode ? ` (${input.couponCode})` : ""}
-${input.loyaltyPointsRedeemed ? `Loyalty points used: ${input.loyaltyPointsRedeemed}\n` : ""}Total: Rs. ${input.totalAmountPaid}`;
+${input.loyaltyPointsRedeemed ? `Loyalty points used: ${input.loyaltyPointsRedeemed}\n` : ""}${input.giftCardAmount ? `Gift card ending ${input.giftCardSuffix}: Rs. ${input.giftCardAmount}\nPaid via Razorpay: Rs. ${input.cashAmount ?? 0}\n` : ""}Total: Rs. ${input.totalAmountPaid}`;
 }
 
 async function sendOrderEmail(to: string, subject: string, title: string, input: OrderEmailInput) {
@@ -407,4 +412,21 @@ export async function sendOrderStatusEmail(input: {
     console.error("SES sendOrderStatusEmail error:", err);
     throw err;
   }
+}
+
+export async function sendGiftCardEmail(input: {
+  to: string; purchaser: boolean; senderName: string; recipientName: string;
+  amountPaise: number; message: string; code: string;
+}) {
+  if (!process.env.NEXT_PUBLIC_S3_ACCESS_KEY || !process.env.NEXT_S3_SECRET_KEY)
+    throw new Error("SES credentials are missing. Gift card delivery must be retried.");
+  const amount = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(input.amountPaise / 100);
+  const title = input.purchaser ? "Your Privae gift card is ready" : `${input.senderName} has sent you a Privae gift card`;
+  const accountUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "https://www.hausofprivae.com"}/profile#gift-cards`;
+  const message = input.message ? `<p style="white-space:pre-wrap">${escapeHtml(input.message)}</p>` : "";
+  await sendBasicEmail({
+    to: input.to, subject: title,
+    text: `${title}\nFor ${input.recipientName}\nValue: ${amount}\n${input.message}\nGift card code: ${input.code}\nClaim your card in your account: ${accountUrl}\nSign in and enter this code in Gift Cards or at checkout. The remaining balance stays on the card for future orders. Keep this code private; the first account to claim it owns the card.`,
+    html: `<div style="background:#f8f5ef;padding:36px;font-family:Georgia,serif;color:#39292b"><p style="letter-spacing:4px;font-size:12px">HAUS OF PRIVAE</p><h1>${escapeHtml(title)}</h1><p>For ${escapeHtml(input.recipientName)}, from ${escapeHtml(input.senderName)}</p><h2 style="font-size:40px">${amount}</h2>${message}<p>Your gift card code</p><p style="font-family:monospace;font-size:18px;padding:18px;background:white">${escapeHtml(input.code)}</p><p><a href="${escapeHtml(accountUrl)}">Claim your gift card in your account</a></p><p>Sign in and enter the code in Gift Cards or at checkout. Any remaining balance stays on your card for future orders.</p><p>Keep the code private. The first account to claim it owns the card.</p></div>`,
+  });
 }
