@@ -22,11 +22,7 @@ import ShoppingPanel from "./ShoppingPanel";
 import { useStore, userWishlistStore } from "@/src/hepler/store/zustand";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-const collectionLinks = [
-  { label: "Aarambh", href: "/product" },
-  { label: "New Arrivals", href: "/new-arrivals" },
-  { label: "Bestsellers", href: "/bestsellers" },
-];
+type CollectionLink = { name: string; slug: string; isComingSoon: boolean };
 
 const categoryLinks = [
   { label: "Loungewear", href: "/category/loungewear" },
@@ -43,8 +39,10 @@ const discoverLinks = [
 
 export default function NavBar({
   navbarMessages,
+  collections = [],
 }: {
   navbarMessages?: string[];
+  collections?: CollectionLink[];
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -198,7 +196,10 @@ export default function NavBar({
               </div>
               <MenuGroup
                 title="Collections"
-                links={collectionLinks}
+                links={[
+                  ...collections.map(item => ({ label: item.name, href: `/collection/${item.slug}`, disabled: item.isComingSoon })),
+                  { label: "View All Collections", href: "/collection", small: true },
+                ]}
                 onClick={closeMenu}
               />
               <MenuGroup
@@ -247,7 +248,7 @@ function MenuGroup({
   onClick,
 }: {
   title: string;
-  links: { label: string; href: string }[];
+  links: { label: string; href: string; disabled?: boolean; small?: boolean }[];
   onClick: () => void;
 }) {
   return (
@@ -257,11 +258,11 @@ function MenuGroup({
       </h4>
       <div className="space-y-3">
         {links.map((link) => (
-          <Link
+          link.disabled ? <span key={link.href} aria-disabled="true" className="block text-sm tracking-[0.15em] uppercase font-body text-white/60">{link.label}<span className="block text-[9px] tracking-[0.2em] mt-1 text-white/50">Coming soon</span></span> : <Link
             key={link.href}
             href={link.href}
             onClick={onClick}
-            className="nav-link block text-sm tracking-[0.15em] uppercase font-body  transition-colors"
+            className={`nav-link block ${link.small ? "text-[10px]" : "text-sm"} tracking-[0.15em] uppercase font-body transition-colors`}
           >
             {link.label}
           </Link>

@@ -14,6 +14,8 @@ export async function revalidateProductCatalogPaths(
   ...products: Array<ProductPathInput | null | undefined>
 ) {
   const paths = new Set(["/", "/product", "/bestsellers", "/collections", "/new-arrivals", "/search", "/admin"]);
+  revalidatePath("/collection");
+  revalidatePath("/collection/[slug]", "page");
   const categoryValues = new Set<string>();
 
   products.forEach((product) => {

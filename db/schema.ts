@@ -5,6 +5,7 @@ import { contact, subscription } from "./contactSchema";
 import { blog, blogForm } from "./blogSchema";
 import { siteSettings } from "./siteSettingsSchema";
 import { loyaltyTransaction } from "./loyaltyTransactionSchema";
+export { collection as collectionsTable, collectionProduct as collectionProductsTable } from "./collectionSchema";
 import {
   order,
   orderItem,

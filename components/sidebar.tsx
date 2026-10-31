@@ -47,6 +47,11 @@ const items = [
     url: "/admin/categories",
     icon: FolderTree,
   },
+  {
+    title: "Collections",
+    url: "/admin/collections",
+    icon: FolderTree,
+  },
   // {
   //   title: "Users",
   //   url: "/admin/users",

@@ -71,6 +71,13 @@
       "when": 1791453068495,
       "tag": "0011_public_ghost_rider",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793440610910,
+      "tag": "0012_cuddly_roxanne_simpson",
+      "breakpoints": true
     }
   ]
 }

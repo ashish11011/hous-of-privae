@@ -2,6 +2,7 @@ import { loadCatalog } from "@/lib/productCatalog";
 import { visibleSizePrices } from "@/lib/productPricing";
 import { CATEGORY_1 } from "@/const";
 import { MetadataRoute } from "next";
+import { getNavbarCollections } from "@/lib/collections";
 // import { blogTable } from '../../db/schema';
 
 const paths = [
@@ -20,7 +21,7 @@ const paths = [
   "/track",
   "/atelier/glossary",
   "/product",
-  "/collections",
+  "/collection",
   "/privacy",
   "/privacy-policy",
   "/terms",
@@ -40,7 +41,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date().toISOString(),
   }));
 
-  const productData = (await loadCatalog()).filter(item => item.variants.length && visibleSizePrices(item.pricingConfig).length);
+  const [catalog, collections] = await Promise.all([loadCatalog(), getNavbarCollections()]);
+  const productData = catalog.filter(item => item.variants.length && visibleSizePrices(item.pricingConfig).length);
 
   const productDataEnteries = productData.map((product) => ({
     url: `${baseUrl}/product/${product.slug}/`,
@@ -51,5 +53,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date().toISOString(),
   }));
 
-  return [...pathEntries, ...productDataEnteries, ...categoryDataEnteries];
+  const collectionEntries = collections.filter(item => !item.isComingSoon).map(item => ({ url: `${baseUrl}/collection/${item.slug}/`, lastModified: new Date().toISOString() }));
+  return [...pathEntries, ...productDataEnteries, ...categoryDataEnteries, ...collectionEntries];
 }
