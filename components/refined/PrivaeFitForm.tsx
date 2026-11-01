@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import SavedMeasurementPicker from "@/components/account/SavedMeasurementPicker";
 import {
   Calendar,
   Check,
@@ -302,6 +303,10 @@ export default function PrivaeFitForm() {
             }}
             className="space-y-8"
           >
+            <SavedMeasurementPicker onSelect={measurement => {
+              const value = (number: number | null) => number === null ? "" : String(Math.round(number * (measurement.unit === "cm" ? 1 / 2.54 : 1) * 100) / 100);
+              setFormData(current => ({ ...current, bust: value(measurement.bust), waist: value(measurement.waist), hips: value(measurement.hips), shoulderWidth: value(measurement.shoulder), sleeveLength: value(measurement.sleeveLength), kurtaLength: value(measurement.kurtaLength) }));
+            }} />
             <div>
               <h3 className="text-xs font-body uppercase tracking-[0.2em] text-foreground mb-4 border-b border-border pb-2">
                 Contact Details

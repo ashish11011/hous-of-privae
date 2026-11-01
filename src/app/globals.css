@@ -631,3 +631,19 @@
   background-repeat: no-repeat;
   animation: shimmer 1.6s linear infinite;
 }
+
+/* Account typography and spacing mirror the Haus Vite account page. */
+.account-dashboard {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+}
+.account-dashboard .font-heading {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+}
+.account-container {
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}

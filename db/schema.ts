@@ -7,6 +7,7 @@ import { siteSettings } from "./siteSettingsSchema";
 import { loyaltyTransaction } from "./loyaltyTransactionSchema";
 export { collection as collectionsTable, collectionProduct as collectionProductsTable } from "./collectionSchema";
 export { giftCard as giftCardsTable, giftCardReservation as giftCardReservationsTable, giftCardTransaction as giftCardTransactionsTable } from "./giftCardSchema";
+export * from "./accountSchema";
 import {
   order,
   orderItem,

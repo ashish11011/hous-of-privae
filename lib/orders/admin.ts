@@ -4,6 +4,8 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { allowedOrderStatuses, type EditableOrderStatus } from "./status";
 import { sendOrderStatusEmail } from "@/lib/email/ses";
 import type { AdminOrderDetail, AdminOrderSummary } from "./types";
+import { updateCircleFulfilment } from "@/lib/account/circle";
+import { reverseOrderReferral } from "@/lib/account/referrals";
 
 export class OrderActionError extends Error {
   constructor(message: string, public status: number) { super(message); }
@@ -87,12 +89,14 @@ export async function updateAdminOrderStatus(id: string, status: EditableOrderSt
     const email = order.checkoutSnapshot?.user.email || customer?.email;
     if (!email) throw new OrderActionError("This order has no customer email address.", 422);
     await tx.update(orderTable).set({ status, updatedAt: new Date() }).where(eq(orderTable.id, id));
+    await updateCircleFulfilment(tx, order, status);
     const [event] = await tx.insert(orderStatusEventsTable).values({
       orderId: id, changedBy: adminId, fromStatus: order.status, toStatus: status,
       recipientEmail: email, recipientName: order.checkoutSnapshot?.user.name ?? customer?.name,
     }).returning();
     return { changed: true, eventId: event?.id ?? null };
   });
+  if (["returned", "cancelled"].includes(status)) await reverseOrderReferral(id);
   if (!result.eventId) return { ...result, emailSent: false };
   try {
     await deliverOrderStatusEmail(id, result.eventId);

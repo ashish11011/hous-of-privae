@@ -123,7 +123,7 @@ export default function BespokeRequestForm() {
     setSubmitting(true);
 
     try {
-      const response = await fetch("/api/bespoke", {
+      const response = await fetch("/api/bespoke/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),

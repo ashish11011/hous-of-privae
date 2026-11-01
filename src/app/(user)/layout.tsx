@@ -5,11 +5,13 @@ import React from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { getNavbarCollections } from "@/lib/collections";
+import AccountSync from "@/components/account/AccountSync";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
   const [{ navbarMessages }, collections] = await Promise.all([getLandingSettings(), getNavbarCollections()]);
   return (
     <div>
+      <AccountSync />
       <NavBar navbarMessages={navbarMessages} collections={collections} />
       {children}
       <Footer />

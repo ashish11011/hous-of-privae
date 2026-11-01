@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       status: orderTable.status, totalAmountPaid: orderTable.totalAmountPaid,
       razorpayPaymentId: orderTable.razorpayPaymentId,
       loyaltyPointsRedeemed: orderTable.loyaltyPointsRedeemed,
+      checkoutSnapshot: orderTable.checkoutSnapshot,
     }).from(orderTable).where(eq(orderTable.razorpayOrderId, razorpay_order_id));
     if (!order) return NextResponse.json({ success: false, msg: "Order not found." }, { status: 404 });
     // Checkout signatures prove the callback's authenticity, not payment capture.
@@ -31,7 +32,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true, verified: true, confirmed, orderId: order.id,
       paymentStatus: order.paymentStatus, orderStatus: order.status,
-      loyaltyPointsEarned: confirmed ? calculateOrderRewardPoints(order.totalAmountPaid ?? 0) : 0,
+      loyaltyPointsEarned: confirmed ? (order.checkoutSnapshot?.circle?.normalPoints ?? calculateOrderRewardPoints(order.totalAmountPaid ?? 0)) : 0,
+      loyaltyPointsPending: Boolean(order.checkoutSnapshot?.circle),
       loyaltyPointsRedeemed: confirmed ? order.loyaltyPointsRedeemed : 0,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

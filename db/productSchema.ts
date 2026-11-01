@@ -43,6 +43,7 @@ export const product = pgTable(
     style_note: varchar("style_note"),
     customization: varchar("customization"),
     isInStoke: boolean("in_stock").default(true),
+    isNew: boolean("is_new").notNull().default(true),
     model_height: varchar("model_height"),
     description: varchar("description"),
     basePrice: integer("base_price"),

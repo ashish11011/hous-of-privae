@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
 } from "@/components/ui/table";
-import { Form, Formik } from "formik";
+import { Form, Formik, useFormikContext } from "formik";
 import Image from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "@/src/hepler/store/zustand";
@@ -32,6 +32,8 @@ import GiftWrapOption from "@/components/cart/GiftWrapOption";
 import { GIFT_WRAP_CHARGE } from "@/lib/giftWrap";
 import GiftCardRedeemBlock, { type AppliedGiftCard } from "@/components/gift-cards/GiftCardRedeemBlock";
 import { giftCardRequest } from "@/lib/gift-cards/client";
+import { circleMaximumPoints, circleRewardPoints } from "@/lib/account/rules";
+import type { Address, Circle } from "@/lib/account/types";
 
 type CheckoutPayment = {
   orderId: string; internalOrderId: string; amount: number; currency: string;
@@ -75,6 +77,9 @@ const Page = () => {
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
+  const [loyaltyPending, setLoyaltyPending] = useState(false);
+  const [circle, setCircle] = useState<Circle | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availablePoints, setAvailablePoints] = useState<number | null>(null);
   const [pendingCheckout, setPendingCheckout] = useState<PendingCheckout | null>(null);
@@ -95,7 +100,7 @@ const Page = () => {
       if (signal?.aborted) return;
       if (response.status === 401 || response.status === 404) {
         setPointsLoadError(false);
-        setAvailablePoints(null); setPendingCheckout(null); return;
+        setAvailablePoints(null); setCircle(null); setSavedAddresses([]); setPendingCheckout(null); return;
       }
       if (!response.ok) throw new Error("Failed to load profile");
       const payload = await response.json();
@@ -103,11 +108,14 @@ const Page = () => {
       if (!user || signal?.aborted) return;
       setPointsLoadError(false);
       setAvailablePoints(payload.availablePoints ?? 0);
+      setCircle(payload.circle ?? null);
+      setSavedAddresses(payload.addresses ?? []);
       setPendingCheckout(payload.pendingCheckout ?? null);
+      const address = payload.addresses?.find((row: Address) => row.isDefault);
       if (prefill) setCheckoutInitialValues({
-        name: user.name || "", number: user.number || "", email: user.email || "",
-        addressLine1: user.addressLine1 || "", addressLine2: user.addressLine2 || "",
-        city: user.city || "", state: user.state || "", pincode: user.pincode || "",
+        name: address?.recipientName || user.name || "", number: address?.phone || user.number || "", email: user.email || "",
+        addressLine1: address?.line1 || user.addressLine1 || "", addressLine2: address?.line2 || user.addressLine2 || "",
+        city: address?.city || user.city || "", state: address?.state || user.state || "", pincode: address?.pincode || user.pincode || "",
       });
     } catch (error) {
       if (signal?.aborted) return;
@@ -148,15 +156,18 @@ const Page = () => {
     0,
   );
 
-  const deliveryCharge = cartTotal === 0 || cartTotal >= 1199 ? 0 : 60;
-  const maximumPoints = maximumRedeemablePoints(cartTotal, availablePoints ?? 0);
-  const appliedPoints = Math.min(Math.max(0, Math.floor((Number(pointsInput) || 0) / 10) * 10), maximumPoints);
+  const deliveryCharge = circle || cartTotal === 0 || cartTotal >= 1199 ? 0 : 60;
+  const eligibleAmount = productStore.filter(item => item.isFullPrice !== false).reduce((sum,item) => sum + item.basePrice * item.quantity, 0);
+  const maximumPoints = circle ? circleMaximumPoints(eligibleAmount, availablePoints ?? 0) : maximumRedeemablePoints(cartTotal, availablePoints ?? 0);
+  const redemptionStep = circle ? 100 : 10;
+  const selectedPoints = Math.min(Math.max(0, Math.floor((Number(pointsInput) || 0) / redemptionStep) * redemptionStep), maximumPoints);
+  const appliedPoints = circle && selectedPoints < 1000 ? 0 : selectedPoints;
   const pointsDiscount = loyaltyPointsToRupees(appliedPoints);
   const giftWrapCharge = giftWrap && productStore.length > 0 ? GIFT_WRAP_CHARGE : 0;
   const totalBeforeGiftCard = cartTotal + deliveryCharge + giftWrapCharge - pointsDiscount;
   const giftCardAmount = appliedGiftCard ? Math.min(appliedGiftCard.balancePaise / 100, totalBeforeGiftCard) : 0;
   const finalTotal = totalBeforeGiftCard - giftCardAmount;
-  const estimatedLoyaltyPoints = calculateOrderRewardPoints(totalBeforeGiftCard);
+  const estimatedLoyaltyPoints = circle ? circleRewardPoints(Math.max(0, eligibleAmount - pointsDiscount - giftCardAmount), circle.current.key) : calculateOrderRewardPoints(totalBeforeGiftCard);
 
   const handlePlaceOrder = async (values: typeof userDetailInitialValues) => {
     setIsSubmitting(true);
@@ -196,7 +207,8 @@ const Page = () => {
         setOrderId(rzpOrderData.internalOrderId);
         setPaymentConfirmed(true); setShowSuccess(true);
         setPointsUsed(rzpOrderData.loyaltyPointsRedeemed || 0);
-        setLoyaltyPointsEarned(calculateOrderRewardPoints(rzpOrderData.totalAmountPaid ?? totalBeforeGiftCard));
+        setLoyaltyPointsEarned(rzpOrderData.circle?.normalPoints ?? calculateOrderRewardPoints(rzpOrderData.totalAmountPaid ?? totalBeforeGiftCard));
+        setLoyaltyPending(Boolean(rzpOrderData.circle));
         setEmailPending(Boolean(rzpOrderData.emailPending));
         clearCart(); setAppliedGiftCard(null); setIsSubmitting(false);
         return;
@@ -247,6 +259,7 @@ const Page = () => {
               if (result.confirmed) {
                 setPaymentConfirmed(true);
                 setLoyaltyPointsEarned(result.loyaltyPointsEarned || 0);
+                setLoyaltyPending(Boolean(result.loyaltyPointsPending));
                 setPointsUsed(result.loyaltyPointsRedeemed || 0);
                 void loadProfile();
                 break;
@@ -335,6 +348,7 @@ const Page = () => {
               onSubmit={handlePlaceOrder}
             >
               <Form className="space-y-4">
+                {savedAddresses.length > 0 && <SavedAddressPicker addresses={savedAddresses} disabled={isSubmitting} />}
                 <LabelInput labelName="Name" name="name" />
                 <LabelInput labelName="Email" name="email" type="email" />
                 <LabelInput
@@ -372,11 +386,11 @@ const Page = () => {
                         {formatINR(availablePoints)} points available · Worth ₹{formatINR(loyaltyPointsToRupees(availablePoints))}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Cover up to 20% of your cart value with points. Delivery and gift wrapping are excluded. 10 points = ₹1.
+                        {circle ? "Redeem at least 1,000 points in multiples of 100, up to 20% of full-price merchandise. Sale pieces, shipping, gift wrap and services are excluded. 100 points = ₹10." : "Cover up to 20% of your cart value with points. Delivery and gift wrapping are excluded. 10 points = ₹1."}
                       </p>
-                      <Label htmlFor="checkout-points">Points to use (in multiples of 10)</Label>
+                      <Label htmlFor="checkout-points">Points to use (in multiples of {redemptionStep})</Label>
                       <div className="flex gap-2">
-                        <input id="checkout-points" type="number" min="0" max={maximumPoints} step="10"
+                        <input id="checkout-points" type="number" min="0" max={maximumPoints} step={redemptionStep}
                           value={pointsInput} disabled={isSubmitting || !!pendingCheckout}
                           onChange={event => setPointsInput(event.target.value)}
                           onBlur={() => setPointsInput(String(appliedPoints))}
@@ -545,7 +559,7 @@ const Page = () => {
                     </TableCell>
                   </TableRow>
                   <TableRow className=" ">
-                    <TableHead>Loyalty Reward</TableHead>
+                    <TableHead>{circle ? "Pending Circle Points" : "Loyalty Reward"}</TableHead>
                     <TableCell className="text-right w-52 text-base">
                       {estimatedLoyaltyPoints} pts
                     </TableCell>
@@ -605,7 +619,7 @@ const Page = () => {
           {loyaltyPointsEarned > 0 && (
             <div className="bg-neutral-50 border border-neutral-100 py-3 px-4 w-full flex justify-between items-center text-xs">
               <span className="text-neutral-400 uppercase tracking-[0.15em] text-[10px]">
-                Loyalty Earned
+                {loyaltyPending ? "Pending Circle Points" : "Loyalty Earned"}
               </span>
               <span className="font-medium text-neutral-800">
                 {loyaltyPointsEarned} pts
@@ -642,3 +656,11 @@ const Page = () => {
 };
 
 export default Page;
+
+function SavedAddressPicker({ addresses, disabled }: { addresses: Address[]; disabled: boolean }) {
+  const { setFieldValue } = useFormikContext<typeof userDetailInitialValues>();
+  return <div className="space-y-2"><Label htmlFor="checkout-saved-address">Delivery address</Label><select id="checkout-saved-address" defaultValue={addresses.find(row => row.isDefault)?.id ?? ""} disabled={disabled} className="w-full border border-border bg-background px-3 py-2 text-sm" onChange={event => {
+    const address = addresses.find(row => row.id === event.target.value); if (!address) return;
+    for (const [field,value] of Object.entries({ name: address.recipientName, number: address.phone, addressLine1: address.line1, addressLine2: address.line2, city: address.city, state: address.state, pincode: address.pincode })) void setFieldValue(field,value);
+  }}><option value="">Enter a different address</option>{addresses.map(address => <option key={address.id} value={address.id}>{address.label || address.recipientName} · {address.city}{address.isDefault ? " (Default)" : ""}</option>)}</select></div>;
+}

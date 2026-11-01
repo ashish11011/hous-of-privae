@@ -6,9 +6,12 @@ import { paymentTransition, type PaymentEvent } from "./razorpay-events";
 import { sendPaidOrderEmails } from "./order-emails";
 import { processGiftCardPayment } from "@/lib/gift-cards/service";
 import { getOrderGiftCardReservation, settleGiftCardReservation } from "@/lib/gift-cards/redemption";
+import { settleOrderReferral } from "@/lib/account/referrals";
+import { circleEnabled } from "@/lib/account/circle";
 
 export async function processPaymentWebhook(payment: PaymentEvent) {
   if (await processGiftCardPayment(payment)) return;
+  const programme = await circleEnabled();
   const orderId = await db.transaction(async tx => {
     const [order] = await tx.select().from(orderTable)
       .where(eq(orderTable.razorpayOrderId, payment.order_id)).for("update");
@@ -32,11 +35,14 @@ export async function processPaymentWebhook(payment: PaymentEvent) {
         updatedAt: new Date(),
       }).where(eq(orderTable.id, order.id));
       if (transition.paymentStatus === "paid") {
-        await settleOrderLoyalty(tx, order, settledTotal);
+        await settleOrderLoyalty(tx, order, settledTotal, programme);
         if (giftAmount > 0) await settleGiftCardReservation(tx, order.id);
       }
     }
     return order.id;
   });
-  if (payment.status === "captured") await sendPaidOrderEmails(orderId);
+  if (payment.status === "captured") {
+    await settleOrderReferral(orderId);
+    await sendPaidOrderEmails(orderId);
+  }
 }

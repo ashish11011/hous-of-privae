@@ -10,7 +10,7 @@ import type { SizePrice } from "@/lib/productPricing";
 import ImageWithSkeleton from "@/components/ImageWithSkeleton";
 
 type VariantInput = { id?: string; color: string; bannerImage: string; images: string[] };
-type Fields = { pricingConfig: SizePrice[]; variants: VariantInput[]; isInStoke: boolean };
+type Fields = { pricingConfig: SizePrice[]; variants: VariantInput[]; isInStoke: boolean; isNew: boolean };
 export default function ProductEdit({ productData, slug, categories = [] }: { productData?: ProductRecord | null; slug: string; categories: { id: string; name: string; level: number }[] }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -21,6 +21,7 @@ export default function ProductEdit({ productData, slug, categories = [] }: { pr
     style_note: productData?.style_note ?? "", customization: productData?.customization ?? "", model_height: productData?.model_height ?? "",
     categoryId1: productData?.categoryId1 ?? "", categoryId2: productData?.categoryId2 ?? "",
     materials: productData?.materials ?? [], isInStoke: productData?.isInStoke ?? true,
+    isNew: productData?.isNew ?? true,
     pricingConfig: SIZES.map(size => productData?.pricingConfig.find(row => row.size === size) ?? { size, basePrice: 0, strikethroughPrice: null, isVisible: false }),
     variants: productData?.variants.map(variant => ({ id: variant.id, color: variant.color, bannerImage: variant.bannerImage, images: variant.images ?? [] })) ?? [{ color: "", bannerImage: "", images: [] }],
   };
@@ -67,7 +68,7 @@ function SizePricing() {
 }
 function ProductOptions() {
   const { values, setFieldValue } = useFormikContext<Fields & { materials: string[] }>();
-  return <div className="space-y-4"><label className="flex gap-3"><input type="checkbox" checked={values.isInStoke} onChange={event => setFieldValue("isInStoke", event.target.checked)} />In stock</label><label className="block">Materials (comma separated)<input className="block border p-2 w-full" value={values.materials.join(", ")} onChange={event => setFieldValue("materials", event.target.value.split(",").map(value => value.trim()))} /></label></div>;
+  return <div className="space-y-4"><label className="flex gap-3"><input type="checkbox" checked={values.isInStoke} onChange={event => setFieldValue("isInStoke", event.target.checked)} />In stock</label><label className="flex gap-3"><input type="checkbox" checked={values.isNew} onChange={event => setFieldValue("isNew", event.target.checked)} />New arrival — show below categories on the home page</label><label className="block">Materials (comma separated)<input className="block border p-2 w-full" value={values.materials.join(", ")} onChange={event => setFieldValue("materials", event.target.value.split(",").map(value => value.trim()))} /></label></div>;
 }
 function VariantsEditor() {
   const { values, setFieldValue } = useFormikContext<Fields>();

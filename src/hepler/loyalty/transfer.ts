@@ -6,10 +6,15 @@ import { db } from "@/lib/db";
 import { getLoyaltyAvailability } from "@/lib/loyaltyBalance";
 import { asc, eq, or } from "drizzle-orm";
 import { getServerSession } from "next-auth";
+import { circleEnabled, transferCirclePoints } from "@/lib/account/circle";
 
 export async function transferLoyaltyPoints(transferEmail: string, transferAmount: number) {
   const session = await getServerSession(authOptions);
   if (!session?.id) throw new Error("User is not logged in");
+  if (await circleEnabled()) {
+    const transfer = await transferCirclePoints(session.id, { id: randomUUID(), email: transferEmail, points: transferAmount });
+    return { message: transfer.status === "claimed" ? "Circle Points sent." : "Circle Points reserved until they join with this email." };
+  }
   if (!Number.isSafeInteger(transferAmount) || transferAmount <= 0 || transferAmount > 2147483647)
     throw new Error("Enter a positive whole number of points");
   const recipientEmail = transferEmail.trim().toLowerCase();

@@ -1,24 +1,43 @@
 "use client";
-
 import { useEffect, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import {
-  CalendarDays,
-  Gem,
+  Calendar,
   Gift,
   Heart,
-  LayoutGrid,
   LogOut,
   MapPin,
   Package,
+  Ruler,
+  Scissors,
+  Shield,
+  Sparkles,
+  User,
 } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import { Signout } from "@/src/hepler/auth";
 import { userWishlistStore } from "@/src/hepler/store/zustand";
-import { loyaltyPointsToRupees } from "@/lib/loyaltyRewards";
-import AddressForm from "./AddressForm";
 import AccountGiftCards from "@/components/gift-cards/AccountGiftCards";
-
+import AddressBook from "@/components/account/AddressBook";
+import Measurements from "@/components/account/Measurements";
+import Dossier from "@/components/account/Dossier";
+import CirclePanel from "@/components/account/CirclePanel";
+import {
+  AppointmentPanel,
+  BespokePanel,
+  ReferralPanel,
+  StylistPanel,
+  WishlistPanel,
+} from "@/components/account/DiscoverPanels";
+import {
+  accountAction,
+  accountDate,
+  accountMoney,
+  EmptyState,
+  StatCard,
+  useAccount,
+} from "@/components/account/shared";
+import { CIRCLE_TIERS, circleProgress } from "@/lib/account/rules";
+import type { AccountOrder, Circle } from "@/lib/account/types";
 export type ProfileUser = {
   name: string | null;
   email: string;
@@ -30,422 +49,428 @@ export type ProfileUser = {
   pincode: string | null;
   loyaltyPoints: number;
 };
-type Order = {
-  id: string;
-  status: string;
-  totalAmountPaid: number | null;
-  createdAt: string;
-};
-type Appointment = { id: string; service: string; scheduled: string };
 const tabs = [
-  { label: "Overview", icon: LayoutGrid },
-  { label: "Orders", icon: Package },
-  { label: "Privae Circle", icon: Gem },
-  { label: "Gift Cards", icon: Gift },
-  { label: "Wishlist", icon: Heart },
-  { label: "Addresses", icon: MapPin },
-  { label: "Appointments", icon: CalendarDays },
+  { key: "overview", label: "Overview", icon: Sparkles },
+  { key: "foryou", label: "For You", icon: Sparkles },
+  { key: "orders", label: "Orders", icon: Package },
+  { key: "circle", label: "Privae Circle", icon: Sparkles },
+  { key: "referrals", label: "Refer a Friend", icon: Gift },
+  { key: "giftcards", label: "Gift Cards", icon: Gift },
+  { key: "wishlist", label: "Wishlist", icon: Heart },
+  { key: "addresses", label: "Addresses", icon: MapPin },
+  { key: "appointments", label: "Appointments", icon: Calendar },
+  { key: "bespoke", label: "Bespoke", icon: Scissors },
+  { key: "measurements", label: "Measurements", icon: Ruler },
+  { key: "profile", label: "Profile", icon: User },
 ] as const;
-type Tab = (typeof tabs)[number]["label"];
-const tiers = [
-  {
-    name: "Member",
-    min: 0,
-    range: "Welcome to Privae Circle",
-    benefits: "Free shipping on every order · Birthday gift",
-  },
-  {
-    name: "Eclat",
-    min: 50000,
-    range: "50,000–99,999 pts",
-    benefits: "Welcome gift · Early access to new launches",
-  },
-  {
-    name: "Lumiere",
-    min: 100000,
-    range: "1,00,000–1,99,999 pts",
-    benefits: "All Eclat perks · Alterations on every order",
-  },
-  {
-    name: "Royale",
-    min: 200000,
-    range: "2,00,000 pts and above",
-    benefits: "All Lumiere perks · Private trunk shows",
-  },
-];
-const format = (value: number) => value.toLocaleString("en-IN");
-const linkStyle = "text-primary underline underline-offset-4 hover:opacity-75";
-
-function TierTable() {
-  return (
-    <section className="bg-secondary/50 p-6 sm:p-7">
-      <h2 className="text-xl mb-3">All Privae Circle tiers</h2>
-      <ul className="divide-y divide-border">
-        {tiers.map((tier) => (
-          <li key={tier.name} className="py-3">
-            <div className="flex flex-wrap justify-between gap-1 text-xs">
-              <span className="font-medium">{tier.name}</span>
-              <span className="text-muted-foreground text-[10px]">
-                {tier.range}
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {tier.benefits}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function OrderSummary({ order }: { order: Order }) {
-  return (
-    <div className="space-y-4 text-sm">
-      <div className="flex flex-wrap justify-between gap-3">
-        <p className="font-medium">Order #{order.id}</p>
-        <span className="bg-primary/10 text-primary px-3 py-1 text-[10px] tracking-wider uppercase">
-          {order.status.replace(/_/g, " ")}
-        </span>
-      </div>
-      <p className="text-muted-foreground">
-        {new Date(order.createdAt).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-          timeZone: "Asia/Kolkata",
-        })}
-      </p>
-      <p>
-        {order.totalAmountPaid === null
-          ? "Payment pending"
-          : `₹${format(order.totalAmountPaid)}`}
-      </p>
-      <Link href={`/track?orderid=${order.id}`} className={linkStyle}>
-        Track your order →
-      </Link>
-    </div>
-  );
-}
-
+type Tab = (typeof tabs)[number]["key"];
 export default function ProfileDashboard({
   userData,
   orders,
   appointments,
+  isAdmin = false,
 }: {
   userData: ProfileUser;
-  orders: Order[];
-  appointments: Appointment[];
+  orders: AccountOrder[];
+  appointments: { id: string; service: string; scheduled: string }[];
+  isAdmin?: boolean;
 }) {
-  const [activeTab, setActiveTab] = useState<Tab>("Overview");
-  const [mounted, setMounted] = useState(false);
-  const wishlistCount = userWishlistStore(
-    (state) => state.productWishlist.length,
+  const [tab, setTab] = useState<Tab>("overview");
+  const [name, setName] = useState(
+    userData.name || userData.email.split("@")[0] || "Friend",
   );
+  const [mounted, setMounted] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(160);
+  const [counts, setCounts] = useState({
+    addresses: 0,
+    measurements: 0,
+    appointments: appointments.length,
+  });
+  const overview = useAccount<typeof counts>("overview");
+  const circleState = useAccount<Circle>("circle");
+  const wishlist = userWishlistStore((state) => state.productWishlist.length);
   useEffect(() => {
     setMounted(true);
-    const selectGiftCards = () => { if (window.location.hash === "#gift-cards") setActiveTab("Gift Cards"); };
-    selectGiftCards();
-    window.addEventListener("hashchange", selectGiftCards);
-    return () => window.removeEventListener("hashchange", selectGiftCards);
+    function readTab() {
+      const hash = window.location.hash.slice(1);
+      const key = hash === "gift-cards" ? "giftcards" : hash;
+      if (tabs.some((row) => row.key === key)) setTab(key as Tab);
+    }
+    readTab();
+    window.addEventListener("hashchange", readTab);
+    const header = document.querySelector("[data-storefront-header]");
+    const observer = new ResizeObserver(() => {
+      if (header) setHeaderHeight(header.getBoundingClientRect().height);
+    });
+    if (header) {
+      setHeaderHeight(header.getBoundingClientRect().height);
+      observer.observe(header);
+    }
+    return () => {
+      window.removeEventListener("hashchange", readTab);
+      observer.disconnect();
+    };
   }, []);
-  const points = Math.max(0, userData.loyaltyPoints);
-  const tierIndex = tiers.reduce(
-    (current, tier, index) => (points >= tier.min ? index : current),
-    0,
-  );
-  const tier = tiers[tierIndex];
-  const nextTier = tiers[tierIndex + 1];
-  const progress = nextTier
-    ? Math.min(100, ((points - tier.min) / (nextTier.min - tier.min)) * 100)
-    : 100;
-  const stats = [
-    { label: "Lifetime Points", value: format(points), tab: "Privae Circle" },
-    { label: "Orders", value: format(orders.length), tab: "Orders" },
-    {
-      label: "Wishlist",
-      value: mounted ? format(wishlistCount) : "—",
-      tab: "Wishlist",
-    },
-    {
-      label: "Appointments",
-      value: format(appointments.length),
-      tab: "Appointments",
-    },
-  ] as const;
-  function navigateTab(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    let target = index;
-    if (event.key === "ArrowRight") target = (index + 1) % tabs.length;
+  useEffect(() => {
+    if (overview.data) setCounts(overview.data);
+  }, [overview.data]);
+  function selectTab(key: Tab) {
+    setTab(key);
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}#${key === "giftcards" ? "gift-cards" : key}`,
+    );
+  }
+  function keys(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    let next = index;
+    if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
     else if (event.key === "ArrowLeft")
-      target = (index + tabs.length - 1) % tabs.length;
-    else if (event.key === "Home") target = 0;
-    else if (event.key === "End") target = tabs.length - 1;
+      next = (index + tabs.length - 1) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
     else return;
     event.preventDefault();
-    setActiveTab(tabs[target].label);
-    document.getElementById(`account-tab-${target}`)?.focus();
+    selectTab(tabs[next].key);
+    document.getElementById(`account-tab-${tabs[next].key}`)?.focus();
   }
+  const circle = circleState.data;
+  const progress = circle ?? circleProgress(0);
+  const points = circle?.availablePoints ?? userData.loyaltyPoints;
+  const displayName = name
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+  const count: Record<string, number> = {
+    orders: orders.length,
+    wishlist: mounted ? wishlist : 0,
+    ...counts,
+  };
   return (
-    <main className="bg-background">
-      <Toaster position="top-right" />
-      <header className="bg-primary text-primary-foreground">
-        <div className="max-w-6xl mx-auto px-6 py-10 sm:px-10 sm:py-12">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-white/65">
-            My account
-          </p>
-          <div className="flex flex-wrap items-end justify-between gap-5 mt-2">
-            <div className="min-w-0">
-              <h1 className="text-4xl sm:text-5xl break-words">
-                Greetings, {userData.name || "Member"}
-              </h1>
-              <p className="text-xs text-white/70 mt-2 break-all">
-                {userData.email}
+    <main className="account-dashboard min-h-screen bg-background font-body">
+      <section className="bg-primary text-primary-foreground">
+        <div className="account-container py-10 md:py-14">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div>
+              <p className="text-[11px] uppercase text-white/70 mb-2">
+                My Account
               </p>
+              <h1 className="font-heading text-3xl md:text-5xl">
+                Greetings, {displayName}
+              </h1>
+              <p className="text-sm text-white/80 mt-2">{userData.email}</p>
             </div>
-            <button
-              onClick={Signout}
-              className="inline-flex items-center gap-2 border border-white/35 px-4 py-2 text-[10px] uppercase tracking-[0.15em] hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              <LogOut size={13} /> Sign out
-            </button>
+            <div className="self-start md:self-end flex items-center gap-2">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] border border-white/30 px-4 py-2 hover:bg-white/10"
+                >
+                  <Shield size={14} />
+                  Admin
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={Signout}
+                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] border border-white/30 px-4 py-2 hover:bg-white/10"
+              >
+                <LogOut size={14} />
+                Sign Out
+              </button>
+            </div>
           </div>
-          <section
-            className="mt-8 border border-white/25 bg-white/10 p-5 sm:p-6"
-            aria-label="Your Privae Circle membership"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="mt-8 border border-white/20 bg-white/10 p-4 md:p-5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div>
-                <p className="text-[9px] uppercase tracking-[0.22em] text-white/65">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-white/60">
                   Privae Circle
                 </p>
-                <p className="font-heading text-3xl mt-1">
-                  {tier.name}{" "}
-                  <span className="text-sm text-white/75">
-                    — {format(points)} pts
+                <p className="font-heading text-2xl md:text-3xl mt-1">
+                  {progress.current.name}{" "}
+                  <span className="text-base text-white/70">
+                    — {points.toLocaleString("en-IN")} available pts
                   </span>
                 </p>
               </div>
               <button
-                onClick={() => setActiveTab("Privae Circle")}
-                className="text-[10px] uppercase tracking-[0.15em] underline underline-offset-4 hover:text-white/75"
+                type="button"
+                onClick={() => selectTab("circle")}
+                className="text-[11px] uppercase font-bold underline underline-offset-4 self-start md:self-auto"
               >
                 View benefits →
               </button>
             </div>
-            <div
-              role="progressbar"
-              aria-label="Progress to next loyalty tier"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(progress)}
-              aria-valuetext={
-                nextTier
-                  ? `${format(nextTier.min - points)} points to ${nextTier.name}`
-                  : "Highest tier reached"
-              }
-              className="h-1.5 bg-white/20 mt-4"
-            >
-              <div
-                className="h-full bg-white/75 transition-all"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className="text-[10px] text-white/70 mt-2">
-              {nextTier
-                ? `${format(nextTier.min - points)} pts to ${nextTier.name}`
-                : "Royale — our highest circle of privileges"}
-            </p>
-          </section>
-        </div>
-      </header>
-      <div className="border-b border-border">
-        <div
-          role="tablist"
-          aria-label="Account sections"
-          className="flex overflow-x-auto max-w-6xl mx-auto px-6 sm:px-10"
-        >
-          {tabs.map(({ label, icon: Icon }, index) => (
-            <button
-              key={label}
-              id={`account-tab-${index}`}
-              role="tab"
-              aria-selected={activeTab === label}
-              aria-controls={`account-panel-${index}`}
-              tabIndex={activeTab === label ? 0 : -1}
-              onKeyDown={(event) => navigateTab(event, index)}
-              onClick={() => setActiveTab(label)}
-              className={`flex shrink-0 flex-1 items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-4 text-[10px] uppercase tracking-[0.12em] transition-colors focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-[-4px] ${activeTab === label ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-primary"}`}
-            >
-              <span
-                className={`rounded-full p-1 ${activeTab === label ? "bg-primary text-white" : "bg-primary/10 text-primary"}`}
-              >
-                <Icon size={12} />
-              </span>
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="max-w-6xl mx-auto px-6 py-10 sm:px-10 sm:py-12">
-        {tabs.map(({ label }, index) => (
-          <div
-            key={label}
-            role="tabpanel"
-            id={`account-panel-${index}`}
-            aria-labelledby={`account-tab-${index}`}
-            hidden={activeTab !== label}
-            tabIndex={0}
-            className="focus-visible:outline-primary"
-          >
-            {label === "Overview" && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {stats.map((stat) => (
-                    <button
-                      key={stat.label}
-                      onClick={() => setActiveTab(stat.tab)}
-                      className="bg-secondary/50 p-5 text-left hover:bg-secondary transition-colors"
-                    >
-                      <span className="block text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {stat.label}
-                      </span>
-                      <span className="block font-heading text-3xl mt-3">
-                        {stat.value}
-                      </span>
-                    </button>
-                  ))}
+            {progress.next && (
+              <div className="mt-4">
+                <div
+                  role="progressbar"
+                  aria-label="Progress to next Circle tier"
+                  aria-valuenow={Math.round(progress.percent)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  className="h-1.5 bg-white/15 overflow-hidden"
+                >
+                  <div
+                    className="h-full bg-white transition-all"
+                    style={{ width: `${progress.percent}%` }}
+                  />
                 </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <TierTable />
-                  <section className="bg-secondary/50 p-6 sm:p-7">
-                    <h2 className="text-xl mb-4">Most recent order</h2>
-                    {orders[0] ? (
-                      <>
-                        <OrderSummary order={orders[0]} />
-                        <button
-                          className={`${linkStyle} text-xs mt-6`}
-                          onClick={() => setActiveTab("Orders")}
-                        >
-                          View all orders →
-                        </button>
-                      </>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">
-                        No orders yet.{" "}
-                        <Link href="/collections" className={linkStyle}>
-                          Start exploring →
-                        </Link>
-                      </p>
-                    )}
-                  </section>
-                </div>
-              </div>
-            )}
-            {label === "Orders" && (
-              <section>
-                <h2 className="text-3xl mb-6">Your orders</h2>
-                {orders.length ? (
-                  <div className="grid md:grid-cols-2 gap-5">
-                    {orders.map((order) => (
-                      <article key={order.id} className="bg-secondary/50 p-6">
-                        <OrderSummary order={order} />
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-secondary/50 p-8">
-                    <p className="mb-3">Your first discovery awaits.</p>
-                    <Link href="/collections" className={linkStyle}>
-                      Explore the collection →
-                    </Link>
-                  </div>
-                )}
-              </section>
-            )}
-            {label === "Privae Circle" && (
-              <div className="grid md:grid-cols-2 gap-6">
-                <section className="bg-primary text-white p-8">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/70">
-                    Your membership
-                  </p>
-                  <h2 className="text-4xl mt-4">{tier.name}</h2>
-                  <p className="font-heading text-3xl mt-6">
-                    {format(points)} points
-                  </p>
-                  <p className="text-sm text-white/75 mt-2">
-                    Worth ₹{format(loyaltyPointsToRupees(points))} · 10 points =
-                    ₹1
-                  </p>
-                  <p className="text-sm mt-6">{tier.benefits}</p>
-                  <Link
-                    href="/loyalty-points"
-                    className="inline-block text-xs underline underline-offset-4 mt-8"
-                  >
-                    Manage & share your points →
-                  </Link>
-                </section>
-                <TierTable />
-              </div>
-            )}
-            {label === "Wishlist" && (
-              <section className="bg-secondary/50 p-8">
-                <Heart
-                  className="text-primary mb-4"
-                  size={24}
-                  strokeWidth={1}
-                />
-                <h2 className="text-3xl">Your wishlist</h2>
-                <p className="text-sm text-muted-foreground my-4">
-                  {mounted
-                    ? wishlistCount
-                      ? `${wishlistCount} treasured ${wishlistCount === 1 ? "piece" : "pieces"}, saved for another moment.`
-                      : "A place for the pieces you love."
-                    : "Loading your saved pieces…"}
+                <p className="text-[11px] text-white/70 mt-2">
+                  {accountMoney(progress.remaining)} eligible spend to{" "}
+                  <span className="text-white">{progress.next.name}</span>
                 </p>
-                <Link href="/my-wishlist" className={linkStyle}>
-                  View your wishlist →
-                </Link>
-              </section>
-            )}
-            {label === "Addresses" && <AddressForm userData={userData} />}
-            {label === "Gift Cards" && activeTab === "Gift Cards" && <AccountGiftCards />}
-            {label === "Appointments" && (
-              <section>
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                  <h2 className="text-3xl">Your appointments</h2>
-                  <Link href="/appointment" className={`${linkStyle} text-sm`}>
-                    Book an appointment →
-                  </Link>
-                </div>
-                {appointments.length ? (
-                  <div className="grid md:grid-cols-2 gap-5">
-                    {appointments.map((appointment) => (
-                      <article
-                        key={appointment.id}
-                        className="bg-secondary/50 p-6"
-                      >
-                        <p className="text-[9px] uppercase tracking-widest text-primary mb-3">
-                          Appointment requested
-                        </p>
-                        <h3 className="text-2xl">{appointment.service}</h3>
-                        <p className="text-sm text-muted-foreground mt-3">
-                          {appointment.scheduled}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-secondary/50 p-8">
-                    <p className="text-sm text-muted-foreground">
-                      No appointment requests yet. Discover a personal styling
-                      experience, made just for you.
-                    </p>
-                  </div>
-                )}
-              </section>
+              </div>
             )}
           </div>
-        ))}
+        </div>
+      </section>
+      <div
+        className="sticky z-30 border-b bg-background border-border"
+        style={{ top: headerHeight }}
+      >
+        <div className="account-container overflow-x-auto">
+          <div
+            role="tablist"
+            aria-label="Account sections"
+            className="flex gap-1 md:gap-2 min-w-max"
+          >
+            {tabs.map((item, index) => {
+              const active = tab === item.key;
+              return (
+                <button
+                  type="button"
+                  key={item.key}
+                  role="tab"
+                  id={`account-tab-${item.key}`}
+                  aria-controls={`account-panel-${item.key}`}
+                  aria-selected={active}
+                  tabIndex={active ? 0 : -1}
+                  onKeyDown={(event) => keys(event, index)}
+                  onClick={() => selectTab(item.key)}
+                  className={`flex items-center gap-1.5 px-3 md:px-4 py-3 text-[11px] uppercase tracking-[0.15em] border-b-2 transition-colors whitespace-nowrap ${active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                >
+                  <span
+                    className={`inline-flex size-6 rounded-full items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}
+                  >
+                    <item.icon size={14} />
+                  </span>
+                  {item.label}
+                  {count[item.key] > 0 && (
+                    <span
+                      className={`text-[10px] px-1.5 ${active ? "bg-primary text-white" : "bg-primary/10 text-primary"}`}
+                    >
+                      {count[item.key]}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="account-container py-10 md:py-14">
+        <div
+          role="tabpanel"
+          id={`account-panel-${tab}`}
+          aria-labelledby={`account-tab-${tab}`}
+          tabIndex={0}
+        >
+          {tab === "overview" && (
+            <div className="space-y-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                {[
+                  {
+                    label: "Available Points",
+                    value: points.toLocaleString("en-IN"),
+                  },
+                  { label: "Orders", value: String(orders.length) },
+                  {
+                    label: "Wishlist",
+                    value: mounted ? String(wishlist) : "—",
+                  },
+                  { label: "Appointments", value: String(counts.appointments) },
+                ].map((stat) => (
+                  <StatCard key={stat.label} {...stat} />
+                ))}
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                <section className="bg-card p-6">
+                  <h2 className="font-heading text-xl mb-3">
+                    All Privae Circle tiers
+                  </h2>
+                  <div className="space-y-3">
+                    {CIRCLE_TIERS.map((tier) => (
+                      <div
+                        key={tier.key}
+                        className="flex items-start justify-between gap-3 border-b pb-3 last:border-0"
+                      >
+                        <div>
+                          <p className="text-sm">{tier.name}</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {tier.perks.slice(0, 2).join(" • ")}
+                          </p>
+                        </div>
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">
+                          {tier.spendLabel}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                <section className="bg-card p-6">
+                  <h2 className="font-heading text-xl mb-3">
+                    Most recent order
+                  </h2>
+                  {orders[0] ? (
+                    <div>
+                      <p className="text-sm">#{orders[0].id}</p>
+                      <p className="text-xs text-muted-foreground mt-1 capitalize">
+                        {orders[0].status.replaceAll("_", " ")}
+                      </p>
+                      <p className="font-heading text-2xl text-primary mt-3">
+                        {accountMoney(orders[0].totalAmount ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        {accountDate(orders[0].createdAt)}
+                      </p>
+                      <Link
+                        href={`/track?orderid=${orders[0].id}`}
+                        className="inline-block text-xs text-primary underline mt-4"
+                      >
+                        Track your order →
+                      </Link>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No orders yet.{" "}
+                      <Link
+                        href="/collection"
+                        className="text-primary underline"
+                      >
+                        Start exploring →
+                      </Link>
+                    </p>
+                  )}
+                </section>
+              </div>
+            </div>
+          )}
+          {tab === "foryou" && <StylistPanel />}
+          {tab === "orders" &&
+            (orders.length ? (
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <article key={order.id} className="bg-card p-5">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Order #{order.id}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          {accountDate(order.createdAt)}
+                        </p>
+                      </div>
+                      <span className="text-[10px] uppercase tracking-[0.15em] bg-secondary px-2 py-1">
+                        {order.status.replaceAll("_", " ")}
+                      </span>
+                      <p className="font-heading text-xl text-primary">
+                        {accountMoney(order.totalAmount ?? 0)}
+                      </p>
+                    </div>
+                    {order.items.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        {order.items.map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 text-sm"
+                          >
+                            {item.image && (
+                              <img
+                                src={item.image}
+                                alt=""
+                                className="size-12 object-cover"
+                              />
+                            )}
+                            <div className="flex-1">
+                              <p>{item.name}</p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Qty {item.quantity}
+                                {item.size ? ` • ${item.size}` : ""}
+                                {item.color ? ` • ${item.color}` : ""}
+                              </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {accountMoney(item.unitPrice * item.quantity)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Link
+                      href={`/track?orderid=${order.id}`}
+                      className="inline-block text-[11px] text-primary underline mt-4"
+                    >
+                      Track your order →
+                    </Link>
+                    {order.pointsPending > 0 &&
+                      !["returned", "cancelled"].includes(order.status) && (
+                        <p className="text-[11px] text-muted-foreground mt-2">
+                          {order.pointsPending.toLocaleString("en-IN")} Circle
+                          Points · available five days after delivery
+                        </p>
+                      )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                icon={<Package />}
+                title="No orders yet"
+                body="Your orders will appear here once you make your first purchase."
+              >
+                <Link href="/collection" className={accountAction}>
+                  Shop Collections
+                </Link>
+              </EmptyState>
+            ))}
+          {tab === "circle" && (
+            <CirclePanel onUpdated={(value) => circleState.setData(value)} />
+          )}
+          {tab === "referrals" && <ReferralPanel />}
+          {tab === "giftcards" && <AccountGiftCards />}
+          {tab === "wishlist" && <WishlistPanel />}
+          {tab === "addresses" && (
+            <AddressBook
+              onChange={(value) =>
+                setCounts((current) => ({ ...current, addresses: value }))
+              }
+            />
+          )}
+          {tab === "appointments" && (
+            <AppointmentPanel
+              onCount={(value) =>
+                setCounts((current) => ({ ...current, appointments: value }))
+              }
+            />
+          )}
+          {tab === "bespoke" && <BespokePanel />}
+          {tab === "measurements" && (
+            <Measurements
+              onChange={(value) =>
+                setCounts((current) => ({ ...current, measurements: value }))
+              }
+            />
+          )}
+          {tab === "profile" && (
+            <Dossier
+              onMeasurements={() => selectTab("measurements")}
+              onSaved={setName}
+            />
+          )}
+        </div>
       </div>
     </main>
   );

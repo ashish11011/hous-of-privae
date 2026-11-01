@@ -1,26 +1,13 @@
 # Loyalty points at checkout
 
-Signed-in customers can use points for up to 20% of the item subtotal, excluding delivery. Ten points are worth ₹1. Redemption uses whole rupees, so the requested points must be a nonnegative multiple of 10. The limit is the smaller of the cart cap and the customer's available points.
+The Vite Privae Circle programme now governs new signed-in checkouts once the Circle schema exists. See [account-dashboard.md](account-dashboard.md) for tier rates, delivery qualification, 24-month expiry, milestone bonuses, referrals, transfers and returns.
 
-For a ₹1,00,000 cart, a customer with at least 2,00,000 available points can redeem them for ₹20,000 off and pay ₹80,000. A customer with 50,000 available points can use ₹5,000 instead. New rewards are calculated on the amount paid through Razorpay after the points discount, including delivery.
+Ten points equal ₹1. Redeem at least 1,000 points in increments of 100, up to 20% of full-price merchandise. Sale pieces, delivery and gift wrapping are excluded. Gift-card funding is also excluded from the amount earning new rewards. The server uses catalogue prices and the authenticated account ID, never a submitted email or balance.
 
-## Payment and history
+Checkout reserves requested points without spending them. Available points exclude reservations, including during transfers. Capture deducts the exact reserved point lots and creates pending rewards in the same transaction as the payment confirmation. Rewards become available five days after delivery. Repeated captured-payment webhooks cannot repeat settlement.
 
-- The server calculates prices from the catalog and validates points against the signed-in account ID. A checkout email cannot select someone else's balance.
-- Starting a checkout reserves the requested points without deducting the balance. Available points exclude reservations, including when transferring points to another customer. There can be one pending checkout using points per account.
-- The order, reservation, and gateway order ID are saved together. Gateway creation failure rolls back the database transaction.
-- The captured-payment webhook deducts the reserved points, awards new points, and appends `redemption` and `order_reward` transactions with their resulting balances. These changes commit together with payment confirmation. Existing order locking prevents duplicate webhook events from repeating them.
-- Transfers record matching `transfer_sent` and `transfer_received` transactions and use consistent account lock ordering.
-- Emails and admin order details include the points used and discount.
+Closing a popup or receiving a failed attempt does not spend or release the reserved points: Razorpay can still capture another attempt against that order. Checkout offers **Resume payment for pending order** even when the current cart is empty. Resume uses the saved order amount and is restricted to its owner. Point lots backing these reservations are protected from expiry until settlement. There is no automatic abandonment cancellation.
 
-## Interrupted payments
+Existing balances are retained. Orders created under the previous programme retain their original settlement rules. While the new Circle tables are absent, existing checkout continues its previous rules: redemption in multiples of 10, capped at 20% of item subtotal, and the original reward calculation at capture.
 
-Closing the popup or receiving a failed payment attempt does not spend points. The reservation remains, and checkout offers **Resume payment for pending order**, including when the current cart is empty. Resume uses the saved order amount and is restricted to the account that placed the order. If the current cart differs from the saved order, paying the saved order preserves the current cart.
-
-There is no automatic reservation expiry or cancellation in this change. Razorpay orders allow multiple payment attempts, so releasing points on a popup close or failed attempt could let a later successful payment use points already spent elsewhere. See [Razorpay order payment attempts](https://github.com/razorpay/markdown-docs/blob/master/api/orders/create.md). An abandoned checkout keeps its reservation until that order is paid; manual resolution must account for any payment that can still be captured.
-
-## Database setup pending
-
-Only TypeScript definitions have been added. No migration or SQL files were generated, and no application migrations were run. Before deploying this code, the database needs the `loyalty_transaction` table and the order's `loyalty_points_redeemed` and `loyalty_points_status` columns with the indexes and constraints in their definitions. Existing orders should receive the defaults of zero points and status `none`. Historical rewards and transfers are not backfilled.
-
-Database and browser tests were not run at the user's request.
+Only TypeScript schema declarations have been added; no application migration was generated or run. Account/payment integration tests use disposable local databases with mocked payment and email services. See the account dashboard document for the test runner and schema activation details.

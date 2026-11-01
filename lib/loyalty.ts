@@ -2,13 +2,23 @@ import { loyaltyTransactionsTable, orderTable, userTable } from "@/db/schema";
 import { calculateOrderRewardPoints, loyaltyPointsToRupees, maximumRedeemablePoints } from "@/lib/loyaltyRewards";
 import type { LoyaltyDatabaseTransaction } from "@/lib/loyaltyBalance";
 import { eq } from "drizzle-orm";
+import { settleCircleOrder, settleLegacyOrderInCircle } from "@/lib/account/circle";
 
 // Called only inside the captured-payment transaction, after locking the order.
 export async function settleOrderLoyalty(
   tx: LoyaltyDatabaseTransaction,
   order: typeof orderTable.$inferSelect,
   totalAmountPaid: number,
+  circleAvailable = false,
 ) {
+  if (order.checkoutSnapshot?.circle?.programVersion === 1) {
+    await settleCircleOrder(tx, order);
+    return;
+  }
+  if (circleAvailable) {
+    await settleLegacyOrderInCircle(tx, order, totalAmountPaid);
+    return;
+  }
   const [user] = await tx.select().from(userTable).where(eq(userTable.id, order.userId)).for("update");
   if (!user) throw new Error("Order account not found");
   const redeemed = order.loyaltyPointsRedeemed;

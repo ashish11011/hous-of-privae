@@ -134,7 +134,7 @@ export default function AppointmentBookingForm() {
     async function loadAppointments() {
       setLoadingMeta(true);
       try {
-        const response = await fetch("/api/appointment", { cache: "no-store" });
+        const response = await fetch("/api/appointment/", { cache: "no-store" });
         const payload = await response.json();
         setBookedTimes(payload.bookedTimes ?? {});
       } catch {
@@ -207,7 +207,7 @@ export default function AppointmentBookingForm() {
     setSubmitting(true);
 
     try {
-      const response = await fetch("/api/appointment", {
+      const response = await fetch("/api/appointment/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -232,7 +232,7 @@ export default function AppointmentBookingForm() {
           return;
         }
 
-        setErrorMessage(payload.error ?? "Could not request appointment. Please try again.");
+        setErrorMessage(payload.error ?? payload.message ?? "Could not request appointment. Please try again.");
 
         if (response.status === 409) {
           setBookedTimes((current) => ({

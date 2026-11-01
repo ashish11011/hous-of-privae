@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import Link from "next/link";
+import SavedMeasurementPicker from "./account/SavedMeasurementPicker";
 
 export default function TailoredFitFormModal() {
   const [open, setOpen] = useState(false);
@@ -104,6 +105,10 @@ export default function TailoredFitFormModal() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-neutral-900">
+          <SavedMeasurementPicker onSelect={measurement => {
+            setUnit(measurement.unit);
+            setForm(current => ({ ...current, chest: measurement.bust?.toString() ?? "", waist: measurement.waist?.toString() ?? "", hips: measurement.hips?.toString() ?? "", shoulderLength: measurement.shoulder?.toString() ?? "" }));
+          }} />
           <div>
             <Label className="mb-2 block">Select Unit of Measurement</Label>
             <div className="flex gap-4 items-center">

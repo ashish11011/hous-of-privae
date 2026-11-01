@@ -14,6 +14,10 @@ export async function sendOrderStatusEmail(input: { orderId: string; email: stri
   statusDeliveries.push(input);
 }
 export const authOptions = {};
+export const formDeliveries: unknown[] = [];
+export async function sendFormNotificationEmails(input: unknown) { if (failRecipient === "form") throw new Error("Simulated form email failure"); formDeliveries.push(input); }
+export const stockDeliveries: { email: string; productName: string }[] = [];
+export async function sendBackInStockEmail(input: { email: string; productName: string }) { stockDeliveries.push(input); }
 export const giftDeliveries: { to: string; code: string }[] = [];
 export let failGiftEmail = false;
 export function failGiftDelivery(value: boolean) { failGiftEmail = value; }

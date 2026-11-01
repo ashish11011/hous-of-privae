@@ -19,6 +19,7 @@ const inputSchema = z.object({
   description: z.string().nullable().optional(), care: z.string().nullable().optional(),
   style_note: z.string().nullable().optional(), customization: z.string().nullable().optional(),
   model_height: z.string().nullable().optional(), isInStoke: z.boolean().default(true),
+  isNew: z.boolean().optional(),
   categoryId1: z.string().nullable().optional(), categoryId2: z.string().nullable().optional(),
   materials: z.array(z.string()).default([]), pricingConfig: pricingConfigSchema,
   variants: z.array(variantSchema).min(1).max(100).refine(rows => {
@@ -32,7 +33,7 @@ async function saveProduct(data: unknown, slug?: string) {
   const { variants, ...fields } = await normalizeProductCategoryIds(parsed);
   return db.transaction(async tx => {
     let id: string;
-    const values = { ...fields, basePrice: lowestVisiblePrice(fields.pricingConfig)?.basePrice ?? null,
+    const values = { ...fields, isNew: fields.isNew ?? (slug ? undefined : true), basePrice: lowestVisiblePrice(fields.pricingConfig)?.basePrice ?? null,
       sizes: fields.pricingConfig.filter((row: any) => row.isVisible).map((row: any) => row.size),
       colors: variants.map((row: any) => row.color), updatedAt: new Date() };
     if (slug) {
@@ -66,6 +67,9 @@ export async function updateProdcutInfoBySlug({ slug, productDetails }: any) { r
 export async function getProdcutInfoBySlug(slug: string) { return loadCatalog(eq(product.slug, slug)); }
 export async function getProductByCategory(categoryID: string) {
   return variantCards(await loadCatalog(or(eq(product.categoryId1, categoryID), eq(product.categoryId2, categoryID))));
+}
+export async function getNewProducts() {
+  return variantCards(await loadCatalog(eq(product.isNew, true)));
 }
 export async function getSimillarProducts(categoryID: string, currentProductSlug: string) {
   const products = variantCards(await loadCatalog()).filter(item => item.slug !== currentProductSlug);

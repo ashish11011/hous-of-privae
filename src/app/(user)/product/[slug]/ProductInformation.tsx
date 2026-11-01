@@ -251,6 +251,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
     "stitched" | "unstitched"
   >("stitched");
   const [shareOpen, setShareOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState("");
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [notifySubmitting, setNotifySubmitting] = useState(false);
   const [notifyForm, setNotifyForm] = useState({
@@ -290,6 +291,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         variantId: productData.variantId!,
         name: productData.name ?? "Privae garment",
         basePrice: getProdcutPrice(),
+        isFullPrice: !(comparisonPrice && comparisonPrice > getProdcutPrice()),
         slug: productData.slug,
         quantity: 1,
         bannerImage: productData.bannerImage,
@@ -370,6 +372,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           productSku: productData.sku,
           productSlug: productData.slug,
           productUrl,
+          size: selectedSize ?? "",
         }),
       });
       const payload = await response.json().catch(() => ({}));
@@ -874,15 +877,30 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           {productData.care ||
             "Dry clean only — entrust to a couture specialist · Store flat in muslin, away from light and moisture"}
         </p>
-        <a href="#" className="text-primary hover:underline font-medium">
+        <button
+          type="button"
+          aria-controls="garment-care"
+          aria-expanded={openAccordion === "care"}
+          onClick={() => {
+            setOpenAccordion("care");
+            requestAnimationFrame(() => {
+              const careTrigger = document.getElementById("garment-care-trigger");
+              careTrigger?.focus({ preventScroll: true });
+              careTrigger?.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          }}
+          className="text-primary hover:underline font-medium"
+        >
           Read all care notes →
-        </a>
+        </button>
       </div>
 
       {/* Accordions */}
       <Accordion
         type="single"
         collapsible
+        value={openAccordion}
+        onValueChange={setOpenAccordion}
         className="w-full border-t border-neutral-200"
       >
         <AccordionItem value="story">
@@ -953,8 +971,8 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="care">
-          <AccordionTrigger className="text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+        <AccordionItem value="care" id="garment-care">
+          <AccordionTrigger id="garment-care-trigger" className="scroll-mt-48 text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
             Garment Care
           </AccordionTrigger>
           <AccordionContent className="text-sm text-neutral-600 space-y-2">

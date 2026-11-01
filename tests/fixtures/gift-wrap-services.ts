@@ -9,6 +9,7 @@ export const authOptions = {};
 export async function getServerSession() { return { id: "00000000-0000-4000-8000-000000000020" }; }
 export async function getLoyaltyAvailability() { return { availablePoints: 100000, pendingCheckout: null }; }
 export const db = {
+  execute: async () => [{ enabled: false }],
   select: () => ({ from: (table: unknown) => ({ where: async () => table === productTable ? [{
     id: productId, name: "Test garment", isInStoke: true,
     pricingConfig: [{ size: "s", basePrice: 1000, isVisible: true }],

@@ -12,11 +12,12 @@ export async function giftCardRequest<T = Record<string, unknown>>(
   body?: unknown,
 ): Promise<T> {
   const response = await fetch(
-    `/api/gift-cards${path}`,
+    `/api/gift-cards${path ? `/${path.replace(/^\/|\/$/g, "")}` : ""}/`,
     body === undefined
-      ? { cache: "no-store" }
+      ? { cache: "no-store", redirect: "error" }
       : {
           method: "POST",
+          redirect: "error",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         },

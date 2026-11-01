@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { getLoyaltyAvailability } from "@/lib/loyaltyBalance";
 import { getPendingGiftCardCheckout } from "@/lib/gift-cards/redemption";
+import { circleEnabled, getCircleSummary } from "@/lib/account/circle";
+import { checkoutAddresses } from "@/lib/account/resources";
 
 export async function GET() {
   try {
@@ -36,8 +38,10 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const [availability, giftCheckout] = await Promise.all([getLoyaltyAvailability(userId, userData.loyaltyPoints), getPendingGiftCardCheckout(userId)]);
-    return NextResponse.json({ success: true, user: userData, ...availability, pendingCheckout: giftCheckout ?? availability.pendingCheckout }, {
+    const programme = await circleEnabled();
+    const [availability, giftCheckout, addresses] = await Promise.all([programme ? getCircleSummary(userId) : getLoyaltyAvailability(userId, userData.loyaltyPoints), getPendingGiftCardCheckout(userId), checkoutAddresses(userId)]);
+    if (programme) userData.loyaltyPoints = availability.availablePoints + availability.reservedPoints;
+    return NextResponse.json({ success: true, user: userData, ...availability, circle: programme ? availability : null, addresses, pendingCheckout: giftCheckout ?? availability.pendingCheckout }, {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {

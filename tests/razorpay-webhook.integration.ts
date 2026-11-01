@@ -8,7 +8,7 @@ import { POST as retryStatusEmail } from "../src/app/api/admin/orders/[id]/notif
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { createAccountTestSchema } from "./fixtures/account-test-schema";
 import postgres from "postgres";
 import { POST as webhook } from "../src/app/api/razorpay/webhook/route";
 import { POST as verify } from "../src/app/api/razorpay/verify-payment/route";
@@ -52,12 +52,7 @@ function callback() {
 
 before(async () => {
   try {
-  // Only a disposable, empty local database is accepted by the runner.
-  const journal = JSON.parse(readFileSync("db/migrations/meta/_journal.json", "utf8"));
-  // 0004 already adds the variant column from historical migration 0001.
-  for (const { tag: file } of journal.entries.filter((entry: { idx: number }) => entry.idx !== 1)) {
-    await sql.unsafe(readFileSync(`db/migrations/${file}.sql`, "utf8"));
-  }
+  await createAccountTestSchema(sql, { account: false, giftCards: false });
   await sql`insert into products (id, name, slug, base_price, pricing_config) values (${productId}, 'Test garment', 'test-garment', 1000, '[{"size":"s","basePrice":1000,"isVisible":true}]'::jsonb)`;
   await sql`insert into product_varient (id, product_id, color, banner_image, images) values (${variantId}, ${productId}, 'Purple', '/test-purple.jpg', ARRAY['/test-purple.jpg'])`;
   process.env.RAZORPAY_WEBHOOK_SECRET = secret;

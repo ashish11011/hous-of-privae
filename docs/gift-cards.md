@@ -28,7 +28,7 @@ Coupon entry was removed from checkout. Historical coupon data and admin coupon 
 - On capture, the gift balance, points ledger and garment order settle in the same transaction. `totalAmountPaid` records all settled tender; `expectedAmountPaise` records only the Razorpay portion. Snapshot fields `giftCardAmount`, `giftCardSuffix` and `cashAmount` provide the breakdown in admin order details and confirmation emails.
 - Separate email-delivery markers allow webhook retries to complete missing deliveries without issuing another card. As with existing SES order emails, a process failure after SES accepts an email but before its marker commits can cause an email duplicate, without duplicating gift-card value.
 - Fully gift-card-funded orders return confirmation even if email fails, with a retry action in checkout. Payment status is never set from a browser assertion.
-- The supplied reference's expiry, PIN, delivery-date and separate Circle rules are not copied into backend policy.
+- Gift cards retain their existing no-expiry policy and have no PIN or scheduled delivery. The separately approved Vite Privae Circle programme is implemented in Next.js; gift-card-funded value does not earn Circle Points. See [account-dashboard.md](account-dashboard.md).
 
 ## Verification
 

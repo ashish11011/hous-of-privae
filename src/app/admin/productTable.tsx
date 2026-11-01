@@ -16,6 +16,7 @@ type Product = {
   id: string;
   variants: { id: string }[];
   name: string | null;
+  isNew: boolean;
   description: string | null;
   basePrice: number | null;
   categoryId1: string | null;
@@ -52,6 +53,7 @@ export function ProductTableAdmin({
             <TableHead>Description</TableHead>
             <TableHead>From price</TableHead>
             <TableHead>Variants</TableHead>
+            <TableHead>New arrival</TableHead>
             <TableHead>Category 1</TableHead>
             <TableHead>Category 2</TableHead>
             <TableHead>Created At</TableHead>
@@ -76,6 +78,7 @@ export function ProductTableAdmin({
                 {product.basePrice != null ? `Rs. ${product.basePrice}` : "-"}
               </TableCell>
               <TableCell>{product.variants.length}</TableCell>
+              <TableCell>{product.isNew ? "Yes" : "No"}</TableCell>
               <TableCell>{product.categoryId1 || "-"}</TableCell>
               <TableCell>{product.categoryId2 || "-"}</TableCell>
 

@@ -72,6 +72,7 @@ const items = [
     url: "/admin/tailoredfit",
     icon: Shirt,
   },
+  { title: "Atelier Requests", url: "/admin/atelier", icon: Shirt },
   {
     title: "Manage Coupons",
     url: "/admin/coupons",

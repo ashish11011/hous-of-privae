@@ -70,7 +70,7 @@ export default function NavBar({
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white text-neutral-950">
+    <header data-storefront-header className="sticky top-0 z-50 bg-white text-neutral-950">
       <NotificationBar messages={navbarMessages} />
 
       <div className="border-b border-neutral-300 bg-white">

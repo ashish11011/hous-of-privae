@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // your Drizzle DB connection
 import { taileredFits } from "@/db/schema";
 import { sendFormNotificationEmails } from "@/lib/email/ses";
+import { getOrderAdmin } from "@/lib/auth/admin";
 
 export async function POST(req: Request) {
   try {
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  if (!await getOrderAdmin()) return NextResponse.json({ error: "Admin sign-in is required." }, { status: 403 });
   try {
     const data = await db
       .select()

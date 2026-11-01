@@ -37,6 +37,7 @@ export default async function Home() {
     <div className=" w-full">
       <Carousel />
       <Categories categories={categories} />
+      <ProductCarousel />
       {/* <div className="reveal">
         <LandingFilmSection />
       </div> */}
@@ -44,7 +45,6 @@ export default async function Home() {
       {/* <VideoPlay /> */}
       {/* <Categories2 /> */}
 
-      <ProductCarousel />
       <div className="h-12"></div>
       {/* <RevicesCarousel /> */}
       {/* <BrandValues /> */}
