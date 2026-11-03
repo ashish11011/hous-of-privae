@@ -16,6 +16,7 @@ import {
   orderStatusEvent,
 } from "./orderSchema";
 
+export { categoryPriority, categoryProductPriority } from "./productSchema";
 export const productTable = product;
 export const productVariantsTable = productVarient;
 export const categoryTable = category;

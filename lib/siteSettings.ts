@@ -20,7 +20,7 @@ export const LANDING_SETTINGS_KEY = "landing_page";
 export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
   navbarMessages: [
     "Aarambh Collection · Now Live",
-    "Complimentary Shipping Across India",
+    "Complimentary Shipping Across World",
     "Handcrafted in Jaipur",
   ],
   landingBanners: {
@@ -57,7 +57,9 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
 
 function normalizeStringArray(value: unknown, fallback: string[]) {
   if (!Array.isArray(value)) return fallback;
-  const cleaned = value.filter((item): item is string => typeof item === "string" && item.trim() !== "");
+  const cleaned = value.filter(
+    (item): item is string => typeof item === "string" && item.trim() !== "",
+  );
   return cleaned.length > 0 ? cleaned : fallback;
 }
 
@@ -81,11 +83,18 @@ function normalizeBannerArray(value: unknown, fallback: BannerItem[]) {
       }
 
       if (!item || typeof item !== "object") return null;
-      const banner = item as { image?: unknown; href?: unknown; link?: unknown };
-      if (typeof banner.image !== "string" || banner.image.trim() === "") return null;
+      const banner = item as {
+        image?: unknown;
+        href?: unknown;
+        link?: unknown;
+      };
+      if (typeof banner.image !== "string" || banner.image.trim() === "")
+        return null;
 
       const href = normalizeHref(banner.href ?? banner.link);
-      return href ? { image: banner.image.trim(), href } : { image: banner.image.trim() };
+      return href
+        ? { image: banner.image.trim(), href }
+        : { image: banner.image.trim() };
     })
     .filter((item): item is BannerItem => item !== null);
 
@@ -97,16 +106,16 @@ export function normalizeLandingSettings(value: unknown): LandingSettings {
   return {
     navbarMessages: normalizeStringArray(
       settings?.navbarMessages,
-      DEFAULT_LANDING_SETTINGS.navbarMessages
+      DEFAULT_LANDING_SETTINGS.navbarMessages,
     ),
     landingBanners: {
       mobile: normalizeBannerArray(
         settings?.landingBanners?.mobile,
-        DEFAULT_LANDING_SETTINGS.landingBanners.mobile
+        DEFAULT_LANDING_SETTINGS.landingBanners.mobile,
       ),
       desktop: normalizeBannerArray(
         settings?.landingBanners?.desktop,
-        DEFAULT_LANDING_SETTINGS.landingBanners.desktop
+        DEFAULT_LANDING_SETTINGS.landingBanners.desktop,
       ),
     },
   };

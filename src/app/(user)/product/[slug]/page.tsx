@@ -1,4 +1,6 @@
-import { getProdcutInfoBySlug } from "@/lib";
+import { getAllCategories, getProdcutInfoBySlug } from "@/lib";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductInformation from "./ProductInformation";
 
@@ -27,13 +29,23 @@ const Page = async ({ params, searchParams }: { params: Promise<{ slug: string }
   if (!selected || !currentProduct.sizes?.length) notFound();
   const safeProductData = { ...currentProduct, variantId: selected.id, bannerImage: selected.bannerImage, images: [selected.bannerImage, ...(selected.images ?? []).filter(image => image !== selected.bannerImage)] };
 
+  const categoryKeys = [currentProduct.categoryId1, currentProduct.categoryId2].filter(Boolean);
+  const categories = categoryKeys.length ? await getAllCategories() : [];
+  const category = categoryKeys
+    .map(key => categories.find(item => item.isActive && (item.id === key || item.slug === key)))
+    .find(Boolean);
+
   return (
-    <>
-      <div className=" container mx-auto px-6">
-        <ProductInformation key={selected.id} productData={safeProductData} />
-        {/* <ShowMoreProducts simillarProducts={simillarProducts} /> */}
-      </div>
-    </>
+    <div className="container mx-auto px-6">
+      <Link
+        href={category ? `/category/${category.slug}` : "/#shop-by-category"}
+        className="mb-3 inline-flex min-h-11 items-center gap-2 font-body text-xs tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft size={14} aria-hidden="true" />
+        {category ? `Back to All ${category.name}` : "Back to Shop by Category"}
+      </Link>
+      <ProductInformation key={selected.id} productData={safeProductData} />
+    </div>
   );
 };
 export default Page;

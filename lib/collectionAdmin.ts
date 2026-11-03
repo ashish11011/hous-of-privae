@@ -13,7 +13,7 @@ function refreshCollections() {
 
 export async function saveCollection(input: unknown, updating: boolean) {
   await requireAdmin();
-  const { id, productIds, ...values } = collectionInput.parse(input);
+  const { id, productIds, productPriorities, ...values } = collectionInput.parse(input);
   if (updating && !id) throw new Error("Collection ID is required");
   const result = await db.transaction(async tx => {
     if (productIds.length) {
@@ -24,8 +24,13 @@ export async function saveCollection(input: unknown, updating: boolean) {
       ? await tx.update(collection).set({ ...values, updatedAt: new Date() }).where(eq(collection.id, id!)).returning()
       : await tx.insert(collection).values(values).returning();
     if (!saved) throw new Error("Collection not found");
+    const existing = updating && !productPriorities
+      ? await tx.select({ id: collectionProduct.productId, priority: collectionProduct.priority })
+        .from(collectionProduct).where(eq(collectionProduct.collectionId, saved.id))
+      : [];
+    const priorities = productPriorities ?? Object.fromEntries(existing.map(item => [item.id, item.priority]));
     await tx.delete(collectionProduct).where(eq(collectionProduct.collectionId, saved.id));
-    if (productIds.length) await tx.insert(collectionProduct).values(productIds.map((productId, sortOrder) => ({ collectionId: saved.id, productId, sortOrder })));
+    if (productIds.length) await tx.insert(collectionProduct).values(productIds.map((productId, sortOrder) => ({ collectionId: saved.id, productId, sortOrder, priority: priorities[productId] ?? 1 })));
     return saved;
   });
   refreshCollections();

@@ -41,20 +41,17 @@ const WatchTheMaisonSection = forwardRef<HTMLElement>((_, ref) => {
     <section ref={ref} className="pb-16 md:pb-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="eyebrow mb-3">The Privae Lens</p>
+          <p className="eyebrow mb-3">Journal</p>
           <h2 className="font-heading text-3xl md:text-5xl text-foreground heading-rule">
-            Watch The Maison Move
+            The Privae Lens
           </h2>
           <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto font-body mt-4">
-            A closer look at drape, detail, and presence through our latest
-            campaign films.
+            A closer look — campaigns, fittings and the moments in between.
           </p>
         </div>
 
         <div className="group/marquee overflow-hidden w-full">
-          <div
-            className="flex gap-4 md:gap-5 w-max animate-[marquee_30s_linear_infinite] group-hover/marquee:[animation-play-state:paused]"
-          >
+          <div className="flex gap-4 md:gap-5 w-max animate-[marquee_30s_linear_infinite] group-hover/marquee:[animation-play-state:paused]">
             {[...videos, ...videos].map((video, i) => (
               <a
                 key={`${video.title}-${i}`}

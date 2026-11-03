@@ -1,10 +1,24 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, type SQL } from "drizzle-orm";
 import { collection, collectionProduct } from "@/db/collectionSchema";
 import { product } from "@/db/productSchema";
 import { db } from "./db";
 import { loadCatalog } from "./productCatalog";
 import { variantCards } from "./productAdapter";
+import { isMissingDatabaseObject } from "./databaseSchemaStatus";
 import { isCollectionSchemaMissing } from "./collectionSchemaStatus";
+
+async function getCollectionMemberships(where: SQL) {
+  const fields = { collectionId: collectionProduct.collectionId, productId: collectionProduct.productId };
+  const tieBreakers = [asc(collectionProduct.sortOrder), asc(collectionProduct.productId)];
+  try {
+    return await db.select({ ...fields, priority: collectionProduct.priority })
+      .from(collectionProduct).where(where).orderBy(desc(collectionProduct.priority), ...tieBreakers);
+  } catch (error) {
+    if (!isMissingDatabaseObject(error, "42703", "priority")) throw error;
+    const rows = await db.select(fields).from(collectionProduct).where(where).orderBy(...tieBreakers);
+    return rows.map(row => ({ ...row, priority: 1 }));
+  }
+}
 
 export async function getNavbarCollections() {
   try {
@@ -23,17 +37,21 @@ export async function getCollections(admin = false) {
     const rows = await db.select().from(collection).where(admin ? undefined : eq(collection.isActive, true))
       .orderBy(asc(collection.sortOrder), asc(collection.name));
     if (!rows.length) return [];
-    const memberships = await db.select().from(collectionProduct)
-      .where(inArray(collectionProduct.collectionId, rows.map(row => row.id)))
-      .orderBy(asc(collectionProduct.sortOrder), asc(collectionProduct.productId));
+    const memberships = await getCollectionMemberships(inArray(collectionProduct.collectionId, rows.map(row => row.id)));
     // Count pieces using the same availability rules as the product cards.
     const productIds = [...new Set(memberships.map(item => item.productId))];
     const visibleIds = admin || !productIds.length ? null : new Set(
       variantCards(await loadCatalog(inArray(product.id, productIds))).map(item => item.id),
     );
     return rows.map(row => {
-      const ids = memberships.filter(item => item.collectionId === row.id).map(item => item.productId);
-      return { ...row, productIds: ids, productCount: ids.filter(id => !visibleIds || visibleIds.has(id)).length };
+      const members = memberships.filter(item => item.collectionId === row.id);
+      const ids = members.map(item => item.productId);
+      return {
+        ...row,
+        productIds: ids,
+        productCount: ids.filter(id => !visibleIds || visibleIds.has(id)).length,
+        ...(admin && { productPriorities: Object.fromEntries(members.map(item => [item.productId, item.priority])) }),
+      };
     });
   } catch (error) {
     if (!admin && isCollectionSchemaMissing(error)) return [];
@@ -46,8 +64,7 @@ export async function getCollectionBySlug(slug: string) {
     const [row] = await db.select().from(collection)
       .where(and(eq(collection.slug, slug), eq(collection.isActive, true), eq(collection.isComingSoon, false))).limit(1);
     if (!row) return null;
-    const memberships = await db.select().from(collectionProduct).where(eq(collectionProduct.collectionId, row.id))
-      .orderBy(asc(collectionProduct.sortOrder), asc(collectionProduct.productId));
+    const memberships = await getCollectionMemberships(eq(collectionProduct.collectionId, row.id));
     const ids = memberships.map(item => item.productId);
     const products = ids.length ? await loadCatalog(inArray(product.id, ids)) : [];
     const order = new Map(ids.map((id, index) => [id, index]));

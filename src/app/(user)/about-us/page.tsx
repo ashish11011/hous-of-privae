@@ -1,6 +1,14 @@
 import Image from "next/image";
 import { Metadata } from "next";
-import { Sparkles, Heart, Leaf, Award, Phone, Mail, MapPin } from "lucide-react";
+import {
+  Sparkles,
+  Heart,
+  Leaf,
+  Award,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: { absolute: "About Us | Haus of Privae" },
@@ -95,8 +103,7 @@ export default function AboutPage() {
               {
                 icon: Heart,
                 title: "Restraint",
-                description:
-                  "For the woman who chooses presence over noise.",
+                description: "For the woman who chooses presence over noise.",
               },
               {
                 icon: Leaf,
@@ -139,7 +146,10 @@ export default function AboutPage() {
           </h2>
           <div className="section-rule mb-8" />
           <p className="font-body text-sm md:text-base leading-relaxed text-muted-foreground max-w-2xl mx-auto mb-16">
-            Our studio sits in the Pink City, where mornings begin with cutting and evenings end with the quiet rhythm of hand embroidery. Every Privae piece passes through these same rooms — sketched, stitched, and signed off, in person.
+            Our studio sits in the Pink City, where mornings begin with cutting
+            and evenings end with the quiet rhythm of hand embroidery. Every
+            Privae piece passes through these same rooms — sketched, stitched,
+            and signed off, in person.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -183,7 +193,7 @@ export default function AboutPage() {
             </div>
             <div className="flex items-center gap-2">
               <Mail size={14} className="text-primary" />
-              <span>queries.hausofprivae@gmail.com</span>
+              <span>privaecare@hausofprivae.com</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin size={14} className="text-primary" />

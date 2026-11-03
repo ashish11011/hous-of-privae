@@ -15,6 +15,7 @@ export const collectionInput = z.object({
   isActive: z.boolean().default(true),
   isComingSoon: z.boolean().default(false),
   sortOrder: z.number().int().min(0).max(100000).default(0),
+  productPriorities: z.record(z.uuid(), z.number().int().min(1).max(2147483647)).optional(),
   productIds: z.array(z.uuid()).max(2000).transform(ids => [...new Set(ids)]),
 });
 

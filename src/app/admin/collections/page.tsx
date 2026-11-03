@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, Edit2, Plus, Trash2, Upload } from "lucide-react";
+import { Edit2, Plus, Trash2, Upload } from "lucide-react";
+import { PriorityOrderList, prioritiesFromOrder } from "@/components/admin/PriorityOrderList";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,12 +46,14 @@ export default function CollectionsAdminPage() {
     setForm(current => ({ ...current, [key]: value }));
   }
   function toggleProduct(id: string) {
-    setForm(current => ({ ...current, productIds: current.productIds.includes(id) ? current.productIds.filter(value => value !== id) : [...current.productIds, id] }));
-  }
-  function moveProduct(index: number, direction: number) {
-    const ids = [...form.productIds];
-    [ids[index], ids[index + direction]] = [ids[index + direction], ids[index]];
-    update("productIds", ids);
+    setForm(current => {
+      const productPriorities = { ...current.productPriorities };
+      delete productPriorities[id];
+      const productIds = current.productIds.includes(id)
+        ? current.productIds.filter(value => value !== id)
+        : [...current.productIds, id];
+      return { ...current, productIds, productPriorities };
+    });
   }
 
   async function save(event: React.FormEvent) {
@@ -115,8 +118,12 @@ export default function CollectionsAdminPage() {
             <div><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isComingSoon} onChange={e => update("isComingSoon", e.target.checked)} />Coming soon</label><p className="text-xs text-muted-foreground mt-1">Shown with “Coming soon” on the collections page and hidden from the navbar. Its card cannot open, and its page is unavailable even through a direct link.</p></div>
             <div className="space-y-3">
               <h3 className="font-medium">Products ({form.productIds.length} selected)</h3>
-              <p className="text-xs text-muted-foreground">Products can belong to multiple collections. Use the arrows to arrange selected pieces.</p>
-              {selectedProducts.length > 0 && <ol className="border divide-y max-h-64 overflow-auto">{selectedProducts.map((item, index) => <li key={item.id} className="flex items-center gap-2 p-2 text-sm"><span className="flex-1 truncate">{item.name || item.slug}</span><Button type="button" variant="ghost" size="sm" aria-label={`Move ${item.name} up`} disabled={index === 0} onClick={() => moveProduct(index, -1)}><ArrowUp size={14} /></Button><Button type="button" variant="ghost" size="sm" aria-label={`Move ${item.name} down`} disabled={index === selectedProducts.length - 1} onClick={() => moveProduct(index, 1)}><ArrowDown size={14} /></Button><Button type="button" variant="ghost" size="sm" aria-label={`Remove ${item.name}`} onClick={() => toggleProduct(item.id)}><Trash2 size={14} /></Button></li>)}</ol>}
+              <p className="text-xs text-muted-foreground">Drag selected products or use the arrows to arrange them. Higher priorities appear first.</p>
+              {selectedProducts.length > 0 && (
+                <PriorityOrderList items={selectedProducts} priorities={form.productPriorities ?? {}}
+                  onReorder={productIds => setForm(current => ({ ...current, productIds, productPriorities: prioritiesFromOrder(productIds) }))}
+                  onRemove={toggleProduct} disabled={!ready || saving || uploading || loading} />
+              )}
               <Input type="search" aria-label="Search products" placeholder="Search by product name or SKU" value={search} onChange={e => setSearch(e.target.value)} />
               <div className="border divide-y max-h-80 overflow-y-auto">{filteredProducts.map(item => <label key={item.id} className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted"><input type="checkbox" checked={form.productIds.includes(item.id)} onChange={() => toggleProduct(item.id)} />{item.image && <img src={item.image} alt="" className="w-10 h-14 object-cover" />}<span className="text-sm"><span className="block">{item.name || item.slug}</span><span className="text-xs text-muted-foreground">{item.sku}</span></span></label>)}{!filteredProducts.length && <p className="p-4 text-sm text-muted-foreground">No products found.</p>}</div>
             </div>

@@ -48,7 +48,7 @@ function fakeDb(results = []) {
       const chain = {
         from(table) { query.table = getTableName(table); return chain; },
         where(predicate) { query.where = predicate; return chain; },
-        orderBy() { return chain; }, limit() { return chain; },
+        orderBy(...order) { query.order = order; return chain; }, limit() { return chain; },
         then(resolve, reject) { return Promise.resolve().then(() => {
           const value = results.shift() ?? [];
           if (value instanceof Error) throw value;
@@ -101,6 +101,10 @@ assert.deepEqual(predicate(0).params, ['aarambh', true, false]);
 assert.match(predicate(0).sql, /is_coming_soon/);
 const productFilter = dialect.sqlToQuery(globalThis.catalogPredicates[0]);
 assert.deepEqual(productFilter.params, [productB, productA]);
+assert.match(dialect.sqlToQuery(selects[1].order[0]).sql, /"priority" desc/);
+const missingPriority = Object.assign(new Error('column collection_products.priority does not exist'), { code: '42703' });
+reset([[row], missingPriority, [{ productId: productB }, { productId: productA }]]);
+assert.deepEqual((await getCollectionBySlug('aarambh')).products.map(item => item.id), [productB, productA]);
 reset([[row], []]);
 assert.deepEqual((await getCollectionBySlug('aarambh')).products, []);
 assert.equal(globalThis.catalogPredicates.length, 0);
@@ -112,7 +116,11 @@ reset([[{ id: productA }, { id: productB }]]);
 await saveCollection(draft, false);
 assert.equal(writes[0].op, 'insert');
 assert.deepEqual(writes[2].value.map(item => [item.collectionId, item.productId, item.sortOrder]), [[collectionId, productA, 0], [collectionId, productB, 1]]);
+assert.deepEqual(writes[2].value.map(item => item.priority), [1, 1]);
 assert.ok(globalThis.collectionRefreshes.some(args => args[1] === 'layout'));
+reset([[{ id: productA }, { id: productB }]]);
+await saveCollection({ ...draft, productPriorities: { [productA]: 2 } }, false);
+assert.deepEqual(writes[2].value.map(item => item.priority), [2, 1]);
 reset([[{ id: productB }]]);
 await saveCollection({ ...draft, id: collectionId, productIds: [productB] }, true);
 assert.deepEqual(writes.map(item => item.op), ['update', 'delete', 'insert']);

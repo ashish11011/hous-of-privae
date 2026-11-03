@@ -248,7 +248,7 @@ const Footer = () => {
     // { Icon: Linkedin, href: "", label: "LinkedIn" },
     {
       Icon: Mail,
-      href: "mailto:queries.hausofprivae@gmail.com",
+      href: "mailto:privaecare@hausofprivae.com",
       label: "Email",
     },
   ].filter((s) => !!s.href);

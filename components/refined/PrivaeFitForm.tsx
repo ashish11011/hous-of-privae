@@ -73,18 +73,18 @@ export default function PrivaeFitForm() {
     window.history.replaceState(
       null,
       "",
-      `${window.location.pathname}${query ? `?${query}` : ""}`
+      `${window.location.pathname}${query ? `?${query}` : ""}`,
     );
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleStudioChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setStudioData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -100,13 +100,15 @@ export default function PrivaeFitForm() {
         body: JSON.stringify(
           nextMode === "measure"
             ? { mode: nextMode, ...formData }
-            : { mode: nextMode, ...studioData }
+            : { mode: nextMode, ...studioData },
         ),
       });
 
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(payload.message || "Could not submit Privae Fit request.");
+        throw new Error(
+          payload.message || "Could not submit Privae Fit request.",
+        );
       }
 
       setSubmitted(nextMode);
@@ -114,7 +116,7 @@ export default function PrivaeFitForm() {
       setError(
         err instanceof Error
           ? err.message
-          : "Could not submit Privae Fit request."
+          : "Could not submit Privae Fit request.",
       );
     } finally {
       setSubmitting(false);
@@ -205,7 +207,10 @@ export default function PrivaeFitForm() {
           </div>
         )}
 
-        <Link href="/collections" className="text-primary font-body text-sm underline">
+        <Link
+          href="/collections"
+          className="text-primary font-body text-sm underline"
+        >
           Browse Collections
         </Link>
       </main>
@@ -303,10 +308,29 @@ export default function PrivaeFitForm() {
             }}
             className="space-y-8"
           >
-            <SavedMeasurementPicker onSelect={measurement => {
-              const value = (number: number | null) => number === null ? "" : String(Math.round(number * (measurement.unit === "cm" ? 1 / 2.54 : 1) * 100) / 100);
-              setFormData(current => ({ ...current, bust: value(measurement.bust), waist: value(measurement.waist), hips: value(measurement.hips), shoulderWidth: value(measurement.shoulder), sleeveLength: value(measurement.sleeveLength), kurtaLength: value(measurement.kurtaLength) }));
-            }} />
+            <SavedMeasurementPicker
+              onSelect={(measurement) => {
+                const value = (number: number | null) =>
+                  number === null
+                    ? ""
+                    : String(
+                        Math.round(
+                          number *
+                            (measurement.unit === "cm" ? 1 / 2.54 : 1) *
+                            100,
+                        ) / 100,
+                      );
+                setFormData((current) => ({
+                  ...current,
+                  bust: value(measurement.bust),
+                  waist: value(measurement.waist),
+                  hips: value(measurement.hips),
+                  shoulderWidth: value(measurement.shoulder),
+                  sleeveLength: value(measurement.sleeveLength),
+                  kurtaLength: value(measurement.kurtaLength),
+                }));
+              }}
+            />
             <div>
               <h3 className="text-xs font-body uppercase tracking-[0.2em] text-foreground mb-4 border-b border-border pb-2">
                 Contact Details
@@ -337,12 +361,42 @@ export default function PrivaeFitForm() {
                 Upper Body - Kurta / Top
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <InputField label="Bust / Chest" name="bust" placeholder="36" unit="in" />
-                <InputField label="Waist" name="waist" placeholder="30" unit="in" />
-                <InputField label="Hips" name="hips" placeholder="38" unit="in" />
-                <InputField label="Shoulder Width" name="shoulderWidth" placeholder="14" unit="in" />
-                <InputField label="Sleeve Length" name="sleeveLength" placeholder="22" unit="in" />
-                <InputField label="Kurta / Top Length" name="kurtaLength" placeholder="42" unit="in" />
+                <InputField
+                  label="Bust / Chest"
+                  name="bust"
+                  placeholder="36"
+                  unit="in"
+                />
+                <InputField
+                  label="Waist"
+                  name="waist"
+                  placeholder="30"
+                  unit="in"
+                />
+                <InputField
+                  label="Hips"
+                  name="hips"
+                  placeholder="38"
+                  unit="in"
+                />
+                <InputField
+                  label="Shoulder Width"
+                  name="shoulderWidth"
+                  placeholder="14"
+                  unit="in"
+                />
+                <InputField
+                  label="Sleeve Length"
+                  name="sleeveLength"
+                  placeholder="22"
+                  unit="in"
+                />
+                <InputField
+                  label="Kurta / Top Length"
+                  name="kurtaLength"
+                  placeholder="42"
+                  unit="in"
+                />
               </div>
             </div>
 
@@ -351,8 +405,18 @@ export default function PrivaeFitForm() {
                 Lower Body - Bottom
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <InputField label="Bottom Waist" name="bottomWaist" placeholder="30" unit="in" />
-                <InputField label="Bottom Length" name="bottomLength" placeholder="40" unit="in" />
+                <InputField
+                  label="Bottom Waist"
+                  name="bottomWaist"
+                  placeholder="30"
+                  unit="in"
+                />
+                <InputField
+                  label="Bottom Length"
+                  name="bottomLength"
+                  placeholder="40"
+                  unit="in"
+                />
               </div>
             </div>
 
@@ -454,9 +518,9 @@ export default function PrivaeFitForm() {
             </div>
 
             <p className="text-center text-sm text-muted-foreground font-body mb-8 max-w-lg mx-auto leading-relaxed">
-              Visit our atelier in Jaipur for a personalized fitting and
-              styling experience. Our team will take your measurements in
-              person and walk you through bespoke options.
+              Visit our atelier in Jaipur for a personalized fitting and styling
+              experience. Our team will take your measurements in person and
+              walk you through bespoke options.
             </p>
 
             <form
@@ -555,7 +619,9 @@ export default function PrivaeFitForm() {
           </div>
         )}
 
-        {error && <p className="mt-6 text-center text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="mt-6 text-center text-sm text-red-600">{error}</p>
+        )}
 
         <div className="mt-10 bg-card p-6 text-center">
           <p className="text-xs font-body uppercase tracking-[0.2em] text-foreground mb-3">
@@ -574,11 +640,11 @@ export default function PrivaeFitForm() {
               +91 7023 117 408
             </a>
             <a
-              href="mailto:hello@hausofprivae.com"
+              href="mailto:privaecare@hausofprivae.com"
               className="flex items-center gap-2 text-primary hover:underline"
             >
               <Mail size={14} />
-              hello@hausofprivae.com
+              privaecare@hausofprivae.com
             </a>
             <a
               href="https://wa.me/917023117408"

@@ -105,10 +105,18 @@ export default function TailoredFitFormModal() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-neutral-900">
-          <SavedMeasurementPicker onSelect={measurement => {
-            setUnit(measurement.unit);
-            setForm(current => ({ ...current, chest: measurement.bust?.toString() ?? "", waist: measurement.waist?.toString() ?? "", hips: measurement.hips?.toString() ?? "", shoulderLength: measurement.shoulder?.toString() ?? "" }));
-          }} />
+          <SavedMeasurementPicker
+            onSelect={(measurement) => {
+              setUnit(measurement.unit);
+              setForm((current) => ({
+                ...current,
+                chest: measurement.bust?.toString() ?? "",
+                waist: measurement.waist?.toString() ?? "",
+                hips: measurement.hips?.toString() ?? "",
+                shoulderLength: measurement.shoulder?.toString() ?? "",
+              }));
+            }}
+          />
           <div>
             <Label className="mb-2 block">Select Unit of Measurement</Label>
             <div className="flex gap-4 items-center">
@@ -232,9 +240,9 @@ export default function TailoredFitFormModal() {
             or{" "}
             <Link
               className="underline"
-              href="mailto:queries.hausofprivae@gmail.com"
+              href="mailto:privaecare@hausofprivae.com"
             >
-              queries.hausofprivae@gmail.com
+              privaecare@hausofprivae.com
             </Link>
             .
           </p>

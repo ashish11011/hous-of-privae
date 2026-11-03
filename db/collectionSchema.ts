@@ -20,6 +20,7 @@ export const collectionProduct = pgTable("collection_products", {
   collectionId: uuid("collection_id").notNull().references(() => collection.id, { onDelete: "cascade" }),
   productId: uuid("product_id").notNull().references(() => product.id, { onDelete: "cascade" }),
   sortOrder: integer("sort_order").notNull().default(0),
+  priority: integer("priority").notNull().default(1),
 }, (table) => [
   primaryKey({ columns: [table.collectionId, table.productId] }),
   index("collection_products_product_idx").on(table.productId),

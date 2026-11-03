@@ -17,7 +17,7 @@ interface CategoriesProps {
 
 export function Categories({ categories }: CategoriesProps) {
   return (
-    <section className="py-16 md:py-24 px-4">
+    <section id="shop-by-category" className="scroll-mt-48 py-16 md:py-24 px-4">
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <p className="eyebrow mb-3">Curated for every occasion</p>

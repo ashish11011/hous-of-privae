@@ -16,14 +16,14 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
     subtitle: "Crafted with care · Delivered with intention",
     eyebrow: "Our promise",
     description:
-      "Complimentary shipping across India. Worldwide insured delivery. Crafted with care, delivered with intention.",
+      "Complimentary Shipping Across World. Worldwide insured delivery. Crafted with care, delivered with intention.",
     bodyHtml: `<h2>Order Processing</h2>
-<p>Each Haus of Privae piece is finished by hand at our atelier. Standard ready-to-ship pieces are dispatched within <strong>5–7 business days</strong> for domestic orders and <strong>7–10 business days</strong> for international orders. Custom, bespoke and Privae Fit pieces are crafted over <strong>3–4 weeks</strong>, with the exact timeline confirmed after consultation.</p>
+<p>Each Haus of Privae piece is finished by hand at our atelier. Stitched pieces are dispatched within <strong>10–12 business days</strong> for domestic orders and <strong>12–15 business days</strong> for international orders, post payment confirmation. Custom, bespoke and Privae Fit pieces are crafted over <strong>3–4 weeks</strong>, with the exact timeline confirmed after consultation.</p>
 
 <h2>Domestic Shipping (India)</h2>
 <ul>
 <li>Complimentary shipping on every order — no minimum spend.</li>
-<li>Standard fits dispatched within <strong>5–7 business days</strong>.</li>
+<li>Stitched pieces dispatched within <strong>10–12 business days</strong> post payment confirmation.</li>
 <li>Custom orders dispatched within <strong>3–4 weeks</strong>.</li>
 <li>Estimated delivery date shared via email once your order is shipped.</li>
 <li>Insured, signature-on-delivery courier with live tracking from dispatch.</li>
@@ -32,12 +32,12 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
 <h2>International Shipping</h2>
 <ul>
 <li>Worldwide delivery, insured and fully tracked.</li>
-<li>Standard fits dispatched within <strong>7–10 business days</strong>.</li>
+<li>Stitched pieces dispatched within <strong>12–15 business days</strong> post payment confirmation.</li>
 <li>Custom orders dispatched within <strong>3–4 weeks</strong>.</li>
 <li>Estimated delivery date shared via email once your order is shipped.</li>
 <li>International shipping is calculated at checkout based on your delivery address and prevailing courier rates.</li>
 <li>Customs duties, taxes and import fees are borne by the recipient.</li>
-<li><strong>International orders are non-returnable and non-exchangeable.</strong></li>
+<li><strong>International orders are non-returnable and non-exchangeable.</strong> For sizing queries, a consultation can be arranged before ordering.</li>
 </ul>
 
 <h2>Order Tracking & Support</h2>
@@ -46,15 +46,15 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
   returns: {
     slug: "returns",
     title: "Returns & Exchange",
-    subtitle: "Considered craftsmanship · Considered policy",
+    subtitle: "Simple, transparent and fair",
     eyebrow: "Our promise",
     description:
-      "7-day return window for ready-to-ship pieces in India. Considered craftsmanship, considered policy.",
+      "5-day return and size exchange window for ready-to-ship pieces in India.",
     bodyHtml: `<h2>What is Eligible</h2>
 <ul>
-<li>Returns are accepted within <strong>7 days of delivery</strong> for ready-to-ship pieces.</li>
-<li>Items must be unworn, unwashed and returned with original tags, packaging and invoice intact.</li>
-<li>Size exchanges are honoured within 7 days, subject to availability of the requested size.</li>
+<li>Returns and size exchanges are accepted within <strong>5 days of delivery</strong> for ready-to-ship pieces (India only).</li>
+<li>Pieces must be unworn, unwashed, with all <strong>tags attached</strong> and returned in their <strong>original packaging</strong> with the invoice intact.</li>
+<li>Size exchanges are subject to availability of the requested size.</li>
 <li>In the rare event of a manufacturing defect or damage in transit, we will replace the piece or issue a full refund.</li>
 </ul>
 
@@ -63,13 +63,13 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
 <li>Custom, bespoke and made-to-measure pieces are non-returnable and non-exchangeable.</li>
 <li>Privae Fit (custom-measured) orders, alterations and bespoke colourways.</li>
 <li>Sale, archive and final-edit pieces, unless damaged on arrival.</li>
-<li>Items returned without original tags, packaging or beyond the 7-day window.</li>
-<li><strong>All international orders</strong> — these are non-returnable and non-exchangeable. Please review size and details carefully before placing your order.</li>
+<li>Pieces returned without tags or original packaging, or beyond the 5-day window.</li>
+<li><strong>All international orders</strong> — these are non-returnable and non-exchangeable. For sizing queries, a consultation can be arranged with our atelier before you place your order.</li>
 </ul>
 
 <h2>How to Initiate a Return or Exchange</h2>
 <ol>
-<li>Write to us at <a href="mailto:queries.hausofprivae@gmail.com">queries.hausofprivae@gmail.com</a> within 7 days of delivery, with your order number and reason.</li>
+<li>Write to us at <a href="mailto:queries.hausofprivae@gmail.com">queries.hausofprivae@gmail.com</a> within 5 days of delivery, with your order number and reason.</li>
 <li>Our team will arrange a reverse pickup from your address, wherever serviceable.</li>
 <li>Once received and inspected, refunds are processed to the original payment method within 7–10 business days.</li>
 <li>For exchanges, the new piece is dispatched once the original is received and inspected.</li>
@@ -114,13 +114,13 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
 <p>We share data only with trusted partners required to deliver your order — couriers, payment processors, email providers and our atelier team. We never sell your personal information.</p>
 
 <h2>Your Rights</h2>
-<p>You may request access to, correction or deletion of your personal data at any time by writing to <a href="mailto:queries.hausofprivae@gmail.com">queries.hausofprivae@gmail.com</a>. We will respond within 30 days.</p>
+<p>You may request access to, correction or deletion of your personal data at any time by writing to <a href="mailto:privaecare@hausofprivae.com">privaecare@hausofprivae.com</a>. We will respond within 30 days.</p>
 
 <h2>Cookies</h2>
 <p>We use essential cookies to keep your cart, wishlist and session active. Optional analytics cookies help us understand how the site is used. You may disable non-essential cookies through your browser settings.</p>
 
 <h2>Contact</h2>
-<p>For any privacy query, reach us at <a href="mailto:queries.hausofprivae@gmail.com">queries.hausofprivae@gmail.com</a> or on WhatsApp at <a href="https://wa.me/917023117408" target="_blank" rel="noopener">+91 7023117408</a>.</p>`,
+<p>For any privacy query, reach us at <a href="mailto:privaecare@hausofprivae.com">privaecare@hausofprivae.com</a> or on WhatsApp at <a href="https://wa.me/917023117408" target="_blank" rel="noopener">+91 7023117408</a>.</p>`,
   },
   terms: {
     slug: "terms",
@@ -165,6 +165,6 @@ export const legalPages: Record<LegalPageSlug, LegalPageContent> = {
 <p>These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts at Jaipur, Rajasthan.</p>
 
 <h2>Contact</h2>
-<p>For any query, write to <a href="mailto:queries.hausofprivae@gmail.com">queries.hausofprivae@gmail.com</a> or WhatsApp <a href="https://wa.me/917023117408" target="_blank" rel="noopener">+91 7023117408</a>.</p>`,
+<p>For any query, write to <a href="mailto:privaecare@hausofprivae.com">privaecare@hausofprivae.com</a> or WhatsApp <a href="https://wa.me/917023117408" target="_blank" rel="noopener">+91 7023117408</a>.</p>`,
   },
 };

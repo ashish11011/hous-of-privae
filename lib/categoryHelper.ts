@@ -2,9 +2,10 @@
 import { requireAdmin } from "@/lib/auth/admin";
 
 import { asc, eq, or } from "drizzle-orm";
-import { categoryTable } from "@/db/schema";
+import { categoryPriority, categoryTable } from "@/db/schema";
 import { CATEGORY_1, CATEGORY_2, moreSidebarCategories } from "@/const";
 import { db } from "./db";
+import { isMissingDatabaseObject } from "./databaseSchemaStatus";
 
 export type CategoryRecord = typeof categoryTable.$inferSelect;
 
@@ -18,13 +19,14 @@ export async function generateCategorySlug(name: string) {
     .replace(/^-|-$/g, "");
 }
 
-export async function fallbackCategories(): Promise<CategoryRecord[]> {
+export async function fallbackCategories(): Promise<(CategoryRecord & { priority: number })[]> {
   const levelOne = [...CATEGORY_1, ...moreSidebarCategories].map((item) => ({
     id: String(item.id),
     name: item.name,
     slug: item.slug,
     image: "image" in item ? item.image ?? null : null,
     tagline: "tagline" in item ? item.tagline ?? null : null,
+    priority: 1,
     level: 1,
     parentId: null,
     isActive: true,
@@ -38,6 +40,7 @@ export async function fallbackCategories(): Promise<CategoryRecord[]> {
     slug: item.slug,
     image: item.image ?? null,
     tagline: null,
+    priority: 1,
     level: 2,
     parentId: null,
     isActive: true,
@@ -48,13 +51,26 @@ export async function fallbackCategories(): Promise<CategoryRecord[]> {
   return [...levelOne, ...levelTwo];
 }
 
+export async function getSavedCategories() {
+  const categories = await db.select().from(categoryTable)
+    .orderBy(asc(categoryTable.level), asc(categoryTable.name), asc(categoryTable.id));
+  if (!categories.length) return [];
+
+  const priorities = new Map<string, number>();
+  try {
+    const rows = await db.select().from(categoryPriority);
+    for (const row of rows) priorities.set(row.categoryId, row.priority);
+  } catch (error) {
+    if (!isMissingDatabaseObject(error, "42P01", "category_priorities")) throw error;
+  }
+
+  return categories.map(item => ({ ...item, priority: priorities.get(item.id) ?? 1 }))
+    .sort((a, b) => b.priority - a.priority);
+}
+
 export async function getAllCategories() {
   try {
-    const categories = await db
-      .select()
-      .from(categoryTable)
-      .orderBy(asc(categoryTable.level), asc(categoryTable.name));
-
+    const categories = await getSavedCategories();
     return categories.length ? categories : fallbackCategories();
   } catch {
     console.warn("Categories database unavailable; using fallback category data.");

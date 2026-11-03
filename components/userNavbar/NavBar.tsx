@@ -28,7 +28,7 @@ const categoryLinks = [
   { label: "Loungewear", href: "/category/loungewear" },
   { label: "Occasion Wear", href: "/category/occasion-wear" },
   { label: "Sarees", href: "/category/sarees" },
-  { label: "Ready To Wear", href: "/category/ready-to-wear/" },
+  // { label: "Ready To Wear", href: "/category/ready-to-wear/" },
 ];
 
 const discoverLinks = [
@@ -40,9 +40,11 @@ const discoverLinks = [
 export default function NavBar({
   navbarMessages,
   collections = [],
+  categoryPriorities = {},
 }: {
   navbarMessages?: string[];
   collections?: CollectionLink[];
+  categoryPriorities?: Record<string, number>;
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -54,6 +56,12 @@ export default function NavBar({
   );
   const wishlistCount = userWishlistStore(
     (state) => state.productWishlist.length,
+  );
+
+  const orderedCategoryLinks = [...categoryLinks].sort(
+    (a, b) =>
+      (categoryPriorities[b.href.split("/")[2]] ?? 1) -
+      (categoryPriorities[a.href.split("/")[2]] ?? 1),
   );
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -70,7 +78,10 @@ export default function NavBar({
   };
 
   return (
-    <header data-storefront-header className="sticky top-0 z-50 bg-white text-neutral-950">
+    <header
+      data-storefront-header
+      className="sticky top-0 z-50 bg-white text-neutral-950"
+    >
       <NotificationBar messages={navbarMessages} />
 
       <div className="border-b border-neutral-300 bg-white">
@@ -197,14 +208,22 @@ export default function NavBar({
               <MenuGroup
                 title="Collections"
                 links={[
-                  ...collections.map(item => ({ label: item.name, href: `/collection/${item.slug}`, disabled: item.isComingSoon })),
-                  { label: "View All Collections", href: "/collection", small: true },
+                  ...collections.map((item) => ({
+                    label: item.name,
+                    href: `/collection/${item.slug}`,
+                    disabled: item.isComingSoon,
+                  })),
+                  {
+                    label: "View All Collections",
+                    href: "/collection",
+                    small: true,
+                  },
                 ]}
                 onClick={closeMenu}
               />
               <MenuGroup
                 title="Shop By Category"
-                links={categoryLinks}
+                links={orderedCategoryLinks}
                 onClick={closeMenu}
               />
               <MenuGroup
@@ -257,16 +276,29 @@ function MenuGroup({
         {title}
       </h4>
       <div className="space-y-3">
-        {links.map((link) => (
-          link.disabled ? <span key={link.href} aria-disabled="true" className="block text-sm tracking-[0.15em] uppercase font-body text-white/60">{link.label}<span className="block text-[9px] tracking-[0.2em] mt-1 text-white/50">Coming soon</span></span> : <Link
-            key={link.href}
-            href={link.href}
-            onClick={onClick}
-            className={`nav-link block ${link.small ? "text-[10px]" : "text-sm"} tracking-[0.15em] uppercase font-body transition-colors`}
-          >
-            {link.label}
-          </Link>
-        ))}
+        {links.map((link) =>
+          link.disabled ? (
+            <span
+              key={link.href}
+              aria-disabled="true"
+              className="block text-sm tracking-[0.15em] uppercase font-body text-white/60"
+            >
+              {link.label}
+              <span className="block text-[9px] tracking-[0.2em] mt-1 text-white/50">
+                Coming soon
+              </span>
+            </span>
+          ) : (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onClick}
+              className={`nav-link block ${link.small ? "text-[10px]" : "text-sm"} tracking-[0.15em] uppercase font-body transition-colors`}
+            >
+              {link.label}
+            </Link>
+          ),
+        )}
       </div>
     </div>
   );

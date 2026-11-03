@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PriorityOrderList, prioritiesFromOrder, type OrderableItem } from "@/components/admin/PriorityOrderList";
+import { CategoryProductOrder } from "@/components/admin/CategoryProductOrder";
 import { Textarea } from "@/components/ui/textarea";
 
 type Category = {
@@ -48,6 +50,11 @@ function slugify(value: string) {
 }
 
 export default function CategoriesAdminPage() {
+  const [orderCategory, setOrderCategory] = useState<{ id: string; name: string } | null>(null);
+  const [categoryOrder, setCategoryOrder] = useState<(OrderableItem & { priority: number })[] | null>(null);
+  const [orderDirty, setOrderDirty] = useState(false);
+  const [orderBusy, setOrderBusy] = useState(false);
+  const [orderMessage, setOrderMessage] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState<Category>(emptyCategory);
   const [loading, setLoading] = useState(true);
@@ -66,8 +73,57 @@ export default function CategoriesAdminPage() {
   }
 
   useEffect(() => {
-    loadCategories();
+    void loadCategories();
+    void loadCategoryOrder();
   }, []);
+
+  async function loadCategoryOrder() {
+    setOrderBusy(true);
+    setOrderMessage("");
+    try {
+      const response = await fetch("/api/admin/categories/order", { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.msg || "Unable to load category order.");
+      setCategoryOrder(payload.categories);
+      setOrderDirty(false);
+    } catch (error) {
+      setOrderMessage(error instanceof Error ? error.message : "Unable to load category order.");
+    } finally {
+      setOrderBusy(false);
+    }
+  }
+
+  function reorderCategories(ids: string[]) {
+    const priorities = prioritiesFromOrder(ids);
+    setCategoryOrder(current => {
+      const byId = new Map(current?.map(item => [item.id, item]));
+      return ids.map(id => ({ ...byId.get(id)!, priority: priorities[id] }));
+    });
+    setOrderDirty(true);
+    setOrderMessage("");
+  }
+
+  async function saveCategoryOrder() {
+    if (!categoryOrder) return;
+    setOrderBusy(true);
+    setOrderMessage("");
+    try {
+      const response = await fetch("/api/admin/categories/order", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: categoryOrder.map(item => item.id) }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.msg || "Unable to save category order.");
+      setOrderDirty(false);
+      setOrderMessage("Category order saved.");
+      await loadCategories();
+    } catch (error) {
+      setOrderMessage(error instanceof Error ? error.message : "Unable to save category order.");
+    } finally {
+      setOrderBusy(false);
+    }
+  }
 
   function updateForm(key: keyof Category, value: string | number | boolean) {
     setForm((current) => {
@@ -101,7 +157,7 @@ export default function CategoriesAdminPage() {
 
     setMessage(form.id ? "Category updated successfully." : "Category created successfully.");
     setForm(emptyCategory);
-    await loadCategories();
+    await Promise.all([loadCategories(), loadCategoryOrder()]);
   }
 
   async function handleDelete(category: Category) {
@@ -122,8 +178,9 @@ export default function CategoriesAdminPage() {
       return;
     }
 
+    setOrderCategory(current => current?.id === category.id ? null : current);
     setMessage("Category deleted successfully.");
-    await loadCategories();
+    await Promise.all([loadCategories(), loadCategoryOrder()]);
   }
 
   return (
@@ -140,6 +197,33 @@ export default function CategoriesAdminPage() {
           Add Category
         </Button>
       </div>
+
+      <section className="space-y-3 border bg-card p-5" aria-labelledby="arrange-categories">
+        <h2 id="arrange-categories" className="text-lg font-medium">Arrange Categories</h2>
+        <p className="text-sm text-muted-foreground">
+          Drag category names into the order you want them to appear on the storefront.
+        </p>
+        {categoryOrder?.length ? (
+          <PriorityOrderList items={categoryOrder}
+            priorities={Object.fromEntries(categoryOrder.map(item => [item.id, item.priority]))}
+            onReorder={reorderCategories} disabled={orderBusy || saving} />
+        ) : categoryOrder ? (
+          <p className="text-sm">Add categories to arrange them here.</p>
+        ) : !orderMessage && (
+          <p role="status" className="text-sm">Loading category order…</p>
+        )}
+        {orderMessage && <p role="status" className="text-sm">{orderMessage}</p>}
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" disabled={!orderDirty || orderBusy || saving} onClick={saveCategoryOrder}>
+            Save Category Order
+          </Button>
+          {orderMessage && (
+            <Button type="button" variant="outline" disabled={orderBusy || saving} onClick={loadCategoryOrder}>
+              Reload Category Order
+            </Button>
+          )}
+        </div>
+      </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-6">
         <form onSubmit={handleSubmit} className="border bg-card p-5 space-y-4 h-fit">
@@ -228,66 +312,74 @@ export default function CategoriesAdminPage() {
 
           {message && <p className="text-sm text-muted-foreground">{message}</p>}
 
-          <Button type="submit" disabled={saving} className="w-full">
+          <Button type="submit" disabled={saving || orderBusy} className="w-full">
             {saving ? "Saving..." : form.id ? "Update Category" : "Create Category"}
           </Button>
         </form>
 
-        <div className="border bg-card overflow-x-auto">
-          {loading ? (
-            <p className="p-6 text-sm text-muted-foreground">Loading categories...</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Slug</TableHead>
+        <div className="min-w-0 space-y-4">
+          {orderCategory && <CategoryProductOrder key={orderCategory.id} {...orderCategory} onClose={() => setOrderCategory(null)} />}
+          <div className="border bg-card overflow-x-auto">
+            {loading ? (
+              <p className="p-6 text-sm text-muted-foreground">Loading categories...</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Slug</TableHead>
 
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
-                  <TableRow key={category.id ?? category.slug}>
-                    <TableCell>{category.name}</TableCell>
-                    <TableCell>{category.slug}</TableCell>
-
-                    <TableCell>{category.isActive ? "Active" : "Hidden"}</TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setForm({
-                              ...emptyCategory,
-                              ...category,
-                              image: category.image ?? "",
-                              tagline: category.tagline ?? "",
-                              parentId: category.parentId ?? "",
-                            })
-                          }
-                        >
-                          <Edit2 size={14} />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          disabled={!category.id || category.id.length !== 36}
-                          onClick={() => handleDelete(category)}
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                </TableHeader>
+                <TableBody>
+                  {categories.map((category) => (
+                    <TableRow key={category.id ?? category.slug}>
+                      <TableCell>{category.name}</TableCell>
+                      <TableCell>{category.slug}</TableCell>
+
+                      <TableCell>{category.isActive ? "Active" : "Hidden"}</TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-2">
+                          {category.id?.length === 36 && (
+                            <Button type="button" variant="outline" size="sm" onClick={() => setOrderCategory({ id: category.id!, name: category.name })}>
+                              Arrange Products
+                            </Button>
+                          )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setForm({
+                                ...emptyCategory,
+                                ...category,
+                                image: category.image ?? "",
+                                tagline: category.tagline ?? "",
+                                parentId: category.parentId ?? "",
+                              })
+                            }
+                          >
+                            <Edit2 size={14} />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            disabled={orderBusy || !category.id || category.id.length !== 36}
+                            onClick={() => handleDelete(category)}
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
         </div>
       </section>
     </main>

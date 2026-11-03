@@ -4,21 +4,32 @@ import { getLandingSettings } from "@/lib/siteSettings";
 import React from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { getAllCategories } from "@/lib/categoryHelper";
 import { getNavbarCollections } from "@/lib/collections";
 import AccountSync from "@/components/account/AccountSync";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const [{ navbarMessages }, collections] = await Promise.all([getLandingSettings(), getNavbarCollections()]);
+  const [{ navbarMessages }, collections, categories] = await Promise.all([
+    getLandingSettings(),
+    getNavbarCollections(),
+    getAllCategories(),
+  ]);
+  const categoryPriorities = Object.fromEntries(
+    categories.map((item) => [item.slug, item.priority]),
+  );
   return (
     <div>
       <AccountSync />
-      <NavBar navbarMessages={navbarMessages} collections={collections} />
+      <NavBar
+        navbarMessages={navbarMessages}
+        collections={collections}
+        categoryPriorities={categoryPriorities}
+      />
       {children}
       <Footer />
 
       <Link
-        href={`https://wa.me/+917023117408?text=Welcome%20to%20Haus%20of%20Privae%20%E2%9C%A8%0AWe%E2%80%99re%20delighted%20to%20have%20you%20here.%0A%0AStep%20into%20a%20world%20of%20refined%20craftsmanship%2C%20where%20every%20creation%20embodies%20elegance%20and%20individuality.%0A%0AOur%20team%20would%20be%20delighted%20to%20assist%20you%20with%20product%20or%20order-related%20queries%2C%20private%20appointments%2C%20or%20customization%20requests%20crafted%20exclusively%20for%20you.%0A%0AMay%20we%20know%20what%20you%E2%80%99d%20like%20help%20with%20today%3F
-`}
+        href={`https://wa.me/+917023117408`}
         target="_blank"
         className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50"
       >

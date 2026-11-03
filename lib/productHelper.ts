@@ -1,8 +1,9 @@
 "use server";
 import { getOrderAdmin } from "@/lib/auth/admin";
-import { eq, inArray, or } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "./db";
 import { product, productVarient } from "@/db/productSchema";
+import { getOrderedCategoryProducts } from "./categoryProducts";
 import { loadCatalog } from "./productCatalog";
 import { variantCards } from "./productAdapter";
 import { pricingConfigSchema, lowestVisiblePrice } from "./productPricing";
@@ -66,7 +67,7 @@ export async function createProduct(data: unknown) { return saveProduct(data); }
 export async function updateProdcutInfoBySlug({ slug, productDetails }: any) { return saveProduct(productDetails, slug); }
 export async function getProdcutInfoBySlug(slug: string) { return loadCatalog(eq(product.slug, slug)); }
 export async function getProductByCategory(categoryID: string) {
-  return variantCards(await loadCatalog(or(eq(product.categoryId1, categoryID), eq(product.categoryId2, categoryID))));
+  return variantCards(await getOrderedCategoryProducts(categoryID));
 }
 export async function getNewProducts() {
   return variantCards(await loadCatalog(eq(product.isNew, true)));

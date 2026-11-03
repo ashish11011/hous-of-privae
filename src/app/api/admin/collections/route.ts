@@ -6,7 +6,10 @@ import { saveCollection, deleteCollection } from "@/lib/collectionAdmin";
 import { loadCatalog } from "@/lib/productCatalog";
 import { isCollectionSchemaMissing } from "@/lib/collectionSchemaStatus";
 
+import { isMissingDatabaseObject } from "@/lib/databaseSchemaStatus";
+
 function failure(error: unknown) {
+  if (isMissingDatabaseObject(error, "42703", "priority")) return NextResponse.json({ success: false, msg: "Apply the collection priority schema before saving collections." }, { status: 503 });
   if (isCollectionSchemaMissing(error)) return NextResponse.json({ success: false, msg: "Collections are not available yet. The new collection schema must be applied to the database before you can manage them." }, { status: 503 });
   if (error instanceof ZodError) return NextResponse.json({ success: false, msg: error.issues[0]?.message ?? "Invalid collection" }, { status: 400 });
   const cause = error as { code?: string; cause?: { code?: string } };

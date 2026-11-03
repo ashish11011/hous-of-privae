@@ -7,6 +7,7 @@ import {
   boolean,
   index,
   jsonb,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import type { SizePrice } from "../lib/productPricing";
 
@@ -29,6 +30,11 @@ export const category = pgTable(
     index("category_level_idx").on(table.level),
   ],
 );
+
+export const categoryPriority = pgTable("category_priorities", {
+  categoryId: uuid("category_id").primaryKey().references(() => category.id, { onDelete: "cascade" }),
+  priority: integer("priority").notNull().default(1),
+});
 
 export const product = pgTable(
   "products",
@@ -66,6 +72,15 @@ export const product = pgTable(
     index("slug_idx").on(table.slug),
   ],
 );
+
+export const categoryProductPriority = pgTable("category_product_priorities", {
+  categoryId: uuid("category_id").notNull().references(() => category.id, { onDelete: "cascade" }),
+  productId: uuid("product_id").notNull().references(() => product.id, { onDelete: "cascade" }),
+  priority: integer("priority").notNull().default(1),
+}, (table) => [
+  primaryKey({ columns: [table.categoryId, table.productId] }),
+  index("category_product_priorities_product_idx").on(table.productId),
+]);
 
 export const productVarient = pgTable("product_varient", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -693,19 +693,19 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
                 size={18}
               />
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShareOpen(true)}
+              className="h-12 w-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium"
+            >
+              <Share2Icon />
+            </Button>
           </div>
         );
       })()}
 
       <div className="flex gap-2">
-        <Button
-          variant="outline"
-          onClick={() => setShareOpen(true)}
-          className="flex-1 h-12 rounded-none border-neutral-300 text-neutral-600 tracking-widest uppercase text-xs font-medium"
-        >
-          <Share2Icon /> Share
-        </Button>
-        <Button
+        {/* <Button
           asChild
           variant="outline"
           className="flex-1 h-12 rounded-none border-[#eaddce] bg-[#fdfbf7] text-[#a68a61] tracking-widest uppercase text-xs font-medium"
@@ -713,7 +713,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           <a href={conciergeUrl} target="_blank" rel="noopener noreferrer">
             <MessageCircle /> Privae Concierge
           </a>
-        </Button>
+        </Button> */}
       </div>
 
       <Dialog open={shareOpen} onOpenChange={setShareOpen}>
@@ -735,15 +735,6 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
             >
               <MessageCircle size={16} />
               WhatsApp
-            </a>
-            <a
-              href={`https://t.me/share/url?url=${encodedProductUrl}&text=${encodeURIComponent(productData.name ?? "Privae garment")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-11 items-center gap-3 border border-neutral-200 px-4 text-sm text-neutral-700 hover:border-primary hover:text-primary"
-            >
-              <Share2Icon size={16} />
-              Telegram
             </a>
             <a
               href={`mailto:?subject=${encodeURIComponent(productData.name ?? "Privae garment")}&body=${encodedShareText}`}
@@ -854,7 +845,7 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </div>
         <div className="bg-[#f9f9f9] py-4 flex flex-col items-center gap-1">
           <span className="text-primary mb-1">↺</span>
-          <span className="font-semibold text-neutral-700">7-Day Returns</span>
+          <span className="font-semibold text-neutral-700">5-Day Returns (India)</span>
           <span className="text-[9px] capitalize text-neutral-400">
             From Delivery
           </span>
@@ -884,9 +875,14 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           onClick={() => {
             setOpenAccordion("care");
             requestAnimationFrame(() => {
-              const careTrigger = document.getElementById("garment-care-trigger");
+              const careTrigger = document.getElementById(
+                "garment-care-trigger",
+              );
               careTrigger?.focus({ preventScroll: true });
-              careTrigger?.scrollIntoView({ behavior: "smooth", block: "start" });
+              careTrigger?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
             });
           }}
           className="text-primary hover:underline font-medium"
@@ -972,7 +968,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
         </AccordionItem>
 
         <AccordionItem value="care" id="garment-care">
-          <AccordionTrigger id="garment-care-trigger" className="scroll-mt-48 text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline">
+          <AccordionTrigger
+            id="garment-care-trigger"
+            className="scroll-mt-48 text-xs uppercase tracking-widest font-semibold text-neutral-600 hover:no-underline"
+          >
             Garment Care
           </AccordionTrigger>
           <AccordionContent className="text-sm text-neutral-600 space-y-2">
@@ -1040,10 +1039,10 @@ const ProductAbout = ({ productData }: { productData: Product }) => {
           </a>{" "}
           or write to{" "}
           <a
-            href="mailto:queries.hausofprivae@gmail.com"
+            href="mailto:privaecare@hausofprivae.com"
             className="text-primary hover:underline font-medium"
           >
-            queries.hausofprivae@gmail.com
+            privaecare@hausofprivae.com
           </a>
           .
         </p>
