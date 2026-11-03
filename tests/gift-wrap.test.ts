@@ -43,6 +43,14 @@ test("unselected wrapping has no fee or note; loyalty cap still uses merchandise
   await assert.rejects(createCheckout(checkoutSchema.parse({ ...input, giftWrap: true, loyaltyPointsToRedeem: 5000 })), /20%/);
 });
 
+test("atelier notes are bounded and saved independently of gift wrapping", async () => {
+  assert.equal(checkoutSchema.safeParse({ ...input, atelierNote: "x".repeat(501) }).success, false);
+  await createCheckout(checkoutSchema.parse({ ...input, atelierNote: "  Call on arrival.  " }));
+  const snapshot = savedOrders.at(-1).checkoutSnapshot;
+  assert.equal(snapshot.atelierNote, "Call on arrival.");
+  assert.equal(snapshot.giftWrap, false);
+});
+
 test("clearing or removing the last cart item clears gift wrapping and its note", () => {
   const store = useStore.getState();
   const item = { id: productId, variantId, quantity: 1, size: "s", color: "Purple", variant: "stitched" } as any;

@@ -26,12 +26,15 @@ import { circleEnabled, circleSummary, refreshCircleAccount, reserveCirclePoints
 import { circleMaximumPoints, circleRewardPoints } from "@/lib/account/rules";
 import { settleOrderReferral } from "@/lib/account/referrals";
 
+import { ATELIER_NOTE_LIMIT } from "@/lib/orders/atelierNote";
+
 const requiredText = z.string().trim().min(1).max(300);
 export const checkoutSchema = z.object({
   giftCardCode: z.union([giftCardCodeSchema, z.literal("")]).default(""),
   requestId: z.uuid().optional(),
   giftWrap: z.boolean().default(false),
   giftWrapNote: z.string().trim().max(GIFT_WRAP_NOTE_LIMIT).default(""),
+  atelierNote: z.string().trim().max(ATELIER_NOTE_LIMIT).optional(),
   loyaltyPointsToRedeem: z.number().int().min(0).max(2147483647).multipleOf(LOYALTY_POINTS_PER_RUPEE_VALUE).default(0),
   name: requiredText,
   email: z.string().trim().email().max(254),
@@ -122,7 +125,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
   if (points > 0 && !session?.id)
     throw new CheckoutError("Sign in to use your loyalty points.", 401);
   const id = input.giftCardCode ? input.requestId! : randomUUID();
-  const checkoutFingerprint = input.giftCardCode ? createHash("sha256").update(JSON.stringify(input)).digest("hex") : undefined;
+  const checkoutFingerprint = input.giftCardCode ? createHash("sha256").update(JSON.stringify({ ...input, atelierNote: input.atelierNote || undefined })).digest("hex") : undefined;
   // Lock the user's balance until the reservation and gateway order are saved.
   // A gateway failure rolls back the reservation without taking any points.
   const result = await db.transaction(async (tx) => {
@@ -176,6 +179,7 @@ export async function createCheckout(input: z.infer<typeof checkoutSchema>) {
       },
       items, subtotalAmount, deliveryCharge, discountAmount,
       giftWrap: input.giftWrap, giftWrapCharge, giftWrapNote,
+      ...(input.atelierNote ? { atelierNote: input.atelierNote } : {}),
       loyaltyPointsRedeemed: points, totalAmountPaid: total,
       ...(checkoutFingerprint ? { checkoutFingerprint } : {}),
     };

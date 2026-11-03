@@ -361,6 +361,11 @@ export default function OrderDetails({
             </div>}
           </section>}
 
+          {detail.atelierNote && <section className="rounded-lg border p-4">
+            <h3 className="mb-2 text-lg">Notes for the atelier</h3>
+            <p className="whitespace-pre-wrap break-words text-sm">{detail.atelierNote}</p>
+          </section>}
+
           <section>
             <h3 className="text-xl mb-3">Status history</h3>
             {!detail.history.length ? (

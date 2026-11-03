@@ -47,6 +47,7 @@ export async function getAdminOrderDetail(id: string): Promise<AdminOrderDetail 
     giftWrap: snapshot?.giftWrap ?? false,
     giftWrapCharge: snapshot?.giftWrapCharge ?? 0,
     giftWrapNote: snapshot?.giftWrapNote ?? "",
+    atelierNote: snapshot?.atelierNote,
     giftCardAmount: snapshot?.giftCardAmount ?? 0,
     giftCardSuffix: snapshot?.giftCardSuffix ?? null,
     cashAmount: snapshot?.cashAmount ?? (order.expectedAmountPaise !== null ? order.expectedAmountPaise / 100 : null),

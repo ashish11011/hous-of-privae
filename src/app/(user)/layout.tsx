@@ -31,6 +31,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
       <Link
         href={`https://wa.me/+917023117408`}
         target="_blank"
+        data-storefront-concierge
         className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50"
       >
         <div className="flex items-center gap-3 px-5 py-3 md:px-6 md:py-3.5 bg-primary text-white hover:bg-primary/95 transition-all duration-150 cursor-pointer rounded-none shadow-xl hover:scale-105">

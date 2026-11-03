@@ -48,16 +48,16 @@ export default function GiftWrapOption({
 
   return (
     <section
-      className="border border-[#e2d9d1] bg-[#f5f1eb] p-4"
+      className="border border-[#ded5c9] bg-[#f2eee7] p-5 lg:p-7"
       aria-labelledby="gift-wrap-heading"
     >
       <div className="mb-4 flex items-center gap-3">
-        {/* <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-[#ce9c33] text-xs text-primary" aria-hidden="true">3</span> */}
+        <span className="grid size-7 shrink-0 place-items-center rounded-full border border-[#ad7a28] text-xs text-[#906622]" aria-hidden="true">3</span>
         <h2 id="gift-wrap-heading" className="font-heading text-2xl">
           Gift wrapping
         </h2>
       </div>
-      <div>
+      <div className="border border-[#d6b77a] bg-[#eee5d4]/55 p-4">
         <label className="flex cursor-pointer items-start gap-3">
           <input
             type="checkbox"

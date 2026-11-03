@@ -39,6 +39,7 @@ export type OrderEmailInput = {
   giftWrap?: boolean;
   giftWrapCharge?: number;
   giftWrapNote?: string;
+  atelierNote?: string;
   discountAmount: number;
   loyaltyPointsRedeemed?: number;
   giftCardAmount?: number;
