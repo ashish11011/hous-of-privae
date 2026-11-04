@@ -9,126 +9,81 @@ import {
 
 const faqs = [
   {
-    category: "About Us",
     question: "What is Haus of Privae?",
-    answer: `Haus of Privae is a modern luxury label offering a curated range of ready-to-wear 
-    and custom-made garments. Each creation embodies quiet sophistication - merging artisanal 
-    detailing with contemporary design to celebrate individuality and refined femininity.`,
+    answer: "Haus of Privae is a luxury clothing label from Jaipur. Our ready-to-wear and custom pieces pair artisanal detailing with contemporary design.",
   },
   {
-    category: "Sustainability",
+    question: "How do I find my correct size?",
+    answer: "Compare your measurements with the size guide on the product page. If you’re between sizes or would like help, contact the atelier before ordering.",
+  },
+  {
+    question: "Can I commission a fully bespoke piece?",
+    answer: "Yes. Our atelier can work with you on a custom design, from measurements and fabric to embroidery and finishing. Send us a message to discuss your commission.",
+  },
+  {
+    question: "What is Privae Fit?",
+    answer: "Privae Fit is our made-to-measure service. The atelier uses your measurements to tailor the piece to your fit.",
+  },
+  {
     question: "Are your pieces sustainably made?",
-    answer: `Yes. Sustainability is an integral part of our design philosophy. We use ethically 
-    sourced materials, promote mindful production practices, and collaborate with skilled artisans 
-    to ensure every piece is made responsibly and with lasting quality.`,
+    answer: "We use ethically sourced materials, promote mindful production practices, and work with skilled artisans to create pieces designed for lasting wear.",
   },
   {
-    category: "Orders & Customization",
-    question: "Can I customize a design?",
-    answer: `Absolutely. We offer customization and bespoke tailoring to help you create a piece 
-    that reflects your personal style. Once your order is placed, our design team will connect with 
-    you to discuss measurements, fabrics, and design preferences.`,
-  },
-  {
-    category: "Delivery Timelines",
     question: "How long will my order take to arrive?",
-    answer: `• Ready-to-wear: Dispatched within 10 business days across India. 
-    • Customized orders: Timelines vary depending on the design and craftsmanship. 
-    • International Orders: Shipping times depend on your destination and customs clearance.`,
+    answer: "Stitched pieces dispatch within 10–12 business days in India and 12–15 business days internationally after payment confirmation. Custom pieces typically take 3–4 weeks to craft. We share an estimated delivery date by email after dispatch.",
   },
   {
-    category: "Shipping",
     question: "Do you ship internationally?",
-    answer: `Yes, Haus of Privae ships globally. International shipping charges and delivery 
-    times are displayed at checkout. Tracking details will be shared once your order is dispatched.`,
+    answer: "Yes. International orders are insured and tracked. Shipping is calculated at checkout, and the recipient is responsible for customs duties and import fees.",
   },
   {
-    category: "Returns & Alterations",
+    question: "What payment methods do you accept?",
+    answer: "Online orders are paid securely through Razorpay. The payment window shows the methods available for your order.",
+  },
+  {
     question: "Can I return or exchange my order?",
-    answer: `Ready-to-ship pieces delivered in India are eligible for returns and size exchanges within 5 days of delivery. Pieces must be unworn and unwashed, with all tags attached, original packaging and invoice intact. Size exchanges are subject to availability. Custom pieces and international orders are non-returnable and non-exchangeable.`,
+    answer: "Ready-to-ship pieces delivered in India are eligible for returns and size exchanges within 5 days of delivery. Pieces must be unworn and unwashed, with all tags attached, original packaging and invoice intact. Size exchanges are subject to availability. Custom pieces and international orders are non-returnable and non-exchangeable.",
   },
   {
-    category: "Garment Care",
-    question: "How should I care for my Haus of Privae garment?",
-    answer: `Each piece includes specific care instructions on its product page. We recommend 
-    dry cleaning or gentle handwashing to preserve craftsmanship and longevity.`,
+    question: "How should I care for my Privae piece?",
+    answer: "Follow the care instructions on the product page. Dry cleaning or gentle handwashing may be recommended depending on the garment.",
   },
-  // {
-  //   category: "Payments & Pricing",
-  //   question: "What payment options are available?",
-  //   answer: `We accept all major credit/debit cards, UPI, and net banking. For international
-  //   customers, payments can be made through secure international gateways available at checkout.`,
-  // },
-  // {
-  //   category: "Customer Experience",
-  //   question: "Can I visit Haus of Privae in person?",
-  //   answer: `Yes, you can visit our Jaipur studio for personalized styling sessions and
-  //   one-on-one consultations. Schedule an appointment via our Contact Us page.`,
-  // },
-  // {
-  //   category: "Stay Connected",
-  //   question: "How can I stay updated about new launches and collections?",
-  //   answer: `Follow us on Instagram for updates, or subscribe to our newsletter to receive
-  //   exclusive previews, style stories, and collection updates directly in your inbox.`,
-  // },
-  // {
-  //   category: "Packaging & Gifting",
-  //   question: "Do you offer gift packaging or notes?",
-  //   answer: `Yes. Every order is beautifully wrapped in our signature Haus of Privae packaging.
-  //   You can also include a personalized note for gifting during checkout.`,
-  // },
-  // {
-  //   category: "Product Availability",
-  //   question: "Do you restock sold-out pieces?",
-  //   answer: `Our collections are produced in limited quantities to maintain exclusivity.
-  //   Restocks are rare, but you can contact our team to inquire about custom recreations
-  //   of select designs.`,
-  // },
-  // {
-  //   category: "Contact & Support",
-  //   question: "How can I reach Haus of Privae?",
-  //   answer: `You can reach us via the Contact Us page or email us at
-  //   privaecare@hausofprivae.com. Our client relations team will assist with customization, sizing,
-  //   or order queries.`,
-  // },
+  {
+    question: "Do you offer gift cards?",
+    answer: "Yes. The Privae Experience Card is available from the gifting page and can be redeemed at checkout.",
+  },
+  {
+    question: "What is Privae Circle?",
+    answer: "Privae Circle is our loyalty programme. Members can earn points on eligible purchases and redeem available points at checkout.",
+  },
+  {
+    question: "Can I visit your atelier in person?",
+    answer: "Yes. Our Jaipur atelier welcomes visitors by appointment for personal styling and consultations. Contact us to arrange a visit.",
+  },
 ];
 
 export default function FaqSection() {
   return (
-    <section className="max-w-4xl mx-auto mt-20 mb-10 px-4">
-      <h2 className="text-2xl font-semibold text-center mb-6">
-        Frequently Asked Questions — Haus of Privae
-      </h2>
+    <section aria-labelledby="contact-faq-heading" className="bg-[#e8e1d7] px-5 py-16 md:py-24">
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-9 text-center">
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em] text-[#855b1d]">We’re here to help</p>
+          <h2 id="contact-faq-heading" className="heading-rule font-heading text-3xl md:text-5xl">Frequently Asked Questions</h2>
+        </div>
 
-      <p className="text-center text-gray-600 mb-10">
-        Welcome to Haus of Privae, a luxury clothing label where timeless
-        craftsmanship meets contemporary elegance. We’ve answered a few common
-        questions to help guide your shopping experience.
-      </p>
-
-      <Accordion type="single" collapsible className="w-full space-y-3">
-        {faqs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`}>
-            <AccordionTrigger className="text-left font-medium">
-              {faq.question}
-            </AccordionTrigger>
-            <AccordionContent>
-              {faq.answer.includes("•") ? (
-                <ul className="list-disc ml-5 space-y-1 text-gray-700">
-                  {faq.answer
-                    .split("•")
-                    .filter(Boolean)
-                    .map((line, i) => (
-                      <li key={i}>{line.trim()}</li>
-                    ))}
-                </ul>
-              ) : (
-                <p className="text-gray-700">{faq.answer}</p>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+        <Accordion type="single" collapsible className="space-y-2">
+          {faqs.map(({ question, answer }) => (
+            <AccordionItem key={question} value={question} className="border-0 bg-[#f7f4ef]">
+              <AccordionTrigger className="rounded-none px-5 py-4 font-heading text-lg font-normal leading-tight sm:px-6">
+                {question}
+              </AccordionTrigger>
+              <AccordionContent className="px-5 leading-relaxed text-muted-foreground sm:px-6">
+                {answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </section>
   );
 }

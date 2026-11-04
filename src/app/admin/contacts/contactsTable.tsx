@@ -57,7 +57,7 @@ export default function ContactsTable({
               <TableCell>{contact.email}</TableCell>
               <TableCell>{contact.phone}</TableCell>
               <TableCell>{contact.location || "-"}</TableCell>
-              <TableCell>{contact.message}</TableCell>
+              <TableCell className="min-w-48 max-w-md whitespace-pre-wrap break-words">{contact.message}</TableCell>
               <TableCell>
                 {new Date(contact.createdAt).toLocaleString()}
               </TableCell>
