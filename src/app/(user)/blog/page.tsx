@@ -4,9 +4,6 @@ import { getVisibleBlogs } from "@/lib/blogHelper";
 import { getImagePreviewUrl } from "@/lib/blogImage";
 import Image from "next/image";
 
-export const revalidate = 86400;
-export const dynamic = "force-static";
-
 export const metadata: Metadata = {
   title: "Blog | Haus of Privae",
   description: "Read editorial stories from Haus of Privae.",

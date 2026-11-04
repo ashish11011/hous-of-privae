@@ -8,6 +8,9 @@ import { getAllCategories } from "@/lib/categoryHelper";
 import { getNavbarCollections } from "@/lib/collections";
 import AccountSync from "@/components/account/AccountSync";
 
+// The storefront navigation reads live catalog and site settings.
+export const dynamic = "force-dynamic";
+
 const layout = async ({ children }: { children: React.ReactNode }) => {
   const [{ navbarMessages }, collections, categories] = await Promise.all([
     getLandingSettings(),

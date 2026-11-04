@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition, Suspense, useCallback } from "react";
+import { useState, useTransition, Suspense } from "react";
 import {
   CheckCircle2,
   Clock,
@@ -75,45 +75,33 @@ function TrackOrderContent() {
   const initialOrderId = searchParams.get("orderid") || "";
 
   const [orderIdInput, setOrderIdInput] = useState<string>(initialOrderId);
+  const [emailInput, setEmailInput] = useState("");
   const [trackedOrder, setTrackedOrder] = useState<TrackedOrder | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [hasCopied, setHasCopied] = useState(false);
 
-  const handleTrack = useCallback((idToTrack: string) => {
-    const trimmed = idToTrack.trim();
-    if (!trimmed) {
-      setErrorMessage("Please enter an Order ID to track.");
-      return;
-    }
-
-    setErrorMessage(null);
-    startTransition(async () => {
-      const response = await getTrackOrderDetails(trimmed);
-      if (response.success) {
-        setTrackedOrder(response.order);
-        setErrorMessage(null);
-      } else {
-        setTrackedOrder(null);
-        setErrorMessage(response.error);
-      }
-    });
-  }, []);
-
-  // Track automatically if orderid is present in searchParams on load
-  useEffect(() => {
-    if (initialOrderId) {
-      handleTrack(initialOrderId);
-    }
-  }, [initialOrderId, handleTrack]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!orderIdInput.trim()) return;
+    const orderId = orderIdInput.trim();
+    const email = emailInput.trim();
+    if (!orderId || !email || isPending) return;
 
-    // Update query param seamlessly
-    router.replace(`/track?orderid=${encodeURIComponent(orderIdInput.trim())}`);
-    handleTrack(orderIdInput);
+    setTrackedOrder(null);
+    setErrorMessage(null);
+    router.replace(`/track?orderid=${encodeURIComponent(orderId)}`);
+    startTransition(async () => {
+      try {
+        const response = await getTrackOrderDetails(orderId, email);
+        if (response.success) {
+          setTrackedOrder(response.order);
+        } else {
+          setErrorMessage(response.error);
+        }
+      } catch {
+        setErrorMessage("Unable to track your order right now. Please try again.");
+      }
+    });
   };
 
   const copyOrderId = () => {
@@ -150,16 +138,40 @@ function TrackOrderContent() {
         onSubmit={handleSubmit}
         className="bg-card border border-border p-6 md:p-8 shadow-sm space-y-4"
       >
-        <label className="block text-xs uppercase tracking-[0.18em] font-medium text-foreground">
+        <h2 className="text-xs uppercase tracking-[0.18em] font-medium text-foreground">
           Track Your Order
-        </label>
-        <div className="flex flex-col sm:flex-row gap-3">
+        </h2>
+        <div className="grid gap-3">
+          <label htmlFor="track-order-id" className="text-sm font-medium">Order ID</label>
           <input
-            className="flex-1 px-4 py-3 bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-colors"
-            placeholder="Enter Order ID (e.g. 550e8400-e29b-41d4-a716-446655440000)"
+            id="track-order-id"
+            className="w-full px-4 py-3 bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-colors"
+            placeholder="Enter the Order ID from your confirmation email"
             required
+            disabled={isPending}
             value={orderIdInput}
-            onChange={(e) => setOrderIdInput(e.target.value)}
+            onChange={(e) => {
+              setOrderIdInput(e.target.value);
+              setTrackedOrder(null);
+              setErrorMessage(null);
+            }}
+          />
+          <label htmlFor="track-email" className="text-sm font-medium">Order email</label>
+          <input
+            id="track-email"
+            type="email"
+            autoComplete="email"
+            maxLength={254}
+            className="w-full px-4 py-3 bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-colors"
+            placeholder="Enter the email used for this order"
+            required
+            disabled={isPending}
+            value={emailInput}
+            onChange={(e) => {
+              setEmailInput(e.target.value);
+              setTrackedOrder(null);
+              setErrorMessage(null);
+            }}
           />
           <button
             type="submit"
@@ -190,7 +202,7 @@ function TrackOrderContent() {
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 mt-6 flex items-start gap-3 text-sm">
+        <div role="alert" className="bg-destructive/10 border border-destructive/20 text-destructive p-4 mt-6 flex items-start gap-3 text-sm">
           <AlertCircle size={18} className="shrink-0 mt-0.5" />
           <div>
             <p className="font-medium">Unable to find order</p>

@@ -7,9 +7,6 @@ import { getBlogBySlug } from "@/lib/blogHelper";
 import { getImagePreviewUrl } from "@/lib/blogImage";
 import Image from "next/image";
 
-export const revalidate = 86400;
-export const dynamic = "force-static";
-
 type BlogDetailPageProps = {
   params: Promise<{ slug: string }>;
 };

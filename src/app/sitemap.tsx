@@ -5,6 +5,9 @@ import { MetadataRoute } from "next";
 import { getNavbarCollections } from "@/lib/collections";
 // import { blogTable } from '../../db/schema';
 
+// Include current catalog entries without querying the database at build time.
+export const dynamic = "force-dynamic";
+
 const paths = [
   "",
   "/about-us",

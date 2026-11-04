@@ -7,6 +7,7 @@ import {
   orderStatusEventsTable,
   productTable,
   productVariantsTable,
+  userTable,
 } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { statusLabel, statusMessages, type EditableOrderStatus } from "@/lib/orders/status";
@@ -52,33 +53,39 @@ export type TrackOrderResponse =
   | { success: true; order: TrackedOrder }
   | { success: false; error: string };
 
-const uuidSchema = z.string().uuid();
+const uuidSchema = z.string().trim().uuid();
+const emailSchema = z.string().trim().email().max(254);
 
-export async function getTrackOrderDetails(orderId: string): Promise<TrackOrderResponse> {
-  const trimmedId = orderId?.trim();
-  if (!trimmedId) {
-    return { success: false, error: "Please enter an order number." };
-  }
-
-  if (!uuidSchema.safeParse(trimmedId).success) {
+export async function getTrackOrderDetails(orderId: string, email: string): Promise<TrackOrderResponse> {
+  const id = uuidSchema.safeParse(orderId);
+  if (!id.success) {
     return {
       success: false,
       error: "Invalid order ID format. Please check your order confirmation email for the valid Order ID.",
     };
   }
 
+  const contact = emailSchema.safeParse(email);
+  if (!contact.success) {
+    return { success: false, error: "Please enter a valid order email address." };
+  }
+
+  const trimmedId = id.data;
   try {
-    const [orderRow] = await db
-      .select()
+    const [match] = await db
+      .select({ order: orderTable, accountEmail: userTable.email })
       .from(orderTable)
+      .innerJoin(userTable, eq(orderTable.userId, userTable.id))
       .where(eq(orderTable.id, trimmedId));
 
-    if (!orderRow) {
+    const orderEmail = match?.order.checkoutSnapshot?.user?.email?.trim() || match?.accountEmail?.trim();
+    if (!match || orderEmail?.toLowerCase() !== contact.data.toLowerCase()) {
       return {
         success: false,
-        error: "No order found with the provided Order ID.",
+        error: "No order matches that Order ID and email address.",
       };
     }
+    const orderRow = match.order;
 
     const [itemsRows, eventsRows] = await Promise.all([
       db

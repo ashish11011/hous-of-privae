@@ -1,9 +1,6 @@
 import ProductCard from "@/components/ProductCard";
 import { useGetAllProducts } from "@/src/hepler";
 
-export const revalidate = 86400;
-export const dynamic = "force-static";
-
 const page = async () => {
   const productsData = await useGetAllProducts(null, null);
   const products = Array.isArray(productsData)

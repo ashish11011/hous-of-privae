@@ -1,21 +1,9 @@
 // import { ProductCard } from "@/components/ProductCard";
 import ProductCard from "@/components/ProductCard";
 import {
-  fallbackCategories,
   getCategoryBySlug,
   getProductByCategory,
 } from "@/lib";
-
-export const revalidate = 86400;
-export const dynamic = "force-static";
-
-export async function generateStaticParams() {
-  return (await fallbackCategories())
-    .filter((cat) => cat.level === 1)
-    .map((cat) => ({
-      categoryID: cat.slug,
-    }));
-}
 
 const Page = async ({ params }: { params: any }) => {
   const categorySlug = (await params).categoryID;
